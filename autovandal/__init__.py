@@ -14,7 +14,7 @@ def changeset_to_data(changeset):
     Parameters
     ----------
     changeset: dict
-        Numpy ndarray, for best results a 2D array
+
     Returns
     -------
     data: tuple
@@ -24,8 +24,22 @@ def changeset_to_data(changeset):
     return [changeset[feature] for feature in features]
 
 
-def predict(data):
-    clf = svm.OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1)
-    clf = joblib.load('models/autovandal.pkl')
-    prediction = clf.predict(data)
-    return prediction
+def load_model():
+    return joblib.load('models/autovandal.pkl')
+
+def predict(model, data):
+    """Returns model prediction for data.
+
+    Parameters
+    ----------
+    model: object
+        Trained machine learning classifier
+    data: tuple
+        Tuple of data items
+    Returns
+    -------
+    prediction: int
+        -1 for outlier, +1 for inlier
+    """
+    prediction = model.predict(data)
+    return prediction[0]

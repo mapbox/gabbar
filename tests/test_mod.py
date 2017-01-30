@@ -21,7 +21,8 @@ def test_changeset_to_data():
 
 def test_predict():
     data = [[0, 0, 500.0, 0.0, 0.0]]
-    actual = autovandal.predict(data)
+    model = autovandal.load_model()
+    actual = autovandal.predict(model, data)
     # Note: -1 for outlier, +1 for inlier
-    expected = [-1, ]
+    expected = -1
     assert actual == expected
