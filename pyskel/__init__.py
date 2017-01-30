@@ -1,3 +1,3 @@
-# pyskel
+# autovandal
 
 has_legs = False
