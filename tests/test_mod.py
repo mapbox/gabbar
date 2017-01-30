@@ -17,3 +17,11 @@ def test_changeset_to_data():
     actual = autovandal.changeset_to_data(changeset)
     expected = [1, 1, 20, 0, 0]
     assert actual == expected
+
+
+def test_predict():
+    data = [[0, 0, 500.0, 0.0, 0.0]]
+    actual = autovandal.predict(data)
+    # Note: -1 for outlier, +1 for inlier
+    expected = [-1, ]
+    assert actual == expected

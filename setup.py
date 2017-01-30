@@ -9,19 +9,22 @@ with codecs_open('README.md', encoding='utf-8') as f:
 
 setup(name='autovandal',
       version='0.0.1',
-      description=u"Skeleton of a Python package",
+      description=u"Robots will catch vandalism on OpenStreetMap!",
       long_description=long_description,
       classifiers=[],
       keywords='',
-      author=u"Sean Gillies",
-      author_email='sean@mapbox.com',
+      author=u"Mapbox Team",
+      author_email='team@mapbox.com',
       url='https://github.com/mapbox/autovandal',
       license='MIT',
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          'click'
+          'click',
+          'numpy',
+          'scipy',
+          'scikit-learn'
       ],
       extras_require={
           'test': ['pytest'],
