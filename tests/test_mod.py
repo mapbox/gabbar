@@ -15,7 +15,7 @@ def test_changeset_to_data():
         "delete": 0
     }
     actual = autovandal.changeset_to_data(changeset)
-    expected = [1, 1, 20, 0, 0]
+    expected = [8, 12, 20, 0, 0]
     assert actual == expected
 
 
