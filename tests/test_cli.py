@@ -1,6 +1,6 @@
 from click.testing import CliRunner
 
-from autovandal.scripts.cli import cli
+from chitti.scripts.cli import cli
 
 
 def test_cli_count():

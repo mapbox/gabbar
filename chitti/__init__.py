@@ -1,4 +1,4 @@
-# autovandal
+# chitti
 
 
 from sklearn import svm
@@ -31,7 +31,7 @@ def changeset_to_data(changeset):
     return data
 
 def load_model():
-    return joblib.load('models/autovandal.pkl')
+    return joblib.load('models/chitti.pkl')
 
 def predict(model, data):
     """Returns model prediction for data.

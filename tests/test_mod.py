@@ -1,8 +1,8 @@
-import autovandal
+import chitti
 
 
 def test_has_legs():
-    assert not autovandal.has_legs
+    assert not chitti.has_legs
 
 
 def test_changeset_to_data():
@@ -22,8 +22,8 @@ def test_changeset_to_data():
 def test_predict():
     # Creating 500 features in a changeset is problematic
     data = [[0, 0, 500.0, 0.0, 0.0]]
-    model = autovandal.load_model()
-    actual = autovandal.predict(model, data)
+    model = chitti.load_model()
+    actual = chitti.predict(model, data)
     # Note: -1 for outlier, +1 for inlier
     expected = -1
     assert actual == expected
