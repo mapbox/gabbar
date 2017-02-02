@@ -3,7 +3,8 @@
 Robots will catch vandalism on OpenStreetMap! :crystal_ball:
 
 
-![collage_fotor](https://cloud.githubusercontent.com/assets/12744420/22545662/a19ac126-e95f-11e6-8297-f94f4af451ed.jpg)
+![gabbar](https://cloud.githubusercontent.com/assets/2899501/22558668/82acc946-e994-11e6-9c68-88e04bbbaa8f.jpg)
+
 _Kitne vandal the?_
 
 ### Tests
