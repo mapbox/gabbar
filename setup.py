@@ -7,7 +7,7 @@ with codecs_open('README.md', encoding='utf-8') as f:
     long_description = f.read()
 
 
-setup(name='chitti',
+setup(name='gabbar',
       version='0.0.1',
       description=u"Robots will catch vandalism on OpenStreetMap!",
       long_description=long_description,
@@ -15,7 +15,7 @@ setup(name='chitti',
       keywords='',
       author=u"Mapbox Team",
       author_email='team@mapbox.com',
-      url='https://github.com/mapbox/chitti,
+      url='https://github.com/mapbox/gabbar,
       license='MIT',
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       include_package_data=True,
@@ -31,6 +31,6 @@ setup(name='chitti',
       },
       entry_points="""
       [console_scripts]
-      autovandal=autovandal.scripts.cli:cli
+      gabbar=gabbar.scripts.cli:cli
       """
       )

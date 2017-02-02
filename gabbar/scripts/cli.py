@@ -2,10 +2,10 @@
 
 import click
 
-import chitti
+import gabbar
 
 
-@click.command('chitti')
+@click.command('gabbar')
 @click.argument('count', type=int, metavar='N')
 def cli(count):
     """Echo a value `N` number of times"""

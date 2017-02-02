@@ -31,7 +31,7 @@ def changeset_to_data(changeset):
     return data
 
 def load_model():
-    return joblib.load('models/chitti.pkl')
+    return joblib.load('models/gabbar.pkl')
 
 def predict(model, data):
     """Returns model prediction for data.

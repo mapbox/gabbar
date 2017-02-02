@@ -1,15 +1,16 @@
-# chitti
+# gabbar
 
-[Robots](https://www.youtube.com/watch?v=-1RkW2RkXZo) will catch vandalism on OpenStreetMap! :crystal_ball:
+Robots will catch vandalism on OpenStreetMap! :crystal_ball:
 
 
-![image](https://cloud.githubusercontent.com/assets/12744420/22458646/69e17e02-e7c3-11e6-8ad0-05a2a2cdc950.png)
+![collage_fotor](https://cloud.githubusercontent.com/assets/12744420/22545662/a19ac126-e95f-11e6-8297-f94f4af451ed.jpg)
+_Kitne vandal the?_
 
 ### Tests
 
 ```sh
 # Setup a virtual environment.
-mkvirtualenv chitti
+mkvirtualenv gabbar
 
 # Install in locally editable (``-e``) mode.
 pip install -e .[test]
