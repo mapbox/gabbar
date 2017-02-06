@@ -3,7 +3,7 @@
 Robots will catch vandalism on OpenStreetMap! :crystal_ball:
 
 
-![gabbar](https://cloud.githubusercontent.com/assets/2899501/22558668/82acc946-e994-11e6-9c68-88e04bbbaa8f.jpg)
+[![amjad-khan](https://cloud.githubusercontent.com/assets/2899501/22643796/0a4a7878-ec86-11e6-9a97-fc63db1caab7.jpg)](https://en.wikipedia.org/wiki/Gabbar_Singh_(character))
 
 _Kitne vandal the?_
 
