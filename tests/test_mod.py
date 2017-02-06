@@ -8,20 +8,18 @@ def test_has_legs():
 def test_changeset_to_data():
     changeset = {
         "ID": 44581855,
-        "editor": "iD 2.0.1",
-        "source": "Not reported",
         "create": 20,
         "modify": 0,
         "delete": 0
     }
     actual = gabbar.changeset_to_data(changeset)
-    expected = [8, 12, 20, 0, 0]
+    expected = [20, 0, 0]
     assert actual == expected
 
 
 def test_predict():
-    # Creating 500 features in a changeset is problematic
-    data = [[0, 0, 500.0, 0.0, 0.0]]
+    # Modifying 406 features in a changeset is problematic
+    data = [[0, 406, 0]]
     model = gabbar.load_model()
     actual = gabbar.predict(model, data)
     # Note: -1 for outlier, +1 for inlier
