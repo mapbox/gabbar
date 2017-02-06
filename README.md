@@ -47,3 +47,8 @@ f1_score = 0.706797
 $ ls training/gabbar.pkl
 training/gabbar.pkl
 ```
+
+
+### Hyperlinks
+- [Validating and protecting OpenStreetMap](https://www.mapbox.com/blog/validating-osm/)
+- [An open database of inconsistent edits observed on OSM from OSMCha](http://www.openstreetmap.org/user/manoharuss/diary/40118)
