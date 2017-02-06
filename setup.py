@@ -9,7 +9,7 @@ with codecs_open('README.md', encoding='utf-8') as f:
 
 setup(name='gabbar',
       version='0.0.1',
-      description=u"Robots will catch vandalism on OpenStreetMap!",
+      description=u"Guarding OSM from invalid or suspicious edits!",
       long_description=long_description,
       classifiers=[],
       keywords='',
