@@ -10,4 +10,4 @@ import gabbar
 def cli(count):
     """Echo a value `N` number of times"""
     for i in range(count):
-        click.echo(chitti.has_legs)
+        click.echo(gabbar.has_legs)

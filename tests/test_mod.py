@@ -14,7 +14,7 @@ def test_changeset_to_data():
         "modify": 0,
         "delete": 0
     }
-    actual = autovandal.changeset_to_data(changeset)
+    actual = gabbar.changeset_to_data(changeset)
     expected = [8, 12, 20, 0, 0]
     assert actual == expected
 
@@ -23,7 +23,7 @@ def test_predict():
     # Creating 500 features in a changeset is problematic
     data = [[0, 0, 500.0, 0.0, 0.0]]
     model = gabbar.load_model()
-    actual = chitti.predict(model, data)
+    actual = gabbar.predict(model, data)
     # Note: -1 for outlier, +1 for inlier
     expected = -1
     assert actual == expected
