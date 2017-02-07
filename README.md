@@ -39,9 +39,12 @@ check date,create,modify,delete
 
 # Run datatrain.py to train a OneClassSVM on the dataset
 $ python training/datatrain.py
-precision = 0.942032
-recall = 0.565568
-f1_score = 0.706797
+training samples: 12364
+[testing] good samples: 5299
+[testing] problematic samples: 671
+precision = 0.915625
+recall = 0.442348
+f1_score = 0.596514
 
 # Find the trained model as a .pkl file
 $ ls training/gabbar.pkl
