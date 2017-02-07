@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn import svm
+from sklearn.cross_validation import train_test_split
 from sklearn.externals import joblib
 from sklearn.metrics import recall_score
 from sklearn.metrics import precision_score
@@ -10,14 +11,17 @@ index = "check date"
 good=pd.read_csv('training/good.prep.csv', index_col=index).dropna()
 problematic=pd.read_csv('training/problematic.prep.csv', index_col=index).dropna()
 
-# Collect training data
-rows = np.random.choice(good.index.values, 13000)
-X_train = good.ix[rows]
+# Collect training/testing data
+X = good
+y = [+1] * good.shape[0]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random_state=42)
 
-# Load some regular and abnormal observations
-rows = np.random.choice(good.index.values, 5655)
-X_test = good.ix[rows]
+# Load some abnormal observations
 X_outliers = problematic
+
+print('training samples: %d' % X_train.shape[0])
+print('[testing] good samples: %d' % X_test.shape[0])
+print('[testing] problematic samples: %d' % X_outliers.shape[0])
 
 # Fit the model
 clf = svm.OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1)
