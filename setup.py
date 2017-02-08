@@ -16,7 +16,7 @@ setup(name='gabbar',
         'Intended Audience :: Developers',
         'Programming Language :: Python :: 2.7'
       ],
-      keywords='',
+      keywords='osm',
       author=u"Mapbox",
       author_email='team@mapbox.com',
       url='https://github.com/mapbox/gabbar',
