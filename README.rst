@@ -28,6 +28,14 @@ Running tests
     $ py.test
 
 
+Releasing a new version
+=======================
+
+.. code-block:: bash
+
+    # bumpversion [options] part [file]
+    $ bumpversion patch setup.py
+
 
 Model training
 ==============

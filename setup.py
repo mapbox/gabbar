@@ -8,7 +8,7 @@ with codecs_open('README.md', encoding='utf-8') as f:
 
 
 setup(name='gabbar',
-      version='0.2.1',
+      version='0.2.2',
       description=u"Guarding OSM from invalid or suspicious edits!",
       long_description=long_description,
       classifiers=[
@@ -32,7 +32,7 @@ setup(name='gabbar',
           'scikit-learn'
       ],
       extras_require={
-          'test': ['pytest', 'pandas'],
+          'test': ['pytest', 'pandas', 'bumpversion'],
       },
       entry_points="""
       [console_scripts]
