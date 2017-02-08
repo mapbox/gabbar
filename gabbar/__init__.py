@@ -3,13 +3,12 @@
 
 from sklearn import svm
 from sklearn.externals import joblib
-
+import os
 
 has_legs = False
 
-
 def changeset_to_data(changeset):
-    """Convert changeset object into data array.
+    """Convert changeset dictionary into an array with required features.
 
     Parameters
     ----------
@@ -20,14 +19,17 @@ def changeset_to_data(changeset):
     data: tuple
         Tuple of data items
     """
-    features = ["create", "modify", "delete"]
-    data = []
-    for feature in features:
-        data.append(changeset[feature])
-    return data
+    return [
+        changeset['create'],
+        changeset['modify'],
+        changeset['delete']
+    ]
 
 def load_model():
-    return joblib.load('models/gabbar.pkl')
+    directory = os.path.dirname(os.path.realpath(__file__))
+    filename = 'models/gabbar.pkl'
+    model = os.path.join(directory, filename)
+    return joblib.load(model)
 
 def predict(model, data):
     """Returns model prediction for data.
