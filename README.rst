@@ -28,6 +28,34 @@ Running tests
     $ py.test
 
 
+Publishing to PyPi
+==================
+
+.. code-block:: bash
+
+    # Bump the version.
+    $ $EDITOR setup.py
+
+    # Bump the tag.
+    $ git tag <VERSION>
+
+    # Push your changes to Github.
+    $ git push
+    $ git push --tags
+
+    # Create a Source Distribution.
+    python setup.py sdist
+
+    # A wheel can be installed without needing to go through the "build" process.
+    python setup.py bdist_wheel --universal
+
+    # Optionally upload to Test PyPI if required.
+    $ twine upload dist/* -r testpypi
+
+    # Upload to PyPi
+    twine upload dist/*
+
+
 Model training
 ==============
 
@@ -36,7 +64,7 @@ Model training
     # Download osm changeset dataset and split into good and problematic changeset files.
     $ python training/dataprep.py
 
-    # View features of changeset used for training the model
+    # View features of changeset used for training the model.
     $ head -n5 training/problematic.prep.csv
     check date,create,modify,delete
     2016-12-20T19:55:46.153444+00:00,0.0,0.0,327.0
@@ -44,7 +72,7 @@ Model training
     2016-12-20T12:09:43.259591+00:00,10.0,20.0,8.0
     2016-12-21T10:09:33.445841+00:00,337.0,538.0,113.0
 
-    # Run datatrain.py to train a OneClassSVM on the dataset
+    # Run datatrain.py to train a OneClassSVM on the dataset.
     $ python training/datatrain.py
     training samples: 12364
     [testing] good samples: 5299
@@ -53,7 +81,7 @@ Model training
     recall = 0.442348
     f1_score = 0.596514
 
-    # Find the trained model as a .pkl file
+    # Find the trained model as a .pkl file.
     $ ls training/gabbar.pkl
     training/gabbar.pkl
 
