@@ -11,7 +11,11 @@ setup(name='gabbar',
       version='0.2.1',
       description=u"Guarding OSM from invalid or suspicious edits!",
       long_description=long_description,
-      classifiers=[],
+      classifiers=[
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Developers',
+        'Programming Language :: Python :: 2.7'
+      ],
       keywords='',
       author=u"Mapbox",
       author_email='team@mapbox.com',
