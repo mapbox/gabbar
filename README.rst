@@ -12,6 +12,13 @@ Guarding OSM from invalid or suspicious edits, Gabbar is an alpha package of a p
 
 https://en.wikipedia.org/wiki/Gabbar_Singh_(character)
 
+Install
+=======
+
+.. code-block:: bash
+
+    pip install gabbar
+
 
 Running tests
 =============
