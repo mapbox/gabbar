@@ -15,17 +15,17 @@ def test_changeset_to_data():
     assert actual == expected
 
 def test_predict_problematic():
-    # Modifying 500 features in a changeset is problematic
-    data = [[0, 500, 0]]
+    # Numbers using the script `training/test-model.py`
+    data = [[101, 82, 7]]
     model = gabbar.load_model()
     actual = gabbar.predict(model, data)
-    expected = -1  # -1 for outlier.
+    expected = True
     assert actual == expected
 
 def test_predict_not_problematic():
-    # Modifying 5 features in a changeset is not problematic
+    # Numbers using the script `training/test-model.py`
     data = [[0, 5, 0]]
     model = gabbar.load_model()
     actual = gabbar.predict(model, data)
-    expected = 1  # +1 for inlier.
+    expected = False
     assert actual == expected
