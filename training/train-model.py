@@ -25,4 +25,4 @@ model.fit(Xtrain, ytrain)
 y_model = model.predict(Xtest)
 print(classification_report(ytest, y_model, labels=[True, False], target_names=['problematic', 'not problematic']))
 
-joblib.dump(model, 'gabbar.pkl')
+joblib.dump(model, 'training/gabbar.pkl')

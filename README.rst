@@ -68,29 +68,26 @@ Model training
 
 .. code-block:: bash
 
-    # Download osm changeset dataset and split into good and problematic changeset files.
-    $ python training/dataprep.py
+    # Download changesets checked on osmcha.
+    wget -O training/changesets.csv https://www.dropbox.com/s/o05zxyhgkt8j4mx/changesets-checked-2017-02-17.csv?dl=1
 
-    # View features of changeset used for training the model.
-    $ head -n5 training/problematic.prep.csv
-    check date,create,modify,delete
-    2016-12-20T19:55:46.153444+00:00,0.0,0.0,327.0
-    2016-12-20T20:43:03.137419+00:00,9062.0,0.0,0.0
-    2016-12-20T12:09:43.259591+00:00,10.0,20.0,8.0
-    2016-12-21T10:09:33.445841+00:00,337.0,538.0,113.0
+    # Train a machine learning model.
+    $ python training/train-model.py
 
-    # Run datatrain.py to train a OneClassSVM on the dataset.
-    $ python training/datatrain.py
-    training samples: 12364
-    [testing] good samples: 5299
-    [testing] problematic samples: 671
-    precision = 0.915625
-    recall = 0.442348
-    f1_score = 0.596514
+                    precision   recall  f1-score    support
+
+    problematic     0.91        0.02    0.04        1406
+    not problematic 0.88        1.00    0.94        10249
+
+    avg / total     0.88        0.88    0.83        11655
+
 
     # Find the trained model as a .pkl file.
     $ ls training/gabbar.pkl
     training/gabbar.pkl
+
+    # Test model for a problematic edit prediction.
+    $ python training/test-model.py
 
 
 Hyperlinks
