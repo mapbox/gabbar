@@ -8,7 +8,7 @@ with codecs_open('README.rst', encoding='utf-8') as f:
 
 
 setup(name='gabbar',
-      version='0.2.4',
+      version='0.3',
       description=u"Guarding OSM from invalid or suspicious edits!",
       long_description=long_description,
       classifiers=[
