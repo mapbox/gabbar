@@ -1,9 +1,7 @@
 import gabbar
 
-
 def test_has_legs():
     assert not gabbar.has_legs
-
 
 def test_changeset_to_data():
     changeset = {
@@ -16,12 +14,18 @@ def test_changeset_to_data():
     expected = [20, 0, 0]
     assert actual == expected
 
-
-def test_predict():
-    # Modifying 406 features in a changeset is problematic
-    data = [[0, 406, 0]]
+def test_predict_problematic():
+    # Modifying 500 features in a changeset is problematic
+    data = [[0, 500, 0]]
     model = gabbar.load_model()
     actual = gabbar.predict(model, data)
-    # Note: -1 for outlier, +1 for inlier
-    expected = -1
+    expected = -1  # -1 for outlier.
+    assert actual == expected
+
+def test_predict_not_problematic():
+    # Modifying 5 features in a changeset is not problematic
+    data = [[0, 5, 0]]
+    model = gabbar.load_model()
+    actual = gabbar.predict(model, data)
+    expected = 1  # +1 for inlier.
     assert actual == expected
