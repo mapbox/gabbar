@@ -33,20 +33,31 @@ bash Anaconda3-4.3.1-Linux-x86_64.sh
 # Directory to download datasets for version 1.
 mkdir -p 'downloads/v1/'
 
+
 # Download all changesets reviewed on osmcha.
 wget 'http://osmcha.mapbox.com/?is_suspect=False&is_whitelisted=All&harmful=None&checked=True&all_reason=True&sort=-date&render_csv=True' -O downloads/v1/reviewed_changesets.csv
 wc -l downloads/v1/reviewed_changesets.csv
+tar -czf downloads/v1/reviewed_changesets.csv.tar.gz downloads/v1/reviewed_changesets.csv
+aws s3 cp downloads/v1/reviewed_changesets.csv.tar.gz s3://mapbox/gabbar/v1/
+
 
 # Download real changesets for reviewed changesets from S3.
 python datasets/real_changesets.py downloads/v1/reviewed_changesets.csv > downloads/v1/reviewed_real_changesets.csv
 wc -l downloads/v1/reviewed_real_changesets.csv
+tar -czf downloads/v1/reviewed_real_changesets.csv.tar.gz downloads/v1/reviewed_real_changesets.csv
+aws s3 cp downloads/v1/reviewed_real_changesets.csv.tar.gz s3://mapbox/gabbar/v1/
+
 
 # Download all changesets on April Fool's day.
 wget 'http://osmcha.mapbox.com/?date__gte=2017-04-01&date__lte=2017-04-02&is_suspect=False&is_whitelisted=All&checked=All&all_reason=True&render_csv=True' -O downloads/v1/april_fools_changesets.csv
 wc -l downloads/v1/april_fools_changesets.csv
+tar -czf downloads/v1/april_fools_changesets.csv.tar.gz downloads/v1/april_fools_changesets.csv
+aws s3 cp downloads/v1/april_fools_changesets.csv.tar.gz s3://mapbox/gabbar/v1/
+
 
 # Download real changesets for all changesets on April Fool's day.
 python datasets/real_changesets.py downloads/v1/april_fools_changesets.csv > downloads/v1/april_fools_real_changesets.csv
 wc -l downloads/v1/april_fools_real_changesets.csv
-
+tar -czf downloads/v1/april_fools_real_changesets.csv.tar.gz downloads/v1/april_fools_real_changesets.csv
+aws s3 cp downloads/v1/april_fools_real_changesets.csv.tar.gz s3://mapbox/gabbar/v1/
 ```
