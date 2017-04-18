@@ -1,14 +1,12 @@
 import os
 import json
 import csv
+import sys
 
 import pandas as pd
 import requests
-import click
 
-@click.command()
-@click.option('--filename', help='CSV file with dump of changesets from osmcha.')
-def main(filename):
+def download(filename):
     # URL of real changesets on S3.
     url = 'https://s3.amazonaws.com/mapbox/real-changesets/production/{}.json'
 
@@ -27,4 +25,7 @@ def main(filename):
         # break
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) != 2:
+        print('\nUSAGE: python real_changesets.py changesets.csv\n')
+    else:
+        download(sys.argv[1])

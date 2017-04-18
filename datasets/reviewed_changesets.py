@@ -1,13 +1,10 @@
 import os
 import datetime
+import sys
 
 import pandas as pd
-import click
 
-
-@click.command()
-@click.option('--filename', help='CSV file to dump changesets from osmcha.')
-def main(filename):
+def download(filename):
     # Download all reviewed changests from osmcha.
     url = 'http://osmcha.mapbox.com/?is_suspect=False&is_whitelisted=All&harmful=None&checked=True&all_reason=True&sort=-date&render_csv=True'
     changesets = pd.read_csv(url)
@@ -23,4 +20,7 @@ def main(filename):
     changesets.to_csv(filename, index=False)
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) != 2:
+        print('\nUSAGE: python reviewed_changesets.py changesets.csv\n')
+    else:
+        download(sys.argv[1])
