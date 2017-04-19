@@ -6,10 +6,6 @@ import os
 
 import gabbar
 
-
-def test_has_legs():
-    assert not gabbar.has_legs
-
 def test_changeset_to_data():
     changeset = {
         "ID": 44581855,
@@ -37,27 +33,15 @@ def test_predict_not_problematic():
     expected = 1  # +1 for inlier.
     assert actual == expected
 
-def test_download_changeset():
-    changeset_id = '47734592'
-    real_changeset = gabbar.download_changeset(changeset_id)
-    assert real_changeset['metadata']['id'] == changeset_id
-
 def test_extract_features():
-    changeset_id = '47930725'
-    directory = os.path.dirname(os.path.realpath(__file__))
-    filepath = os.path.join(directory, 'real_changesets/{}.json'.format(changeset_id))
-    with open(filepath) as f:
-        real_changeset = json.loads(f.read())
-
+    changeset_id = '47734592'
     expected = {
         'changeset_id': changeset_id,
-        'created_features': 2,
-        'modified_features': 2,
-        'deleted_features': 2
-    };
-    actual = gabbar.extract_features(real_changeset)
+        'features_created': 1,
+        'features_modified': 0,
+        'features_deleted': 0,
+    }
+    actual = gabbar.extract_features(changeset_id)
 
-    assert expected['changeset_id'] == actual['changeset_id']
-    assert expected['features_created'] == actual['features_created']
-    assert expected['features_modified'] == actual['features_modified']
-    assert expected['features_deleted'] == actual['features_deleted']
+    for key in expected:
+        assert actual[key] == expected[key]
