@@ -19,6 +19,42 @@ def download_changeset(changeset_id):
     except Exception:
         return None
 
+
+def extract_features(changeset):
+
+    def get_changeset_id(changeset):
+        return changeset['metadata']['id']
+
+    def get_created_features(changeset):
+        created_features = []
+        for feature in changeset['elements']:
+            if feature['action'] == 'create':
+                created_features.append(feature)
+        return created_features
+
+    def get_modified_features(changeset):
+        modified_features = []
+        for feature in changeset['elements']:
+            if feature['action'] == 'modify':
+                modified_features.append(feature)
+        return modified_features
+
+    def get_deleted_features(changeset):
+        deleted_features = []
+        for feature in changeset['elements']:
+            if feature['action'] == 'delete':
+                deleted_features.append(feature)
+        return deleted_features
+
+    features = {
+        'changeset_id': get_changeset_id(changeset),
+        'created': len(get_created_features(changeset)),
+        'modified': len(get_modified_features(changeset)),
+        'deleted': len(get_deleted_features(changeset))
+    }
+    return features
+
+
 def changeset_to_data(changeset):
     """Convert changeset dictionary into an array with required features.
 

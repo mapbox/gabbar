@@ -39,5 +39,25 @@ def test_predict_not_problematic():
 
 def test_download_changeset():
     changeset_id = '47734592'
-    actual = gabbar.download_changeset(changeset_id)
-    assert actual['metadata']['id'] == changeset_id
+    real_changeset = gabbar.download_changeset(changeset_id)
+    assert real_changeset['metadata']['id'] == changeset_id
+
+def test_extract_features():
+    changeset_id = '47930725'
+    directory = os.path.dirname(os.path.realpath(__file__))
+    filepath = os.path.join(directory, 'real_changesets/{}.json'.format(changeset_id))
+    with open(filepath) as f:
+        real_changeset = json.loads(f.read())
+
+    expected = {
+        'changeset_id': changeset_id,
+        'created': 2,
+        'modified': 2,
+        'deleted': 2
+    };
+    actual = gabbar.extract_features(real_changeset)
+
+    assert expected['changeset_id'] == actual['changeset_id']
+    assert expected['created'] == actual['created']
+    assert expected['modified'] == actual['modified']
+    assert expected['deleted'] == actual['deleted']
