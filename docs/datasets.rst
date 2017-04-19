@@ -6,17 +6,10 @@ Datasets
 Download datasets
 =================
 
-1. https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/reviewed_changesets.csv.tar.gz
-    - Changesets reviewed by users on `osmcha.mapbox.com <https://osmcha.mapbox.com/>`_
-
-2. https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/reviewed_real_changesets.csv.tar.gz
-    - Real changesets version of changesets reviewed by users on `osmcha.mapbox.com <https://osmcha.mapbox.com/>`_
-
-3. https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/april_fools_changesets.csv.tar.gz
-    - All changesets for a single day on OpenStreetMap.
-
-4. https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/april_fools_real_changesets.csv.tar.gz
-    - Real changesets version of all changesets for a single day on OpenStreetMap.
+1. `Changesets reviewed by users on osmcha.mapbox.com <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/reviewed_changesets.csv.tar.gz>`_
+2. `Real changesets version of changesets reviewed by users on osmcha.mapbox.com <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/reviewed_real_changesets.csv.tar.gz>`_
+3. `All changesets for a single day on OpenStreetMap <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/april_fools_changesets.csv.tar.gz>`_
+4. `Real changesets version of all changesets for a single day on OpenStreetMap <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/april_fools_real_changesets.csv.tar.gz>`_
 
 
 Create datasets
