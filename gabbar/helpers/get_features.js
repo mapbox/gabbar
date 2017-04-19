@@ -9,11 +9,18 @@ const parser = require('real-changesets-parser');
 const queue = require('d3-queue').queue;
 
 module.exports = {
-    extractFeatures: extractFeatures
+    extractFeatures: extractFeatures,
+    downloadRealChangeset: downloadRealChangeset
 };
 
 if (argv.changesetID) {
-    extractFeatures(argv.changesetID);
+    downloadRealChangeset(argv.changesetID)
+    .then(realChangeset => {
+        extractFeatures(realChangeset)
+        .then(features => {
+            console.log(JSON.stringify(features));
+        });
+    });
 }
 
 function getFeaturesCreated(changeset) {
@@ -59,37 +66,34 @@ function getNewAndOldVersion(changeset, touchedFeature) {
     else return [versions[1], versions[0]];
 }
 
-function extract(changesetID, callback) {
-    let url = `https://s3.amazonaws.com/mapbox/real-changesets/production/${changesetID}.json`
-    request.get(url, (error, response, body) => {
-        try {
-            if (error) return callback(null, {});
-
-            let realChangeset = JSON.parse(body);
-            let changeset = parser(realChangeset);
-
-            let featuresCreated = getFeaturesCreated(changeset);
-            let featuresModified = getFeaturesModified(changeset);
-            let featuresDeleted = getFeaturesDeleted(changeset);
-
-            let features = {
-                'changeset_id': realChangeset['metadata']['id'],
-                'features_created': featuresCreated.length,
-                'features_modified': featuresModified.length,
-                'features_deleted': featuresDeleted.length,
-            }
-            return callback(null, features);
-        } catch (error) {
-            return callback(null, {});
-        }
+function downloadRealChangeset(changesetID) {
+    return new Promise((resolve, reject) => {
+        let url = `https://s3.amazonaws.com/mapbox/real-changesets/production/${changesetID}.json`
+        request.get(url, (error, response, body) => {
+            if (error || response.statusCode !== 200) return resolve({});
+            else return resolve(JSON.parse(body));
+        });
     });
 }
 
-function extractFeatures(changesetID) {
-    let q = queue(1);
-    q.defer(extract, changesetID);
-    q.awaitAll((error, results) => {
-        let features = results[0];
-        console.log(JSON.stringify(features));
+function extract(realChangeset, callback) {
+    callback(null, features);
+}
+
+function extractFeatures(realChangeset) {
+    return new Promise((resolve, reject) => {
+        let changeset = parser(realChangeset);
+
+        let featuresCreated = getFeaturesCreated(changeset);
+        let featuresModified = getFeaturesModified(changeset);
+        let featuresDeleted = getFeaturesDeleted(changeset);
+
+        let features = {
+            'changeset_id': realChangeset['metadata']['id'],
+            'features_created': featuresCreated.length,
+            'features_modified': featuresModified.length,
+            'features_deleted': featuresDeleted.length,
+        }
+        resolve(features);
     });
 }
