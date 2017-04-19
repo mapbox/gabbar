@@ -1,11 +1,25 @@
 # gabbar
 
+import os
+import requests
+import json
 
 from sklearn import svm
 from sklearn.externals import joblib
-import os
 
 has_legs = False
+
+def download_changeset(changeset_id):
+    url = 'https://s3.amazonaws.com/mapbox/real-changesets/production/{}.json'
+    try:
+        response = requests.get(url.format(changeset_id))
+        changeset = json.loads(response.text)
+        print(response.text)
+        if response.status_code == 200 and changeset:
+            return changeset
+    except Exception:
+        return None
+
 
 def changeset_to_data(changeset):
     """Convert changeset dictionary into an array with required features.
