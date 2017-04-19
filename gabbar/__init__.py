@@ -13,13 +13,11 @@ def download_changeset(changeset_id):
     url = 'https://s3.amazonaws.com/mapbox/real-changesets/production/{}.json'
     try:
         response = requests.get(url.format(changeset_id))
-        changeset = json.loads(response.text)
-        print(response.text)
-        if response.status_code == 200 and changeset:
+        if response.status_code == 200:
+            changeset = json.loads(response.text)
             return changeset
     except Exception:
         return None
-
 
 def changeset_to_data(changeset):
     """Convert changeset dictionary into an array with required features.
