@@ -51,13 +51,13 @@ def test_extract_features():
 
     expected = {
         'changeset_id': changeset_id,
-        'created': 2,
-        'modified': 2,
-        'deleted': 2
+        'created_features': 2,
+        'modified_features': 2,
+        'deleted_features': 2
     };
     actual = gabbar.extract_features(real_changeset)
 
     assert expected['changeset_id'] == actual['changeset_id']
-    assert expected['created'] == actual['created']
-    assert expected['modified'] == actual['modified']
-    assert expected['deleted'] == actual['deleted']
+    assert expected['features_created'] == actual['features_created']
+    assert expected['features_modified'] == actual['features_modified']
+    assert expected['features_deleted'] == actual['features_deleted']

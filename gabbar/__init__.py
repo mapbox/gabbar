@@ -48,9 +48,9 @@ def extract_features(changeset):
 
     features = {
         'changeset_id': get_changeset_id(changeset),
-        'created': len(get_created_features(changeset)),
-        'modified': len(get_modified_features(changeset)),
-        'deleted': len(get_deleted_features(changeset))
+        'features_created': len(get_created_features(changeset)),
+        'features_modified': len(get_modified_features(changeset)),
+        'features_deleted': len(get_deleted_features(changeset))
     }
     return features
 
