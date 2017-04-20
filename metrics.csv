@@ -1,2 +1,2 @@
-Date,Gitsha,Features,Labelled changesets,"True,True","True,False","False,True","False,False",Unlabelled changesets,True,False
-2017-04-20,7b54739,3,,57,1597,0,20682,,0,26191
+Date,Gitsha,Model,Features,Labelled changesets,Cross validation score,"True,True","True,False","False,True","False,False",Unlabelled changesets,True,False
+2017-04-20,7b54739,SVC,3,,0.926,57,1597,0,20682,,0,26191

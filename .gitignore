@@ -21,7 +21,6 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-*.csv
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -56,6 +55,3 @@ target/
 
 # OS X
 .DS_Store
-
-# Ignore folder with downloaded data
-downloads
