@@ -23,5 +23,11 @@
   "bugs": {
     "url": "https://github.com/mapbox/gabbar/issues"
   },
-  "homepage": "https://github.com/mapbox/gabbar#readme"
+  "homepage": "https://github.com/mapbox/gabbar#readme",
+  "dependencies": {
+    "d3-queue": "^3.0.5",
+    "minimist": "^1.2.0",
+    "real-changesets-parser": "^1.2.3",
+    "request": "^2.81.0"
+  }
 }
