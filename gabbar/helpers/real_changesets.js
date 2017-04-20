@@ -9,8 +9,9 @@ const parser = require('real-changesets-parser');
 const queue = require('d3-queue').queue;
 
 module.exports = {
+    downloadRealChangeset: downloadRealChangeset,
     extractFeatures: extractFeatures,
-    downloadRealChangeset: downloadRealChangeset
+    formatFeatures: formatFeatures
 };
 
 if (argv.changesetID) {
@@ -19,10 +20,10 @@ if (argv.changesetID) {
         if (Object.keys(realChangeset).length > 0) {
             extractFeatures(realChangeset)
             .then(features => {
-                console.log(JSON.stringify(features));
+                console.log(JSON.stringify(formatFeatures(features)));
             });
         } else {
-            console.log(JSON.stringify({}));
+            console.log(JSON.stringify([]));
         }
     });
 }
@@ -75,11 +76,20 @@ function extractFeatures(realChangeset) {
         let featuresDeleted = getFeaturesByAction(changeset, 'delete');
 
         let features = {
-            'changeset_id': realChangeset['metadata']['id'],
+            'changeset_id': realChangeset.metadata.id,
             'features_created': featuresCreated.length,
             'features_modified': featuresModified.length,
             'features_deleted': featuresDeleted.length,
         }
         resolve(features);
     });
+}
+
+function formatFeatures(features) {
+    return [
+        features.changeset_id,
+        features.features_created,
+        features.features_modified,
+        features.features_deleted
+    ];
 }

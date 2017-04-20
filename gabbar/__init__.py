@@ -8,7 +8,7 @@ import subprocess
 from sklearn import svm
 from sklearn.externals import joblib
 
-def extract_features(changeset_id):
+def get_features(changeset_id):
     # Run node.js script to download real changeset and extract features.
     directory = os.path.dirname(os.path.realpath(__file__))
     helper = os.path.join(directory, 'helpers/real_changesets.js')

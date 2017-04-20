@@ -33,15 +33,8 @@ def test_predict_not_problematic():
     expected = 1  # +1 for inlier.
     assert actual == expected
 
-def test_extract_features():
-    changeset_id = '47734592'
-    expected = {
-        'changeset_id': changeset_id,
-        'features_created': 1,
-        'features_modified': 0,
-        'features_deleted': 0,
-    }
-    actual = gabbar.extract_features(changeset_id)
-
-    for key in expected:
-        assert actual[key] == expected[key]
+def test_get_features():
+    changeset_id = u'47734592'
+    expected = [changeset_id, 1, 0, 0];
+    actual = gabbar.get_features(changeset_id)
+    assert json.dumps(actual) == json.dumps(expected)
