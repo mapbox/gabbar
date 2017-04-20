@@ -14,7 +14,7 @@ setup(name='gabbar',
       classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
-        'Programming Language :: Python :: 2.7'
+        'Programming Language :: Python :: 3.6'
       ],
       keywords='osm',
       author=u"Mapbox",
