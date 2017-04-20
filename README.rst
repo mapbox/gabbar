@@ -52,6 +52,10 @@ Run tests
     # Run tests.
     npm run test
 
+Performance
+===========
+
+Performance of the model on both labelled and unlabelled changesets is tracked in `metrics.csv <./metrics.csv>`_
 
 Hyperlinks
 ==========

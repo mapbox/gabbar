@@ -6,10 +6,17 @@ Datasets
 Download datasets
 =================
 
-1. `Changesets labelled by users on osmcha.mapbox.com <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/reviewed_changesets.csv.tar.gz>`_
-2. `Real changesets version of changesets labelled by users on osmcha.mapbox.com <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/reviewed_real_changesets.csv.tar.gz>`_
-3. `All changesets for a single day on OpenStreetMap <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/april_fools_changesets.csv.tar.gz>`_
-4. `Real changesets version of all changesets for a single day on OpenStreetMap <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/april_fools_real_changesets.csv.tar.gz>`_
+Labelled
+--------
+- OSMCHA: `labelled_changesets.csv.tar.gz <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/labelled_changesets.csv.tar.gz>`_ (5.2 MB)
+- Real changesets: `labelled_real_changesets.json.tar.gz <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/labelled_real_changesets.json.tar.gz>`_ (497.8 MB)
+- Features: `labelled_features.csv <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/labelled_features.csv>`_ (471.3 KB)
+
+Unlabelled
+----------
+- OSMCHA: `unlabelled_changesets.csv.tar.gz <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/unlabelled_changesets.csv.tar.gz>`_ (1.6 MB)
+- Real changesets: `unlabelled_real_changesets.json.tar.gz <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/unlabelled_real_changesets.json.tar.gz>`_ (319.5 MB)
+- Features: `unlabelled_features.csv <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/unlabelled_features.csv>`_ (403.2 KB)
 
 
 Create datasets
