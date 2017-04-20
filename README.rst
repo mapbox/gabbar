@@ -21,8 +21,8 @@ Install
     pip install gabbar
 
 
-Running tests
-=============
+Setup
+=====
 
 .. code-block:: bash
 
@@ -34,6 +34,20 @@ Running tests
 
     # Install node dependencies.
     npm install
+
+Get a prediction
+================
+
+.. code-block:: bash
+
+    # Get a prediction for a changeset.
+    python gabbar/scripts/cli.py --changeset 47734592
+
+
+Run tests
+=========
+
+.. code-block:: bash
 
     # Run tests.
     npm run test
