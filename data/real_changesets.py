@@ -21,8 +21,7 @@ def download(filename):
             continue
 
         # This will take too long. Use prepared dataset file on S3 instead.
-        # s3://mapbox/gabbar/v1/reviewed_real_changesets.json
-        # break
+        break
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
