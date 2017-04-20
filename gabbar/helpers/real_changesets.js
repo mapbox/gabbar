@@ -16,10 +16,14 @@ module.exports = {
 if (argv.changesetID) {
     downloadRealChangeset(argv.changesetID)
     .then(realChangeset => {
-        extractFeatures(realChangeset)
-        .then(features => {
-            console.log(JSON.stringify(features));
-        });
+        if (Object.keys(realChangeset).length > 0) {
+            extractFeatures(realChangeset)
+            .then(features => {
+                console.log(JSON.stringify(features));
+            });
+        } else {
+            console.log(JSON.stringify({}));
+        }
     });
 }
 

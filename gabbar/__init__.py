@@ -11,7 +11,7 @@ from sklearn.externals import joblib
 def extract_features(changeset_id):
     # Run node.js script to download real changeset and extract features.
     directory = os.path.dirname(os.path.realpath(__file__))
-    helper = os.path.join(directory, 'helpers/extract_features.js')
+    helper = os.path.join(directory, 'helpers/real_changesets.js')
 
     # Arguments must contain only strings.
     features = json.loads(subprocess.check_output([helper, '--changesetID', str(changeset_id)]))
