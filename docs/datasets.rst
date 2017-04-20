@@ -27,15 +27,16 @@ Create datasets
     # Download all changesets labelled on osmcha.
     wget 'http://osmcha.mapbox.com/?is_suspect=False&is_whitelisted=All&harmful=None&checked=True&all_reason=True&sort=-date&render_csv=True' -O labelled_changesets.csv
 
-    # Download real changesets for labelled changesets from S3.
-    python datasets/real_changesets.py labelled_changesets.csv > labelled_real_changesets.csv
+    # Download real changesets for changesets in the dump from osmcha.
+    python data/real_changesets.py downloads/v1/labelled_changesets.csv > downloads/v1/labelled_real_changesets.csv
 
     # Download all changesets on April Fool's day.
     wget 'http://osmcha.mapbox.com/?date__gte=2017-04-01&date__lte=2017-04-02&is_suspect=False&is_whitelisted=All&checked=All&all_reason=True&render_csv=True' -O april_fools_changesets.csv
 
-    # Download real changesets for all changesets on April Fool's day.
-    python datasets/real_changesets.py april_fools_changesets.csv > april_fools_real_changesets.csv
-
+    # Extract features for changesets.
+    node data/extract_features.js \
+        --changesets downloads/v1/labelled_changesets.csv \
+        --realChangesets downloads/v1/labelled_real_changesets.json > downloads/v1/labelled_features.csv
 
 
 Create setup
