@@ -22,7 +22,7 @@ setup(name='gabbar',
       url='https://github.com/mapbox/gabbar',
       license='MIT',
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests', 'training']),
-      package_data={'gabbar': ['models/gabbar.pkl']},
+      package_data={'gabbar': ['trained/scaler.pkl', 'trained/model.pkl', 'helpers/real_changesets.js']},
       include_package_data=True,
       zip_safe=False,
       install_requires=[
