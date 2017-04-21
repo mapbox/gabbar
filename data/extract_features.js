@@ -13,14 +13,17 @@ if (!argv.realChangesets) {
     console.log('Usage: node extract_features.js OPTIONS');
     console.log('');
     console.log('  OPTIONS');
-    console.log('    --changesets       changesets.csv          Changesets dump from osmcha [OPTIONAL].');
     console.log('    --realChangesets   realChangesets.json     Line delimited file with real changesets.');
+    console.log('    --userDetails      userDetails.json        Line delimited file with user details [OPTIONAL].');
+    console.log('    --changesets       changesets.csv          Changesets dump from osmcha [OPTIONAL].');
     console.log('');
     process.exit(0);
 }
 
 function getHarmful(filepath) {
     return new Promise((resolve, reject) => {
+        if (!filepath) return resolve(undefined);
+
         csv.parse(fs.readFileSync(filepath), (error, rows) => {
             let harmful = {};
             for (let row of rows) {
@@ -32,7 +35,29 @@ function getHarmful(filepath) {
     });
 }
 
-function extract(filename, harmful) {
+function getUserDetails(filepath) {
+    return new Promise((resolve, reject) => {
+        if (!filepath) return resolve(undefined);
+
+        let userDetails = {};
+        const reader = readline.createInterface({
+            input: fs.createReadStream(filepath),
+            output: null
+        });
+
+        reader.on('line', line => {
+            let userDetail = JSON.parse(line);
+            let userID = userDetail['id'];
+            if (!(userID in userDetails)) userDetails[userID] = userDetail;
+        });
+
+        reader.on('close', () => {
+            resolve(userDetails);
+        });
+    });
+}
+
+function extract(filename, userDetails, harmful) {
     const reader = readline.createInterface({
         input: fs.createReadStream(argv.realChangesets),
         output: null
@@ -41,7 +66,7 @@ function extract(filename, harmful) {
     reader.on('line', line => {
         let realChangeset = JSON.parse(line);
 
-        extractFeatures(realChangeset)
+        extractFeatures(realChangeset, userDetails)
         .then(features => {
             features = formatFeatures(features);
 
@@ -49,19 +74,24 @@ function extract(filename, harmful) {
                 let changesetID = features[0];
                 features.splice(1, 0, harmful[changesetID]);
             }
-
             csv.stringify([features], function (error, result) {
                 if (!error) process.stdout.write(result);
             })
+        })
+        .catch(error => {
+            throw error;
         });
     });
 }
 
-if (argv.changesets) {
+let q = [
+    getUserDetails(argv.userDetails),
     getHarmful(argv.changesets)
-    .then(harmful => {
-        extract(argv.realChangesets, harmful);
-    });
-} else {
-    extract(argv.realChangesets);
-}
+];
+Promise.all(q)
+.then(results => {
+    extract(argv.realChangesets, results[0], results[1])
+})
+.catch(error => {
+    throw error;
+});
