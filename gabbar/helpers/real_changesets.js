@@ -91,6 +91,25 @@ function getBBOXArea(realChangeset) {
     return parseFloat(turf.area(polygon).toFixed(4));
 }
 
+function getChangesetEditor(realChangeset) {
+    let changesetEditor = '';
+
+    let tags = realChangeset.metadata.tag;
+    for (let tag of tags) {
+        if (tag['k'] === 'created_by') {
+            changesetEditor = tag['v'];
+            break;
+        }
+    }
+    // Adding GNOME for amishas157! :wave:
+    let editors = ['iD', 'JOSM', 'MAPS.ME', 'Potlatch', 'Redaction bot', 'Vespucci', 'OsmAnd', 'Merkaartor', 'gnome'];
+    for (let editor of editors) {
+        if (changesetEditor.indexOf(editor) !== -1) return editor;
+    }
+    // The changeset editor does not match with any in the list.
+    return 'other';
+}
+
 function extractFeatures(realChangeset, userDetails) {
     return new Promise((resolve, reject) => {
         let changeset = parser(realChangeset);
@@ -99,6 +118,7 @@ function extractFeatures(realChangeset, userDetails) {
         let featuresModified = getFeaturesByAction(changeset, 'modify');
         let featuresDeleted = getFeaturesByAction(changeset, 'delete');
         let bboxArea = getBBOXArea(realChangeset);
+        let changesetEditor = getChangesetEditor(realChangeset);
 
         let userID = realChangeset.metadata.uid;
         downloadUserDetails(userID, userDetails)
@@ -113,7 +133,8 @@ function extractFeatures(realChangeset, userDetails) {
                 'user_first_edit': userDetail.first_edit,
                 'user_changesets': userDetail.changeset_count,
                 'user_features': userDetail.num_changes,
-                'bbox_area': bboxArea
+                'bbox_area': bboxArea,
+                'changeset_editor': changesetEditor
             };
             resolve(features);
         })
@@ -134,6 +155,7 @@ function formatFeatures(features) {
         features.user_first_edit,
         features.user_changesets,
         features.user_features,
-        features.bbox_area
+        features.bbox_area,
+        features.changeset_editor
     ];
 }
