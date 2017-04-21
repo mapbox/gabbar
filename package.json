@@ -8,6 +8,8 @@
     "test": "tests"
   },
   "scripts": {
+    "lint": "eslint index.js */*/*.js",
+    "pretest": "npm run lint",
     "test": "py.test -v"
   },
   "repository": {
@@ -30,5 +32,9 @@
     "minimist": "^1.2.0",
     "real-changesets-parser": "^1.2.3",
     "request": "^2.81.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-mourner": "^2.0.1"
   }
 }
