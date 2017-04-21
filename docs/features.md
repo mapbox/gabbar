@@ -17,4 +17,5 @@ Add new feature
         - If calculating the feature is async in nature, use `Promises <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise>`_
 2. Add appropriate name for the feature and result from the function to the `features` object in `gabbar.helpers.extractFeatures.extractFeatures`.
 3. Add the feature name to the end of the formatted features list in `gabbar.helpers.extractFeatures.formatFeatures`
-4. The new feature should now be part of the results from `data/extract_features.js`, :tada:
+4. Update tests with the new feature.
+5. The new feature should now be part of the results from `data/extract_features.js`, :tada:

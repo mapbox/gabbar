@@ -12,7 +12,7 @@ NUMBER_OF_DECIMALS = 3
 
 def test_get_features():
     changeset_id = u'47734592'
-    expected = [changeset_id, 1, 0, 0, 5662807, 'Bhuvan Anand', '2017-04-13T08:23:26.000Z', 1, 1]
+    expected = [changeset_id, 1, 0, 0, 5662807, 'Bhuvan Anand', '2017-04-13T08:23:26.000Z', 1, 1, 0]
     actual = gabbar.get_features(changeset_id)
     assert json.dumps(actual) == json.dumps(expected)
 

@@ -4,6 +4,7 @@
 const request = require('request');
 const argv = require('minimist')(process.argv.slice(2));
 const parser = require('real-changesets-parser');
+const turf = require('@turf/turf');
 
 module.exports = {
     downloadRealChangeset: downloadRealChangeset,
@@ -83,6 +84,13 @@ function downloadUserDetails(userID, userDetails) {
     });
 }
 
+function getBBOXArea(realChangeset) {
+    let meta = realChangeset['metadata'];
+    let bbox = [meta['min_lat'], meta['min_lon'], meta['max_lat'], meta['max_lon']].map(parseFloat);
+    var polygon = turf.bboxPolygon(bbox);
+    return parseFloat(turf.area(polygon).toFixed(4));
+}
+
 function extractFeatures(realChangeset, userDetails) {
     return new Promise((resolve, reject) => {
         let changeset = parser(realChangeset);
@@ -90,6 +98,7 @@ function extractFeatures(realChangeset, userDetails) {
         let featuresCreated = getFeaturesByAction(changeset, 'create');
         let featuresModified = getFeaturesByAction(changeset, 'modify');
         let featuresDeleted = getFeaturesByAction(changeset, 'delete');
+        let bboxArea = getBBOXArea(realChangeset);
 
         let userID = realChangeset.metadata.uid;
         downloadUserDetails(userID, userDetails)
@@ -103,7 +112,8 @@ function extractFeatures(realChangeset, userDetails) {
                 'user_name': userDetail.name,
                 'user_first_edit': userDetail.first_edit,
                 'user_changesets': userDetail.changeset_count,
-                'user_features': userDetail.num_changes
+                'user_features': userDetail.num_changes,
+                'bbox_area': bboxArea
             };
             resolve(features);
         })
@@ -123,6 +133,7 @@ function formatFeatures(features) {
         features.user_name,
         features.user_first_edit,
         features.user_changesets,
-        features.user_features
+        features.user_features,
+        features.bbox_area
     ];
 }
