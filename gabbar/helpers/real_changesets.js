@@ -124,6 +124,26 @@ function getFeatureTypeCounts(features) {
     return counts;
 }
 
+function getPropertyModifications(features) {
+    let modifications = [];
+    for (let versions of features) {
+        let newVersion = versions[0];
+        let oldVersion = versions[1];
+        if (!(_.isEqual(newVersion.properties.tags, oldVersion.properties.tags))) modifications.push(versions);
+    }
+    return modifications;
+}
+
+function getGeometryModifications(features) {
+    let modifications = [];
+    for (let versions of features) {
+        let newVersion = versions[0];
+        let oldVersion = versions[1];
+        if (JSON.stringify(newVersion.geometry) !== JSON.stringify(oldVersion.geometry)) modifications.push(versions);
+    }
+    return modifications;
+}
+
 function extractFeatures(realChangeset, userDetails) {
     return new Promise((resolve, reject) => {
         let changeset = parser(realChangeset);
@@ -136,8 +156,8 @@ function extractFeatures(realChangeset, userDetails) {
         let featuresCreated = getFeaturesByAction(changeset, 'create');
         let featuresModified = getFeaturesByAction(changeset, 'modify');
         let featuresDeleted = getFeaturesByAction(changeset, 'delete');
-        let allFeatures = featuresCreated.concat(featuresModified, featuresDeleted);
 
+        let allFeatures = featuresCreated.concat(featuresModified, featuresDeleted);
         let featureTypeCounts = getFeatureTypeCounts(allFeatures);
 
         let userID = realChangeset.metadata.uid;
@@ -157,7 +177,9 @@ function extractFeatures(realChangeset, userDetails) {
                 'changeset_editor': changesetEditor,
                 'node_count': featureTypeCounts['node'],
                 'way_count': featureTypeCounts['way'],
-                'relation_count': featureTypeCounts['relation']
+                'relation_count': featureTypeCounts['relation'],
+                'property_modifications': getPropertyModifications(featuresModified).length,
+                'geometry_modifications': getGeometryModifications(featuresModified).length
             };
             resolve(features);
         })
@@ -182,6 +204,8 @@ function formatFeatures(features) {
         features.changeset_editor,
         features.node_count,
         features.way_count,
-        features.relation_count
+        features.relation_count,
+        features.property_modifications,
+        features.geometry_modifications
     ];
 }
