@@ -6,6 +6,7 @@ const argv = require('minimist')(process.argv.slice(2));
 const path = require('path');
 const extractFeatures = require(path.join(__dirname, '../gabbar/helpers/real_changesets')).extractFeatures;
 const formatFeatures = require(path.join(__dirname, '../gabbar/helpers/real_changesets')).formatFeatures;
+const getFeatureList = require(path.join(__dirname, '../gabbar/helpers/real_changesets')).getFeatureList;
 const csv = require('csv');
 
 if (!argv.realChangesets) {
@@ -90,7 +91,11 @@ let q = [
 ];
 Promise.all(q)
 .then(results => {
-    extract(argv.realChangesets, results[0], results[1])
+    let header = getFeatureList();
+    csv.stringify([header], (error, headerAsString) => {
+        process.stdout.write(headerAsString);
+        extract(argv.realChangesets, results[0], results[1]);
+    })
 })
 .catch(error => {
     throw error;
