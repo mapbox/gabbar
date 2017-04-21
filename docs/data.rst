@@ -11,13 +11,14 @@ Labelled
 - OSMCHA: `labelled_changesets.csv.tar.gz <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/labelled_changesets.csv.tar.gz>`_ (5.2 MB)
 - Real changesets: `labelled_real_changesets.json.tar.gz <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/labelled_real_changesets.json.tar.gz>`_ (497.8 MB)
 - Features: `labelled_features.csv <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/labelled_features.csv>`_ (471.3 KB)
+- User details: `labelled_user_details.json <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/labelled_user_details.json>`_ (660.2 KB)
 
 Unlabelled
 ----------
 - OSMCHA: `unlabelled_changesets.csv.tar.gz <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/unlabelled_changesets.csv.tar.gz>`_ (1.6 MB)
 - Real changesets: `unlabelled_real_changesets.json.tar.gz <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/unlabelled_real_changesets.json.tar.gz>`_ (319.5 MB)
 - Features: `unlabelled_features.csv <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/unlabelled_features.csv>`_ (403.2 KB)
-
+- User details: `unlabelled_user_details.json <https://s3-us-west-2.amazonaws.com/mapbox-gabbar/public/unlabelled_user_details.json>`_ (369.2 KB)
 
 Create datasets
 ===============
@@ -35,8 +36,9 @@ Create datasets
 
     # Extract features for changesets.
     node data/extract_features.js \
-        --changesets downloads/v1/labelled_changesets.csv \
-        --realChangesets downloads/v1/labelled_real_changesets.json > downloads/v1/labelled_features.csv
+        --realChangesets downloads/v1/labelled_real_changesets.json > downloads/v1/labelled_features.csv \
+        --userDetails downloads/v1/labelled_user_details.json \
+        --changesets downloads/v1/labelled_changesets.csv
 
 
 Create setup

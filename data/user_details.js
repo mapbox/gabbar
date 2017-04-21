@@ -6,6 +6,16 @@ const argv = require('minimist')(process.argv.slice(2));
 const path = require('path');
 const csv = require('csv');
 
+if (!argv.features) {
+    console.log('');
+    console.log('USAGE: node user_details.js OPTIONS');
+    console.log('');
+    console.log('  OPTIONS');
+    console.log('    --features     features.csv');
+    console.log('');
+    process.exit(0);
+}
+
 let userDetails = {};
 let header = false;
 csv.parse(fs.readFileSync(argv.features), (error, features) => {
