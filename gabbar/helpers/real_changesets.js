@@ -62,6 +62,21 @@ let PRIMARY_TAGS = [
     'waterway'
 ];
 
+let CHANGESET_EDITORS = [
+    'iD',
+    'JOSM',
+    'MAPS.ME',
+    'Potlatch',
+    'Redaction bot',
+    'Vespucci',
+    'OsmAnd',
+    'Merkaartor',
+    'gnome', // For amishas157! :wave:
+    'other'
+];
+let CHANGESET_EDITOR_PREFIX = 'changeset_editor_';
+
+
 function getFeaturesByAction(changeset, action) {
     let features = [];
     let seen = [];
@@ -131,13 +146,34 @@ function getChangesetEditor(realChangeset) {
             break;
         }
     }
-    // Adding GNOME for amishas157! :wave:
-    let editors = ['iD', 'JOSM', 'MAPS.ME', 'Potlatch', 'Redaction bot', 'Vespucci', 'OsmAnd', 'Merkaartor', 'gnome'];
-    for (let editor of editors) {
+    for (let editor of CHANGESET_EDITORS) {
         if (changesetEditor.indexOf(editor) !== -1) return editor;
     }
     // The changeset editor does not match with any in the list.
     return 'other';
+}
+
+function getChangesetEditorCounts(realChangeset) {
+    let changesetEditor = '';
+    let tags = realChangeset.metadata.tag;
+    for (let tag of tags) {
+        if (tag['k'] === 'created_by') {
+            changesetEditor = tag['v'];
+            break;
+        }
+    }
+
+    let editors = [];
+    for (let i = 0; i < CHANGESET_EDITORS.length; i++) {
+        let editor = CHANGESET_EDITORS[i];
+        if (changesetEditor.indexOf(editor) !== -1) editors.push(1);
+        else editors.push(0);
+    }
+    // Set changeset if no other editor has a count of 1.
+    let sum = editors.reduce((a, b) => a + b);
+    if (sum === 0) editors[editors.length - 1] += 1;
+
+    return editors;
 }
 
 function getFeatureTypeCounts(features) {
@@ -205,13 +241,13 @@ function getFeatureVersionCounts(features) {
         let featureVersion = parseInt(newVersion.properties.version);
 
         if (featureVersion === 1) {
-            counts.new += 1
+            counts.new += 1;
         } else if ((featureVersion > 1) && (featureVersion <= 5)) {
-            counts.low += 1
+            counts.low += 1;
         } else if ((featureVersion > 5) && (featureVersion <= 10)) {
-            counts.medium += 1
+            counts.medium += 1;
         } else {
-            counts.high += 1
+            counts.high += 1;
         }
     }
     return counts;
@@ -224,6 +260,7 @@ function extractFeatures(realChangeset, userDetails) {
         // Real changeset based features.
         let bboxArea = getBBOXArea(realChangeset);
         let changesetEditor = getChangesetEditor(realChangeset);
+        let editorCounts = getChangesetEditorCounts(realChangeset);
 
         // Processed changeset based features.
         let featuresCreated = getFeaturesByAction(changeset, 'create');
@@ -261,6 +298,10 @@ function extractFeatures(realChangeset, userDetails) {
                 'feature_version_high': featureVersionCounts.high
             };
 
+            for (let editor of CHANGESET_EDITORS) {
+                features[CHANGESET_EDITOR_PREFIX + editor] = editorCounts[CHANGESET_EDITORS.indexOf(editor)];
+            }
+
             // Concat primary tag counts.
             for (let primaryTag of PRIMARY_TAGS) {
                 features[primaryTag] = primaryTag in primaryTagCounts ? primaryTagCounts[primaryTag] : 0;
@@ -274,31 +315,46 @@ function extractFeatures(realChangeset, userDetails) {
     });
 }
 
-function formatFeatures(features) {
-    let formatted = [
-        features.changeset_id,
-        features.features_created,
-        features.features_modified,
-        features.features_deleted,
-        features.user_id,
-        features.user_name,
-        features.user_first_edit,
-        features.user_changesets,
-        features.user_features,
-        features.bbox_area,
-        features.changeset_editor,
-        features.node_count,
-        features.way_count,
-        features.relation_count,
-        features.property_modifications,
-        features.geometry_modifications,
-        features.feature_version_new,
-        features.feature_version_low,
-        features.feature_version_medium,
-        features.feature_version_high
+function getFeatureList() {
+    let features = [
+        'changeset_id',
+        'features_created',
+        'features_modified',
+        'features_deleted',
+        'user_id',
+        'user_name',
+        'user_first_edit',
+        'user_changesets',
+        'user_features',
+        'bbox_area',
+        'changeset_editor',
+        'node_count',
+        'way_count',
+        'relation_count',
+        'property_modifications',
+        'geometry_modifications',
+        'feature_version_new',
+        'feature_version_low',
+        'feature_version_medium',
+        'feature_version_high'
     ];
-    for (let primaryTag of PRIMARY_TAGS) {
-        formatted.push(features[primaryTag]);
+
+    for (let editor of CHANGESET_EDITORS) features.push(CHANGESET_EDITOR_PREFIX + editor);
+    for (let primaryTag of PRIMARY_TAGS) features.push(primaryTag);
+
+    return features;
+}
+
+function formatFeatures(features) {
+    let featureList = getFeatureList();
+    console.log(JSON.stringify(featureList));
+
+    let formatted = [];
+    for (let feature of featureList) {
+        formatted.push(features[feature]);
     }
+    console.log(JSON.stringify(formatted));
+    process.exit(0);
+
     return formatted;
 }
