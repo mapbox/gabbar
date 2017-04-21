@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/mapbox/gabbar#readme",
   "dependencies": {
+    "csv": "^1.1.1",
     "d3-queue": "^3.0.5",
     "minimist": "^1.2.0",
     "real-changesets-parser": "^1.2.3",
