@@ -18,14 +18,14 @@ def get_features(changeset_id):
     return features
 
 def filter_features(features):
-    # TODO: Currently returning all features except changeset_id.
-    return [
-        features[1],
-        features[2],
-        features[3],
-        features[7],
-        features[8]
-    ]
+    filtered = []
+    indexes_to_ignore = [0, 4, 5, 6, 10]
+    for i in range(len(features)):
+        if i in indexes_to_ignore:
+            continue
+        else:
+            filtered.append(features[i])
+    return filtered
 
 def normalize_features(features):
     directory = os.path.dirname(os.path.realpath(__file__))
