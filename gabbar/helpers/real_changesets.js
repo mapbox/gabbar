@@ -193,6 +193,30 @@ function getPrimaryTagCounts(features) {
     return counts;
 }
 
+function getFeatureVersionCounts(features) {
+    let counts = {
+        new: 0,     // version == 1
+        low: 0,     // version <= 5
+        medium: 0,  // version <= 10
+        high: 0     // version > 10
+    };
+    for (let version of features) {
+        let newVersion = version[0];
+        let featureVersion = parseInt(newVersion.properties.version);
+
+        if (featureVersion === 1) {
+            counts.new += 1
+        } else if ((featureVersion > 1) && (featureVersion <= 5)) {
+            counts.low += 1
+        } else if ((featureVersion > 5) && (featureVersion <= 10)) {
+            counts.medium += 1
+        } else {
+            counts.high += 1
+        }
+    }
+    return counts;
+}
+
 function extractFeatures(realChangeset, userDetails) {
     return new Promise((resolve, reject) => {
         let changeset = parser(realChangeset);
@@ -209,6 +233,7 @@ function extractFeatures(realChangeset, userDetails) {
         let allFeatures = featuresCreated.concat(featuresModified, featuresDeleted);
         let featureTypeCounts = getFeatureTypeCounts(allFeatures);
         let primaryTagCounts = getPrimaryTagCounts(allFeatures);
+        let featureVersionCounts = getFeatureVersionCounts(allFeatures);
 
         let userID = realChangeset.metadata.uid;
         downloadUserDetails(userID, userDetails)
@@ -229,7 +254,11 @@ function extractFeatures(realChangeset, userDetails) {
                 'way_count': featureTypeCounts['way'],
                 'relation_count': featureTypeCounts['relation'],
                 'property_modifications': getPropertyModifications(featuresModified).length,
-                'geometry_modifications': getGeometryModifications(featuresModified).length
+                'geometry_modifications': getGeometryModifications(featuresModified).length,
+                'feature_version_new': featureVersionCounts.new,
+                'feature_version_low': featureVersionCounts.low,
+                'feature_version_medium': featureVersionCounts.medium,
+                'feature_version_high': featureVersionCounts.high
             };
 
             // Concat primary tag counts.
@@ -262,7 +291,11 @@ function formatFeatures(features) {
         features.way_count,
         features.relation_count,
         features.property_modifications,
-        features.geometry_modifications
+        features.geometry_modifications,
+        features.feature_version_new,
+        features.feature_version_low,
+        features.feature_version_medium,
+        features.feature_version_high
     ];
     for (let primaryTag of PRIMARY_TAGS) {
         formatted.push(features[primaryTag]);
