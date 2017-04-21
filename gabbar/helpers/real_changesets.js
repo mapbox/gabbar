@@ -110,15 +110,35 @@ function getChangesetEditor(realChangeset) {
     return 'other';
 }
 
+function getFeatureTypeCounts(features) {
+    let counts = {
+        node: 0,
+        way: 0,
+        relation: 0
+    };
+    for (var version of features) {
+        var newVersion = version[0];
+        var featureType = newVersion.properties.type;
+        counts[featureType] += 1;
+    }
+    return counts;
+}
+
 function extractFeatures(realChangeset, userDetails) {
     return new Promise((resolve, reject) => {
         let changeset = parser(realChangeset);
 
+        // Real changeset based features.
+        let bboxArea = getBBOXArea(realChangeset);
+        let changesetEditor = getChangesetEditor(realChangeset);
+
+        // Processed changeset based features.
         let featuresCreated = getFeaturesByAction(changeset, 'create');
         let featuresModified = getFeaturesByAction(changeset, 'modify');
         let featuresDeleted = getFeaturesByAction(changeset, 'delete');
-        let bboxArea = getBBOXArea(realChangeset);
-        let changesetEditor = getChangesetEditor(realChangeset);
+        let allFeatures = featuresCreated.concat(featuresModified, featuresDeleted);
+
+        let featureTypeCounts = getFeatureTypeCounts(allFeatures);
 
         let userID = realChangeset.metadata.uid;
         downloadUserDetails(userID, userDetails)
@@ -134,7 +154,10 @@ function extractFeatures(realChangeset, userDetails) {
                 'user_changesets': userDetail.changeset_count,
                 'user_features': userDetail.num_changes,
                 'bbox_area': bboxArea,
-                'changeset_editor': changesetEditor
+                'changeset_editor': changesetEditor,
+                'node_count': featureTypeCounts['node'],
+                'way_count': featureTypeCounts['way'],
+                'relation_count': featureTypeCounts['relation']
             };
             resolve(features);
         })
@@ -156,6 +179,9 @@ function formatFeatures(features) {
         features.user_changesets,
         features.user_features,
         features.bbox_area,
-        features.changeset_editor
+        features.changeset_editor,
+        features.node_count,
+        features.way_count,
+        features.relation_count
     ];
 }
