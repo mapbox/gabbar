@@ -10,7 +10,8 @@ const _ = require('underscore');
 module.exports = {
     downloadRealChangeset: downloadRealChangeset,
     extractFeatures: extractFeatures,
-    formatFeatures: formatFeatures
+    formatFeatures: formatFeatures,
+    getFeatureList: getFeatureList
 };
 
 if (argv.changesetID) {
@@ -347,14 +348,10 @@ function getFeatureList() {
 
 function formatFeatures(features) {
     let featureList = getFeatureList();
-    console.log(JSON.stringify(featureList));
 
     let formatted = [];
     for (let feature of featureList) {
         formatted.push(features[feature]);
     }
-    console.log(JSON.stringify(formatted));
-    process.exit(0);
-
     return formatted;
 }
