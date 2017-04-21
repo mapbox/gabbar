@@ -32,7 +32,8 @@
     "d3-queue": "^3.0.5",
     "minimist": "^1.2.0",
     "real-changesets-parser": "^1.2.3",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "eslint": "^3.19.0",

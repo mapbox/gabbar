@@ -5,6 +5,7 @@ const request = require('request');
 const argv = require('minimist')(process.argv.slice(2));
 const parser = require('real-changesets-parser');
 const turf = require('@turf/turf');
+const _ = require('underscore');
 
 module.exports = {
     downloadRealChangeset: downloadRealChangeset,
@@ -31,6 +32,35 @@ if (argv.changesetID) {
         throw error;
     });
 }
+
+let PRIMARY_TAGS = [
+    'aerialway',
+    'aeroway',
+    'amenity',
+    'barrier',
+    'boundary',
+    'building',
+    'craft',
+    'emergency',
+    'geological',
+    'highway',
+    'historic',
+    'landuse',
+    'leisure',
+    'man_made',
+    'military',
+    'natural',
+    'office',
+    'place',
+    'power',
+    'public_transport',
+    'railway',
+    'route',
+    'shop',
+    'sport',
+    'tourism',
+    'waterway'
+];
 
 function getFeaturesByAction(changeset, action) {
     let features = [];
@@ -144,6 +174,25 @@ function getGeometryModifications(features) {
     return modifications;
 }
 
+function getPrimaryTags(feature) {
+    let primaryTags = [];
+    for (var tag in feature.properties.tags) {
+        if (PRIMARY_TAGS.indexOf(tag) !== -1) primaryTags.push(tag);
+    }
+    return primaryTags;
+}
+
+function getPrimaryTagCounts(features) {
+    let counts = {};
+    for (let version of features) {
+        for (let primaryTag of getPrimaryTags(version[0])) {
+            if (!(primaryTag in counts)) counts[primaryTag] = 0;
+            counts[primaryTag] += 1;
+        }
+    }
+    return counts;
+}
+
 function extractFeatures(realChangeset, userDetails) {
     return new Promise((resolve, reject) => {
         let changeset = parser(realChangeset);
@@ -159,6 +208,7 @@ function extractFeatures(realChangeset, userDetails) {
 
         let allFeatures = featuresCreated.concat(featuresModified, featuresDeleted);
         let featureTypeCounts = getFeatureTypeCounts(allFeatures);
+        let primaryTagCounts = getPrimaryTagCounts(allFeatures);
 
         let userID = realChangeset.metadata.uid;
         downloadUserDetails(userID, userDetails)
@@ -181,6 +231,12 @@ function extractFeatures(realChangeset, userDetails) {
                 'property_modifications': getPropertyModifications(featuresModified).length,
                 'geometry_modifications': getGeometryModifications(featuresModified).length
             };
+
+            // Concat primary tag counts.
+            for (let primaryTag of PRIMARY_TAGS) {
+                features[primaryTag] = primaryTag in primaryTagCounts ? primaryTagCounts[primaryTag] : 0;
+            }
+
             resolve(features);
         })
         .catch(error => {
@@ -190,7 +246,7 @@ function extractFeatures(realChangeset, userDetails) {
 }
 
 function formatFeatures(features) {
-    return [
+    let formatted = [
         features.changeset_id,
         features.features_created,
         features.features_modified,
@@ -208,4 +264,8 @@ function formatFeatures(features) {
         features.property_modifications,
         features.geometry_modifications
     ];
+    for (let primaryTag of PRIMARY_TAGS) {
+        formatted.push(features[primaryTag]);
+    }
+    return formatted;
 }
