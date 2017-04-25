@@ -1,7 +1,10 @@
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 
-import argparse
+import sys
+import os
+import datetime
+import json
 
 import gabbar
 
@@ -13,18 +16,29 @@ def get_prediction(changeset):
     prediction = gabbar.get_prediction(normalized)
     return prediction
 
+
+def converter(o):
+    if isinstance(o, datetime.datetime):
+        return o.__str__()
+
+
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Use pre-trained ML model to predict if changeset is harmful or not.')
-    parser.add_argument('--changeset')
-    args = parser.parse_args()
-    changeset = args.changeset
-
+    changeset = sys.argv[1]
     prediction = get_prediction(changeset)
+    if prediction == 1:
+        prediction = 'good'
+    else:
+        prediction = 'harmful'
 
-    message = 'Cannot make a prediction. Sorry.'
-    url = 'http://www.openstreetmap.org/changeset/{}'.format(changeset)
-    if (prediction == 1):
-        message = 'Changeset {} looks GOOD.'.format(url)
-    elif (prediction == -1):
-        message = 'Changeset {} looks HARMFUL.'.format(url)
-    print('\n{}\n'.format(message))
+    directory = os.path.dirname(os.path.realpath(__file__))
+    version_filepath = os.path.join(directory, '../../VERSION')
+    with open(version_filepath) as f:
+        version = f.read().strip()
+
+    timestamp = datetime.datetime.now()
+    results = {
+        'prediction': prediction,
+        'version': version,
+        'timestamp': timestamp
+    }
+    print(json.dumps(results, sort_keys=True, default=converter))

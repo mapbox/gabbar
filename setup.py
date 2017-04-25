@@ -1,3 +1,6 @@
+import path
+import os
+
 from codecs import open as codecs_open
 from setuptools import setup, find_packages
 
@@ -6,9 +9,13 @@ from setuptools import setup, find_packages
 with codecs_open('README.rst', encoding='utf-8') as f:
     long_description = f.read()
 
+directory = os.path.dirname(os.path.realpath(__file__))
+version_filepath = os.path.join(directory, 'VERSION')
+with open(version_filepath) as f:
+    version = version_file.read().strip()
 
 setup(name='gabbar',
-      version='0.2.4',
+      version=version,
       description=u"Guarding OSM from invalid or suspicious edits!",
       long_description=long_description,
       classifiers=[
