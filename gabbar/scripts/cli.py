@@ -6,8 +6,9 @@ import os
 import datetime
 import json
 
-import gabbar
+import click
 
+import gabbar
 
 def get_prediction(changeset):
     features = gabbar.get_features(changeset)
@@ -22,8 +23,9 @@ def converter(o):
         return o.__str__()
 
 
-if __name__ == '__main__':
-    changeset = sys.argv[1]
+@click.command('gabbar')
+@click.argument('changeset', type=str, metavar='changeset')
+def cli(changeset):
     prediction = get_prediction(changeset)
     if prediction == 1:
         prediction = 'good'
