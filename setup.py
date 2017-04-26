@@ -35,7 +35,7 @@ setup(name='gabbar',
           'click',
           'numpy',
           'scipy',
-          'scikit-learn'
+          'scikit-learn[alldeps]'
       ],
       extras_require={
           'test': ['pytest', 'pandas'],
