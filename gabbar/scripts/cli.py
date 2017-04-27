@@ -39,6 +39,7 @@ def cli(changeset):
 
     timestamp = datetime.datetime.now()
     results = {
+        'changeset': changeset,
         'prediction': prediction,
         'version': version,
         'timestamp': timestamp
