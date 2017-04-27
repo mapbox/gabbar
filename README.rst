@@ -57,7 +57,8 @@ Run tests
 Performance
 ===========
 
-Performance of the model on both labelled and unlabelled changesets is tracked in `metrics.csv <./metrics.csv>`_
+- Performance of the model is tracked in `metrics.csv <./metrics.csv>`_
+- Real-world performance is tracked in `performance.md <./docs/performance.md>`_
 
 Hyperlinks
 ==========
