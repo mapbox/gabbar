@@ -20,7 +20,8 @@ if (argv.changesetID) {
         if (Object.keys(realChangeset).length > 0) {
             extractFeatures(realChangeset)
             .then(features => {
-                console.log(JSON.stringify(formatFeatures(features)));
+                // console.log(JSON.stringify(formatFeatures(features)));
+                console.log(JSON.stringify(features));
             })
             .catch(error => {
                 throw error;
@@ -254,6 +255,10 @@ function getFeatureVersionCounts(features) {
     return counts;
 }
 
+function datetimeToInteger(dt) {
+    return Math.floor(new Date(dt) / 1000);
+}
+
 function extractFeatures(realChangeset, userDetails) {
     return new Promise((resolve, reject) => {
         let changeset = parser(realChangeset);
@@ -283,7 +288,7 @@ function extractFeatures(realChangeset, userDetails) {
                 'features_deleted': featuresDeleted.length,
                 'user_id': userDetail.id,
                 'user_name': userDetail.name,
-                'user_first_edit': userDetail.first_edit,
+                'user_first_edit': String(datetimeToInteger(userDetail.first_edit)),
                 'user_changesets': userDetail.changeset_count,
                 'user_features': userDetail.num_changes,
                 'bbox_area': bboxArea,

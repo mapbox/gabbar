@@ -18,13 +18,62 @@ def get_features(changeset_id):
     return features
 
 def filter_features(features):
+    keys = [
+        'features_created',
+        'features_modified',
+        'features_deleted',
+        'user_changesets',
+        'user_features',
+        'bbox_area',
+        'node_count',
+        'way_count',
+        'relation_count',
+        'property_modifications',
+        'geometry_modifications',
+        'feature_version_new',
+        'feature_version_low',
+        'feature_version_medium',
+        'feature_version_high',
+        'changeset_editor_iD',
+        'changeset_editor_JOSM',
+        'changeset_editor_MAPS.ME',
+        'changeset_editor_Potlatch',
+        'changeset_editor_Redaction bot',
+        'changeset_editor_Vespucci',
+        'changeset_editor_OsmAnd',
+        'changeset_editor_Merkaartor',
+        'changeset_editor_gnome',
+        'changeset_editor_other',
+        'aerialway',
+        'aeroway',
+        'amenity',
+        'barrier',
+        'boundary',
+        'building',
+        'craft',
+        'emergency',
+        'geological',
+        'highway',
+        'historic',
+        'landuse',
+        'leisure',
+        'man_made',
+        'military',
+        'natural',
+        'office',
+        'place',
+        'power',
+        'public_transport',
+        'railway',
+        'route',
+        'shop',
+        'sport',
+        'tourism',
+        'waterway',
+    ]
     filtered = []
-    indexes_to_ignore = [0, 4, 5, 6, 10]
-    for i in range(len(features)):
-        if i in indexes_to_ignore:
-            continue
-        else:
-            filtered.append(features[i])
+    for key in keys:
+        filtered.append(features[key])
     return filtered
 
 def normalize_features(features):
