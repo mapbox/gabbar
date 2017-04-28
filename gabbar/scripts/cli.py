@@ -6,15 +6,19 @@ import os
 import datetime
 import json
 
-import gabbar
+import click
 
+import gabbar
 
 def get_prediction(changeset):
     features = gabbar.get_features(changeset)
     filtered = gabbar.filter_features(features)
     normalized = gabbar.normalize_features(filtered)
     prediction = gabbar.get_prediction(normalized)
-    return prediction
+    return {
+        'features': features,
+        'prediction': prediction
+    };
 
 
 def converter(o):
@@ -22,9 +26,14 @@ def converter(o):
         return o.__str__()
 
 
-if __name__ == '__main__':
-    changeset = sys.argv[1]
-    prediction = get_prediction(changeset)
+@click.command('gabbar')
+@click.argument('changeset', type=str, metavar='changeset')
+def cli(changeset):
+    results = get_prediction(changeset);
+
+    features = results['features'];
+    prediction = results['prediction']
+
     if prediction == 1:
         prediction = 'good'
     else:
@@ -37,7 +46,9 @@ if __name__ == '__main__':
 
     timestamp = datetime.datetime.now()
     results = {
+        'changeset': changeset,
         'prediction': prediction,
+        'features': features,
         'version': version,
         'timestamp': timestamp
     }

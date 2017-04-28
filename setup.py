@@ -1,4 +1,3 @@
-import path
 import os
 
 from codecs import open as codecs_open
@@ -12,7 +11,7 @@ with codecs_open('README.rst', encoding='utf-8') as f:
 directory = os.path.dirname(os.path.realpath(__file__))
 version_filepath = os.path.join(directory, 'VERSION')
 with open(version_filepath) as f:
-    version = version_file.read().strip()
+    version = f.read().strip()
 
 setup(name='gabbar',
       version=version,
@@ -36,10 +35,10 @@ setup(name='gabbar',
           'click',
           'numpy',
           'scipy',
-          'scikit-learn'
+          'scikit-learn[alldeps]'
       ],
       extras_require={
-          'test': ['pytest', 'pandas'],
+          'test': ['pytest', 'pandas', 'requests'],
       },
       entry_points="""
       [console_scripts]

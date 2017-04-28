@@ -41,7 +41,7 @@ Get a prediction
 .. code-block:: bash
 
     # Get a prediction for a changeset.
-    $ python gabbar/scripts/cli.py 47734592
+    $ gabbar 47734592
     {"prediction": "good", "timestamp": "2017-04-26 01:05:00.441977", "version": "0.2.4"}
 
 
