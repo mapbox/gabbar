@@ -89,6 +89,43 @@ Labelled changesets on osmcha in May, 2017
     aws s3 cp user-details.tar.gz s3://mapbox-gabbar/public/datasets/validation/user-details.tar.gz
 
 
+Testing
+=======
+
+Unlabelled changesets from osmcha on 1st May, 2017
+
+.. code-block:: bash
+
+    # Inside the home directory.
+    cd ~
+
+    # Download changesets from osmcha
+    wget 'http://osmcha.mapbox.com/?date__gte=2017-05-01&date__lte=2017-05-02&is_suspect=False&is_whitelisted=All&harmful=None&checked=All&all_reason=True&render_csv=True' -O changesets.csv
+
+    # Create a small sample file to test the script.
+    head -n10 changesets.csv > sample-changesets.csv
+
+    # Copy script to download datasets.
+    vim download-datasets.js
+
+    # Install required packages.
+    npm install csv d3-queue request mkdirp minimist
+
+    # Run script first on the sample and later on all changesets.
+    node download-datasets.js \
+        --changesets changesets.csv \
+        --directory .
+
+    # Compress folders.
+    tar -czf real-changesets.tar.gz real-changesets/
+    tar -czf user-details.tar.gz user-details/
+
+    # Move datasets onto s3.
+    aws s3 cp changesets.csv s3://mapbox-gabbar/public/datasets/testing/changesets.csv
+    aws s3 cp real-changesets.tar.gz s3://mapbox-gabbar/public/datasets/testing/real-changesets.tar.gz
+    aws s3 cp user-details.tar.gz s3://mapbox-gabbar/public/datasets/testing/user-details.tar.gz
+
+
 Download datasets
 =================
 
