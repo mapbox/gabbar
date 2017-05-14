@@ -41,7 +41,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
     let q = queue(5);
     let changesetID, userName, url, filepath;
 
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < changesets.length; i++) {
         let changeset = changesets[i];
 
         changesetID = changeset[0];
