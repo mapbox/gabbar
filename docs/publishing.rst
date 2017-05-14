@@ -4,8 +4,8 @@ Publishing to PyPi
 
 .. code-block:: bash
 
-    # Bump the version.
-    $ $EDITOR setup.py
+    # Bump up version in the version file.
+    $ $EDITOR VERSION
 
     # Bump the tag.
     $ git tag <VERSION>
@@ -15,13 +15,13 @@ Publishing to PyPi
     $ git push --tags
 
     # Create a Source Distribution.
-    python setup.py sdist
+    $ python setup.py sdist
 
     # A wheel can be installed without needing to go through the "build" process.
-    python setup.py bdist_wheel --universal
+    $ python setup.py bdist_wheel --universal
 
     # Optionally upload to Test PyPI if required.
     $ twine upload dist/* -r testpypi
 
     # Upload to PyPi
-    twine upload dist/*
+    $ twine upload dist/*
