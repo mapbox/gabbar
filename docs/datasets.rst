@@ -3,6 +3,46 @@ Datasets
 ========
 
 
+Setup
+=====
+
+.. code-block:: bash
+
+    # Download and install Anaconda. Instructions for Ubuntu x64.
+    cd ~
+    mkdir -p softwares && cd softwares
+    wget https://repo.continuum.io/archive/Anaconda3-4.3.1-Linux-x86_64.sh
+    bash Anaconda3-4.3.1-Linux-x86_64.sh
+
+
+Training
+========
+
+Labelled changesets from osmcha between January, 2017 and April, 2017
+
+.. code-block:: bash
+
+    # Inside the home directory.
+    cd ~
+
+    # Download changesets from osmcha
+    wget 'http://osmcha.mapbox.com/?date__gte=2017-01-01&date__lte=2017-04-30&is_suspect=False&is_whitelisted=All&harmful=None&checked=True&all_reason=True&render_csv=True' -O changesets.csv
+
+    # Create a small sample file to test the script.
+    head -n10 changesets.csv > sample-changesets.csv
+
+    # Copy script to download datasets.
+    vim download-datasets.js
+
+    # Install required packages.
+    npm install csv d3-queue request mkdirp minimist
+
+    # Run script first on the sample and later on all changesets.
+    node download-datasets.js \
+        --changesets sample-changesets.csv \
+        --directory .
+
+
 Download datasets
 =================
 
@@ -39,15 +79,3 @@ Create datasets
         --realChangesets downloads/v1/labelled_real_changesets.json > downloads/v1/labelled_features.csv \
         --userDetails downloads/v1/labelled_user_details.json \
         --changesets downloads/v1/labelled_changesets.csv
-
-
-Create setup
-============
-
-.. code-block:: bash
-
-    # Download and install Anaconda for Ubuntu x64.
-    cd ~
-    mkdir -p softwares && cd softwares
-    wget https://repo.continuum.io/archive/Anaconda3-4.3.1-Linux-x86_64.sh
-    bash Anaconda3-4.3.1-Linux-x86_64.sh
