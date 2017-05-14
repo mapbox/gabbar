@@ -38,7 +38,7 @@ setup(name='gabbar',
           'scikit-learn[alldeps]'
       ],
       extras_require={
-          'test': ['pytest', 'pandas', 'requests'],
+          'test': ['pytest', 'pandas', 'requests', 'twine'],
       },
       entry_points="""
       [console_scripts]
