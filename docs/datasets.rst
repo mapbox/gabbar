@@ -42,6 +42,15 @@ Labelled changesets from osmcha between January, 2017 and April, 2017
         --changesets sample-changesets.csv \
         --directory .
 
+    # Compress folders.
+    tar -czf real-changesets.tar.gz real-changesets/
+    tar -czf user-details.tar.gz user-details/
+
+    # Move datasets onto s3.
+    aws s3 cp changesets.csv s3://mapbox-gabbar/public/datasets/training/changesets.csv
+    aws s3 cp real-changesets.tar.gz s3://mapbox-gabbar/public/datasets/training/real-changesets.tar.gz
+    aws s3 cp user-details.tar.gz s3://mapbox-gabbar/public/datasets/training/user-details.tar.gz
+
 
 Download datasets
 =================
