@@ -31,6 +31,7 @@
     "csv": "^1.1.1",
     "d3-queue": "^3.0.5",
     "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
     "real-changesets-parser": "^1.2.3",
     "request": "^2.81.0",
     "underscore": "^1.8.3"
