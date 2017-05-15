@@ -34,21 +34,31 @@ Extract attributes
 
 .. code-block:: bash
 
-    aws s3 sync s3://mapbox-gabbar/public/datasets/training/ training/
-    cd training
+    # Download all datasets required to extract features.
+    aws s3 sync s3://mapbox-gabbar/public/datasets/validation/ .
+
+    # Extract folders when required.
     tar -xzf real-changesets.tar.gz
     tar -xzf user-details.tar.gz
 
-    cd ~
+    # Create a small sample to test if the script works.
     head -n10 training/changesets.csv > training/sample-changesets.csv
 
+    # Prepare the script.
     vim extract-attributes.js
 
+    # Install required packages for the extract features script.
     npm install minimist csv d3-queue @turf/turf real-changesets-parser underscore
 
+    # Extract features passing all the datasets.
     node extract-attributes.js \
-        --changesets training/changesets.csv \
-        --realChangesets training/real-changesets/ \
-        --userDetails training/user-details/ > training/features.csv
+        --changesets changesets.csv \
+        --realChangesets real-changesets/ \
+        --userDetails user-details/ > attributes.csv
 
-    aws s3 cp training/features.csv s3://mapbox-gabbar/public/datasets/training/features.csv
+    # Remove any duplicate rows if any.
+    uniq -c attributes.csv > attributes-unique.csv
+    mv attributes-unique.csv attributes.csv
+
+    # Copy features to s3.
+    aws s3 cp attributes.csv s3://mapbox-gabbar/public/datasets/validation/attributes.csv
