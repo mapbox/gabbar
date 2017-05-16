@@ -191,7 +191,7 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
             userDetails['extra']['mapping_days'],
             userDetails['extra']['total_discussions'],
             userDetails['extra']['changesets_with_discussions'],
-            changesetComment.length > 0 ? 'True' : 'False',
+            changesetComment.length > 0 ? 1 : 0,
             changesetComment.length > 0 ? changesetComment.split(' ').length : 0,
             changesetImageryUsed.length > 0 ? 1 : 0,
         ];
