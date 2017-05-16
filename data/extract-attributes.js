@@ -223,9 +223,9 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'user_mapping_days',
         'user_discussions',
         'user_changesets_with_discussions',
-        'changeset_comment',
+        'has_changeset_comment',
         'changeset_comment_words',
-        'changeset_imagery_used',
+        'has_changeset_imagery_used',
     ]
     console.log(header.join(','));
     let features = [];
