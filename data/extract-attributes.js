@@ -196,7 +196,7 @@ function getPrimaryTags(tags) {
     return primaryTags;
 }
 
-function getPrimaryTagCounts(features) {
+function getPrimaryTagActionCounts(features) {
     let counts = {
         'created': 0,
         'modified': 0,
@@ -252,7 +252,7 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
 
         let allFeatures = featuresCreated.concat(featuresModified, featuresDeleted);
         let featureTypeCounts = getFeatureTypeCounts(allFeatures);
-        let primaryTagCounts = getPrimaryTagCounts(allFeatures);
+        let primaryTagActionCounts = getPrimaryTagActionCounts(allFeatures);
 
         let attributes = [
             changesetID,
@@ -277,9 +277,9 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
             changesetComment.length > 0 ? changesetComment.split(' ').length : 0,
             changesetImageryUsed.length > 0 ? 1 : 0,
             specialCharacterCount,
-            primaryTagCounts['created'],
-            primaryTagCounts['modified'],
-            primaryTagCounts['deleted'],
+            primaryTagActionCounts['created'],
+            primaryTagActionCounts['modified'],
+            primaryTagActionCounts['deleted'],
         ];
         console.log(attributes.join(','));
         return callback();
