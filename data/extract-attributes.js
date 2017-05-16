@@ -199,6 +199,7 @@ function getPrimaryTags(tags) {
 function getPrimaryTagCounts(features) {
     let counts = {
         'created': 0,
+        'modified': 0,
         'deleted': 0
     }
     for (let versions of features) {
@@ -206,6 +207,25 @@ function getPrimaryTagCounts(features) {
         let action = newVersion.properties.action;
         if (action === 'create') counts['created'] += getPrimaryTags(newVersion.properties.tags).length;
         if (action === 'delete') counts['deleted'] += getPrimaryTags(newVersion.properties.tags).length;
+        if (action == 'modify') {
+            let newTags = newVersion.properties.tags;
+            let newPrimaryTags = getPrimaryTags(newVersion.properties.tags);
+
+            let oldVersion = versions[1];
+            let oldTags = oldVersion.properties.tags;
+            let oldPrimaryTags = getPrimaryTags(oldVersion.properties.tags);
+
+            for (let newPrimaryTag of newPrimaryTags) {
+                if (oldPrimaryTags.indexOf(newPrimaryTag) === -1) counts['created'] += 1;
+                else if (newTags[newPrimaryTag] !== oldTags[newPrimaryTag]) counts['modified'] += 1;
+            }
+
+            for (let oldPrimaryTag of oldPrimaryTags) {
+                if (newPrimaryTags.indexOf(oldPrimaryTag) === -1) counts['created'] += 1;
+                // Modifications are previously checked ^
+                // else if (newTags[oldPrimaryTag] !== oldTags[oldPrimaryTag]) counts['modified'] += 1;
+            }
+        }
     }
     return counts;
 }
@@ -258,6 +278,7 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
             changesetImageryUsed.length > 0 ? 1 : 0,
             specialCharacterCount,
             primaryTagCounts['created'],
+            primaryTagCounts['modified'],
             primaryTagCounts['deleted'],
         ];
         console.log(attributes.join(','));
@@ -293,6 +314,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'has_changeset_imagery_used',
         'user_name_special_characters',
         'primary_tags_created',
+        'primary_tags_modified',
         'primary_tags_deleted',
     ]
     console.log(header.join(','));
