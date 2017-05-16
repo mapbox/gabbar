@@ -137,6 +137,19 @@ function getChangesetComment(realChangeset) {
     return comment;
 }
 
+function getChangesetImageryUsed(realChangeset) {
+    let imageryUsed = '';
+
+    let tags = realChangeset.metadata.tag;
+    for (let tag of tags) {
+        if (tag['k'] === 'imagery_used') {
+            imageryUsed = tag['v'];
+            break;
+        }
+    }
+    return imageryUsed;
+}
+
 function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
     try {
         let changesetID = row[0];
@@ -145,6 +158,7 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
         let changeset = parser(realChangeset);
 
         let changesetComment = getChangesetComment(realChangeset);
+        let changesetImageryUsed = getChangesetImageryUsed(realChangeset);
 
         let userName = row[1];
         let userDetailsPath = path.join(userDetailsDir, userName + '.json');
@@ -179,6 +193,7 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
             userDetails['extra']['changesets_with_discussions'],
             changesetComment.length > 0 ? 'True' : 'False',
             changesetComment.length > 0 ? changesetComment.split(' ').length : 0,
+            changesetImageryUsed.length > 0 ? 1 : 0,
         ];
         console.log(attributes.join(','));
         return callback();
@@ -210,6 +225,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'user_changesets_with_discussions',
         'changeset_comment',
         'changeset_comment_words',
+        'changeset_imagery_used',
     ]
     console.log(header.join(','));
     let features = [];
