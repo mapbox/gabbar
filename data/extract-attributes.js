@@ -33,6 +33,35 @@ let EDITORS = [
     'GNOME'  // For amishas157! :wave:
 ];
 
+var PRIMARY_TAGS = [
+    'aerialway',
+    'aeroway',
+    'amenity',
+    'barrier',
+    'boundary',
+    'building',
+    'craft',
+    'emergency',
+    'geological',
+    'highway',
+    'historic',
+    'landuse',
+    'leisure',
+    'man_made',
+    'military',
+    'natural',
+    'office',
+    'place',
+    'power',
+    'public_transport',
+    'railway',
+    'route',
+    'shop',
+    'sport',
+    'tourism',
+    'waterway'
+];
+
 function getChangesetEditor(realChangeset) {
     let changesetEditor = '';
 
@@ -159,6 +188,28 @@ function getSpecialCharacterCount(s) {
     return count;
 }
 
+function getPrimaryTags(tags) {
+    let primaryTags = [];
+    for (var tag in tags) {
+        if (PRIMARY_TAGS.indexOf(tag) !== -1) primaryTags.push(tag);
+    }
+    return primaryTags;
+}
+
+function getPrimaryTagCounts(features) {
+    let counts = {
+        'created': 0,
+        'deleted': 0
+    }
+    for (let versions of features) {
+        let newVersion = versions[0];
+        let action = newVersion.properties.action;
+        if (action === 'create') counts['created'] += getPrimaryTags(newVersion.properties.tags).length;
+        if (action === 'delete') counts['deleted'] += getPrimaryTags(newVersion.properties.tags).length;
+    }
+    return counts;
+}
+
 function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
     try {
         let changesetID = row[0];
@@ -181,6 +232,7 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
 
         let allFeatures = featuresCreated.concat(featuresModified, featuresDeleted);
         let featureTypeCounts = getFeatureTypeCounts(allFeatures);
+        let primaryTagCounts = getPrimaryTagCounts(allFeatures);
 
         let attributes = [
             changesetID,
@@ -205,6 +257,8 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
             changesetComment.length > 0 ? changesetComment.split(' ').length : 0,
             changesetImageryUsed.length > 0 ? 1 : 0,
             specialCharacterCount,
+            primaryTagCounts['created'],
+            primaryTagCounts['deleted'],
         ];
         console.log(attributes.join(','));
         return callback();
@@ -238,6 +292,8 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'changeset_comment_words',
         'has_changeset_imagery_used',
         'user_name_special_characters',
+        'primary_tags_created',
+        'primary_tags_deleted',
     ]
     console.log(header.join(','));
     let features = [];
