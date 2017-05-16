@@ -178,6 +178,7 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
             userDetails['extra']['total_discussions'],
             userDetails['extra']['changesets_with_discussions'],
             changesetComment.length > 0 ? 'True' : 'False',
+            changesetComment.length > 0 ? changesetComment.split(' ').length : 0,
         ];
         console.log(attributes.join(','));
         return callback();
@@ -208,6 +209,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'user_discussions',
         'user_changesets_with_discussions',
         'changeset_comment',
+        'changeset_comment_words',
     ]
     console.log(header.join(','));
     let features = [];
