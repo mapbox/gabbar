@@ -150,6 +150,15 @@ function getChangesetImageryUsed(realChangeset) {
     return imageryUsed;
 }
 
+function getSpecialCharacterCount(s) {
+    let count = 0;
+    let specials = '0123456789~`!#$%^&*+=-[]\\\';,/{}|\":<>?';
+    for (let character of s) {
+        if (specials.indexOf(s) !== -1) count += 1;
+    }
+    return count;
+}
+
 function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
     try {
         let changesetID = row[0];
@@ -161,6 +170,7 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
         let changesetImageryUsed = getChangesetImageryUsed(realChangeset);
 
         let userName = row[1];
+        let specialCharacterCount = getSpecialCharacterCount(userName);
         let userDetailsPath = path.join(userDetailsDir, userName + '.json');
         let userDetails = JSON.parse(fs.readFileSync(userDetailsPath));
 
@@ -194,6 +204,7 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
             changesetComment.length > 0 ? 1 : 0,
             changesetComment.length > 0 ? changesetComment.split(' ').length : 0,
             changesetImageryUsed.length > 0 ? 1 : 0,
+            specialCharacterCount,
         ];
         console.log(attributes.join(','));
         return callback();
@@ -226,6 +237,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'has_changeset_comment',
         'changeset_comment_words',
         'has_changeset_imagery_used',
+        'user_name_special_characters',
     ]
     console.log(header.join(','));
     let features = [];
