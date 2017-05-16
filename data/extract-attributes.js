@@ -188,9 +188,9 @@ function getSpecialCharacterCount(s) {
     return count;
 }
 
-function getPrimaryTags(tags) {
+function getPrimaryTags(feature) {
     let primaryTags = [];
-    for (var tag in tags) {
+    for (var tag in feature.properties.tags) {
         if (PRIMARY_TAGS.indexOf(tag) !== -1) primaryTags.push(tag);
     }
     return primaryTags;
@@ -205,15 +205,15 @@ function getPrimaryTagActionCounts(features) {
     for (let versions of features) {
         let newVersion = versions[0];
         let action = newVersion.properties.action;
-        if (action === 'create') counts['created'] += getPrimaryTags(newVersion.properties.tags).length;
-        if (action === 'delete') counts['deleted'] += getPrimaryTags(newVersion.properties.tags).length;
+        if (action === 'create') counts['created'] += getPrimaryTags(newVersion).length;
+        if (action === 'delete') counts['deleted'] += getPrimaryTags(newVersion).length;
         if (action == 'modify') {
             let newTags = newVersion.properties.tags;
-            let newPrimaryTags = getPrimaryTags(newVersion.properties.tags);
+            let newPrimaryTags = getPrimaryTags(newVersion);
 
             let oldVersion = versions[1];
             let oldTags = oldVersion.properties.tags;
-            let oldPrimaryTags = getPrimaryTags(oldVersion.properties.tags);
+            let oldPrimaryTags = getPrimaryTags(oldVersion);
 
             for (let newPrimaryTag of newPrimaryTags) {
                 if (oldPrimaryTags.indexOf(newPrimaryTag) === -1) counts['created'] += 1;
@@ -225,6 +225,18 @@ function getPrimaryTagActionCounts(features) {
                 // Modifications are previously checked ^
                 // else if (newTags[oldPrimaryTag] !== oldTags[oldPrimaryTag]) counts['modified'] += 1;
             }
+        }
+    }
+    return counts;
+}
+
+function getPrimaryTagCounts(features) {
+    let counts = {};
+    for (let version of features) {
+        let primaryTags = getPrimaryTags(version[0]);
+        for (let primaryTag of primaryTags) {
+            if (!(primaryTag in counts)) counts[primaryTag] = 0;
+            counts[primaryTag] += 1;
         }
     }
     return counts;
@@ -253,6 +265,7 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
         let allFeatures = featuresCreated.concat(featuresModified, featuresDeleted);
         let featureTypeCounts = getFeatureTypeCounts(allFeatures);
         let primaryTagActionCounts = getPrimaryTagActionCounts(allFeatures);
+        let primaryTagCounts = getPrimaryTagCounts(allFeatures);
 
         let attributes = [
             changesetID,
@@ -281,6 +294,12 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
             primaryTagActionCounts['modified'],
             primaryTagActionCounts['deleted'],
         ];
+
+        // Concat primary tag counts.
+        for (let primaryTag of PRIMARY_TAGS) {
+            attributes.push(primaryTag in primaryTagCounts ? primaryTagCounts[primaryTag] : 0);
+        }
+
         console.log(attributes.join(','));
         return callback();
     } catch(error) {
@@ -317,6 +336,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'primary_tags_modified',
         'primary_tags_deleted',
     ]
+    for (let primaryTag of PRIMARY_TAGS) header.push(primaryTag);
     console.log(header.join(','));
     let features = [];
 
