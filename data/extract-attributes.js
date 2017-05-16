@@ -124,12 +124,27 @@ function getGeometryModifications(features) {
     return modifications;
 }
 
+function getChangesetComment(realChangeset) {
+    let comment = '';
+
+    let tags = realChangeset.metadata.tag;
+    for (let tag of tags) {
+        if (tag['k'] === 'comment') {
+            comment = tag['v'];
+            break;
+        }
+    }
+    return comment;
+}
+
 function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
     try {
         let changesetID = row[0];
         let changesetPath = path.join(realChangesetsDir, changesetID + '.json');
         let realChangeset = JSON.parse(fs.readFileSync(changesetPath));
         let changeset = parser(realChangeset);
+
+        let changesetComment = getChangesetComment(realChangeset);
 
         let userName = row[1];
         let userDetailsPath = path.join(userDetailsDir, userName + '.json');
@@ -162,6 +177,7 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
             userDetails['extra']['mapping_days'],
             userDetails['extra']['total_discussions'],
             userDetails['extra']['changesets_with_discussions'],
+            changesetComment.length > 0 ? 'True' : 'False',
         ];
         console.log(attributes.join(','));
         return callback();
@@ -190,7 +206,8 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'user_features',
         'user_mapping_days',
         'user_discussions',
-        'user_changesets_with_discussions'
+        'user_changesets_with_discussions',
+        'changeset_comment',
     ]
     console.log(header.join(','));
     let features = [];
