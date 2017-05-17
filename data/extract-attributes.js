@@ -263,42 +263,11 @@ function mergeTagsIntoProperties(features) {
     return mergedFeatures;
 }
 
-
-function getNullIslandCount(features) {
+function typeACompareFunction(compareFunction, features) {
     let count = 0;
     let result;
     for (let feature of features) {
-        result = nullIslandCF(feature[0], feature[1]);
-        if (result) count += 1;
-    }
-    return count;
-}
-
-function getAddedPlaceCount(features) {
-    let count = 0;
-    let result;
-    for (let feature of features) {
-        result = addedPlaceCF(feature[0], feature[1]);
-        if (result) count += 1;
-    }
-    return count;
-}
-
-function getCommonTagValuesCount(features) {
-    let count = 0;
-    let result;
-    for (let feature of features) {
-        result = commonTagValuesCF(feature[0], feature[1]);
-        if (result) count += 1;
-    }
-    return count;
-}
-
-function getDraggedHighwayWaterwayCount(features) {
-    let count = 0;
-    let result;
-    for (let feature of features) {
-        result = draggedHighwayWaterwayCF(feature[0], feature[1]);
+        result = compareFunction(feature[0], feature[1]);
         if (result) count += 1;
     }
     return count;
@@ -357,10 +326,10 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
             primaryTagActionCounts['created'],
             primaryTagActionCounts['modified'],
             primaryTagActionCounts['deleted'],
-            getNullIslandCount(allFeaturesMerged),
-            getAddedPlaceCount(allFeaturesMerged),
-            getCommonTagValuesCount(allFeaturesMerged),
-            getDraggedHighwayWaterwayCount(allFeaturesMerged),
+            typeACompareFunction(nullIslandCF, allFeaturesMerged),
+            typeACompareFunction(addedPlaceCF, allFeaturesMerged),
+            typeACompareFunction(commonTagValuesCF, allFeaturesMerged),
+            typeACompareFunction(draggedHighwayWaterwayCF, allFeaturesMerged),
         ];
 
         // Concat primary tag counts.
