@@ -11,6 +11,7 @@ const _ = require('underscore');
 const nullIslandCF = require('@mapbox/osm-compare/comparators/null_island.js');
 const addedPlaceCF = require('@mapbox/osm-compare/comparators/added_place.js');
 const commonTagValuesCF = require('@mapbox/osm-compare/comparators/common_tag_values.js');
+const draggedHighwayWaterwayCF = require('@mapbox/osm-compare/comparators/dragged_highway_waterway.js');
 
 if (!argv.changesets || !argv.realChangesets || !argv.userDetails) {
     console.log('');
@@ -293,6 +294,16 @@ function getCommonTagValuesCount(features) {
     return count;
 }
 
+function getDraggedHighwayWaterwayCount(features) {
+    let count = 0;
+    let result;
+    for (let feature of features) {
+        result = draggedHighwayWaterwayCF(feature[0], feature[1]);
+        if (result) count += 1;
+    }
+    return count;
+}
+
 function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
     try {
         let changesetID = row[0];
@@ -349,6 +360,7 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
             getNullIslandCount(allFeaturesMerged),
             getAddedPlaceCount(allFeaturesMerged),
             getCommonTagValuesCount(allFeaturesMerged),
+            getDraggedHighwayWaterwayCount(allFeaturesMerged),
         ];
 
         // Concat primary tag counts.
@@ -394,6 +406,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'cf_null_island',
         'cf_added_place',
         'cf_common_tag_values',
+        'cf_dragged_highway_waterway',
     ]
     for (let primaryTag of PRIMARY_TAGS) header.push(primaryTag);
     console.log(header.join(','));
