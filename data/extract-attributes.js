@@ -14,6 +14,7 @@ const commonTagValuesCF = require('@mapbox/osm-compare/comparators/common_tag_va
 const draggedHighwayWaterwayCF = require('@mapbox/osm-compare/comparators/dragged_highway_waterway.js');
 const largeBuildingCF = require('@mapbox/osm-compare/comparators/large_building.js');
 const majorNameModificationCF = require('@mapbox/osm-compare/comparators/major_name_modification.js');
+const majorRoadChangedCF = require('@mapbox/osm-compare/comparators/major_road_changed.js');
 
 if (!argv.changesets || !argv.realChangesets || !argv.userDetails) {
     console.log('');
@@ -334,6 +335,7 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
             typeACompareFunction(draggedHighwayWaterwayCF, allFeaturesMerged),
             typeACompareFunction(largeBuildingCF, allFeaturesMerged),
             typeACompareFunction(majorNameModificationCF, allFeaturesMerged),
+            typeACompareFunction(majorRoadChangedCF, allFeaturesMerged),
         ];
 
         // Concat primary tag counts.
@@ -382,6 +384,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'cf_dragged_highway_waterway',
         'cf_large_building',
         'cf_major_name_modification',
+        'cf_major_road_changed',
     ]
     for (let primaryTag of PRIMARY_TAGS) header.push(primaryTag);
     console.log(header.join(','));
