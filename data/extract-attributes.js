@@ -33,6 +33,35 @@ let EDITORS = [
     'GNOME'  // For amishas157! :wave:
 ];
 
+var PRIMARY_TAGS = [
+    'aerialway',
+    'aeroway',
+    'amenity',
+    'barrier',
+    'boundary',
+    'building',
+    'craft',
+    'emergency',
+    'geological',
+    'highway',
+    'historic',
+    'landuse',
+    'leisure',
+    'man_made',
+    'military',
+    'natural',
+    'office',
+    'place',
+    'power',
+    'public_transport',
+    'railway',
+    'route',
+    'shop',
+    'sport',
+    'tourism',
+    'waterway'
+];
+
 function getChangesetEditor(realChangeset) {
     let changesetEditor = '';
 
@@ -124,6 +153,95 @@ function getGeometryModifications(features) {
     return modifications;
 }
 
+function getChangesetComment(realChangeset) {
+    let comment = '';
+
+    let tags = realChangeset.metadata.tag;
+    for (let tag of tags) {
+        if (tag['k'] === 'comment') {
+            comment = tag['v'];
+            break;
+        }
+    }
+    return comment;
+}
+
+function getChangesetImageryUsed(realChangeset) {
+    let imageryUsed = '';
+
+    let tags = realChangeset.metadata.tag;
+    for (let tag of tags) {
+        if (tag['k'] === 'imagery_used') {
+            imageryUsed = tag['v'];
+            break;
+        }
+    }
+    return imageryUsed;
+}
+
+function getSpecialCharacterCount(s) {
+    let count = 0;
+    let specials = '0123456789~`!#$%^&*+=-[]\\\';,/{}|\":<>?';
+    for (let character of s) {
+        if (specials.indexOf(character) !== -1) count += 1;
+    }
+    return count;
+}
+
+function getPrimaryTags(feature) {
+    let primaryTags = [];
+    for (var tag in feature.properties.tags) {
+        if (PRIMARY_TAGS.indexOf(tag) !== -1) primaryTags.push(tag);
+    }
+    return primaryTags;
+}
+
+function getPrimaryTagActionCounts(features) {
+    let counts = {
+        'created': 0,
+        'modified': 0,
+        'deleted': 0
+    }
+    for (let versions of features) {
+        let newVersion = versions[0];
+        let action = newVersion.properties.action;
+        if (action === 'create') counts['created'] += getPrimaryTags(newVersion).length;
+        if (action === 'delete') counts['deleted'] += getPrimaryTags(newVersion).length;
+        if (action == 'modify') {
+            let newTags = newVersion.properties.tags;
+            let newPrimaryTags = getPrimaryTags(newVersion);
+
+            let oldVersion = versions[1];
+            let oldTags = oldVersion.properties.tags;
+            let oldPrimaryTags = getPrimaryTags(oldVersion);
+
+            for (let newPrimaryTag of newPrimaryTags) {
+                if (oldPrimaryTags.indexOf(newPrimaryTag) === -1) counts['created'] += 1;
+                else if (newTags[newPrimaryTag] !== oldTags[newPrimaryTag]) counts['modified'] += 1;
+            }
+
+            for (let oldPrimaryTag of oldPrimaryTags) {
+                if (newPrimaryTags.indexOf(oldPrimaryTag) === -1) counts['created'] += 1;
+                // Modifications are previously checked ^
+                // else if (newTags[oldPrimaryTag] !== oldTags[oldPrimaryTag]) counts['modified'] += 1;
+            }
+        }
+    }
+    return counts;
+}
+
+function getPrimaryTagCounts(features) {
+    let counts = {};
+    for (let version of features) {
+        let primaryTags = getPrimaryTags(version[0]);
+        for (let primaryTag of primaryTags) {
+            if (!(primaryTag in counts)) counts[primaryTag] = 0;
+            counts[primaryTag] += 1;
+        }
+    }
+    return counts;
+}
+
 function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
     try {
         let changesetID = row[0];
@@ -131,7 +249,11 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
         let realChangeset = JSON.parse(fs.readFileSync(changesetPath));
         let changeset = parser(realChangeset);
 
+        let changesetComment = getChangesetComment(realChangeset);
+        let changesetImageryUsed = getChangesetImageryUsed(realChangeset);
+
         let userName = row[1];
+        let specialCharacterCount = getSpecialCharacterCount(userName);
         let userDetailsPath = path.join(userDetailsDir, userName + '.json');
         let userDetails = JSON.parse(fs.readFileSync(userDetailsPath));
 
@@ -142,6 +264,8 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
 
         let allFeatures = featuresCreated.concat(featuresModified, featuresDeleted);
         let featureTypeCounts = getFeatureTypeCounts(allFeatures);
+        let primaryTagActionCounts = getPrimaryTagActionCounts(allFeatures);
+        let primaryTagCounts = getPrimaryTagCounts(allFeatures);
 
         let attributes = [
             changesetID,
@@ -162,7 +286,20 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
             userDetails['extra']['mapping_days'],
             userDetails['extra']['total_discussions'],
             userDetails['extra']['changesets_with_discussions'],
+            changesetComment.length > 0 ? 1 : 0,
+            changesetComment.length > 0 ? changesetComment.split(' ').length : 0,
+            changesetImageryUsed.length > 0 ? 1 : 0,
+            specialCharacterCount,
+            primaryTagActionCounts['created'],
+            primaryTagActionCounts['modified'],
+            primaryTagActionCounts['deleted'],
         ];
+
+        // Concat primary tag counts.
+        for (let primaryTag of PRIMARY_TAGS) {
+            attributes.push(primaryTag in primaryTagCounts ? primaryTagCounts[primaryTag] : 0);
+        }
+
         console.log(attributes.join(','));
         return callback();
     } catch(error) {
@@ -190,8 +327,16 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'user_features',
         'user_mapping_days',
         'user_discussions',
-        'user_changesets_with_discussions'
+        'user_changesets_with_discussions',
+        'has_changeset_comment',
+        'changeset_comment_words',
+        'has_changeset_imagery_used',
+        'user_name_special_characters',
+        'primary_tags_created',
+        'primary_tags_modified',
+        'primary_tags_deleted',
     ]
+    for (let primaryTag of PRIMARY_TAGS) header.push(primaryTag);
     console.log(header.join(','));
     let features = [];
 
