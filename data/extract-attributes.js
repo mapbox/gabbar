@@ -9,6 +9,7 @@ const turf = require('@turf/turf');
 const parser = require('real-changesets-parser');
 const _ = require('underscore');
 const nullIslandCF = require('@mapbox/osm-compare/comparators/null_island.js');
+const addedPlaceCF = require('@mapbox/osm-compare/comparators/added_place.js');
 
 if (!argv.changesets || !argv.realChangesets || !argv.userDetails) {
     console.log('');
@@ -253,6 +254,16 @@ function getNullIslandCount(features) {
     return count;
 }
 
+function getAddedPlaceCount(features) {
+    let count = 0;
+    let result;
+    for (let feature of features) {
+        result = addedPlaceCF(feature[0], feature[1]);
+        if (result) count += 1;
+    }
+    return count;
+}
+
 function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
     try {
         let changesetID = row[0];
@@ -305,6 +316,7 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
             primaryTagActionCounts['modified'],
             primaryTagActionCounts['deleted'],
             getNullIslandCount(allFeatures),
+            getAddedPlaceCount(allFeatures),
         ];
 
         // Concat primary tag counts.
@@ -348,6 +360,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'primary_tags_modified',
         'primary_tags_deleted',
         'cf_null_island',
+        'cf_added_place',
     ]
     for (let primaryTag of PRIMARY_TAGS) header.push(primaryTag);
     console.log(header.join(','));
