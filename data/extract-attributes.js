@@ -183,7 +183,7 @@ function getSpecialCharacterCount(s) {
     let count = 0;
     let specials = '0123456789~`!#$%^&*+=-[]\\\';,/{}|\":<>?';
     for (let character of s) {
-        if (specials.indexOf(s) !== -1) count += 1;
+        if (specials.indexOf(character) !== -1) count += 1;
     }
     return count;
 }
