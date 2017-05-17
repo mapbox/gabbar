@@ -244,6 +244,24 @@ function getPrimaryTagCounts(features) {
     return counts;
 }
 
+function mergeTagsIntoProperties(features) {
+    let mergedFeatures = [];
+    for (let versions of features) {
+        let newVersion = versions[0];
+        let oldVersion = versions[1];
+
+        if (newVersion && (Object.keys(newVersion.properties.tags).length > 0)) {
+            newVersion.properties = Object.assign(newVersion.properties, newVersion.properties.tags);
+        }
+        if (oldVersion && (Object.keys(oldVersion.properties.tags).length > 0)) {
+            oldVersion.properties = Object.assign(oldVersion.properties, oldVersion.properties.tags);
+        }
+        mergedFeatures.push([newVersion, oldVersion]);
+    }
+    return mergedFeatures;
+}
+
+
 function getNullIslandCount(features) {
     let count = 0;
     let result;
@@ -289,6 +307,8 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
         let primaryTagActionCounts = getPrimaryTagActionCounts(allFeatures);
         let primaryTagCounts = getPrimaryTagCounts(allFeatures);
 
+        let allFeaturesMerged = mergeTagsIntoProperties(allFeatures);
+
         let attributes = [
             changesetID,
             row[15],
@@ -315,8 +335,8 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
             primaryTagActionCounts['created'],
             primaryTagActionCounts['modified'],
             primaryTagActionCounts['deleted'],
-            getNullIslandCount(allFeatures),
-            getAddedPlaceCount(allFeatures),
+            getNullIslandCount(allFeaturesMerged),
+            getAddedPlaceCount(allFeaturesMerged),
         ];
 
         // Concat primary tag counts.
