@@ -8,15 +8,7 @@ const queue = require('d3-queue').queue;
 const turf = require('@turf/turf');
 const parser = require('real-changesets-parser');
 const _ = require('underscore');
-
-// Prepare naughty words list.
-var NAUGHTY_WORDS = [];
-let naughtyWordsLanguages = [
-    'ar', 'zh', 'cs', 'da', 'nl', 'en', 'eo', 'fi', 'fr', 'de', 'hi', 'hu', 'it', 'ja', 'tlh', 'ko', 'no',
-    'fa', 'pl', 'pt', 'ru', 'es', 'sv', 'th', 'tr'];
-for (let naughtyWordsLanguage of naughtyWordsLanguages) {
-    NAUGHTY_WORDS = NAUGHTY_WORDS.concat(require('naughty-words/' + naughtyWordsLanguage + '.json'));
-}
+const moment = require('moment');
 
 if (!argv.changesets || !argv.realChangesetsDir || !argv.userDetailsDir) {
     console.log('');
@@ -29,6 +21,44 @@ if (!argv.changesets || !argv.realChangesetsDir || !argv.userDetailsDir) {
     console.log('');
     process.exit(0);
 }
+
+// Prepare naughty words list.
+var NAUGHTY_WORDS = [];
+let naughtyWordsLanguages = [
+    'ar', 'zh', 'cs', 'da', 'nl', 'en', 'eo', 'fi', 'fr', 'de', 'hi', 'hu', 'it', 'ja', 'tlh', 'ko', 'no',
+    'fa', 'pl', 'pt', 'ru', 'es', 'sv', 'th', 'tr'];
+for (let naughtyWordsLanguage of naughtyWordsLanguages) {
+    NAUGHTY_WORDS = NAUGHTY_WORDS.concat(require('naughty-words/' + naughtyWordsLanguage + '.json'));
+}
+
+var PRIMARY_TAGS = [
+    'aerialway',
+    'aeroway',
+    'amenity',
+    'barrier',
+    'boundary',
+    'building',
+    'craft',
+    'emergency',
+    'geological',
+    'highway',
+    'historic',
+    'landuse',
+    'leisure',
+    'man_made',
+    'military',
+    'natural',
+    'office',
+    'place',
+    'power',
+    'public_transport',
+    'railway',
+    'route',
+    'shop',
+    'sport',
+    'tourism',
+    'waterway'
+];
 
 let EDITORS = [
     'iD',
@@ -128,7 +158,7 @@ function getNaughtyWordsCount(s) {
     let count = 0;
     let words = s.split(' ');
     for (let word of words) {
-        if (NAUGHTY_WORDS.indexOf(word) !== -1) count += 1;
+        if (NAUGHTY_WORDS.indexOf(word.toLowerCase()) !== -1) count += 1;
     }
     return count;
 }
@@ -152,6 +182,84 @@ function checkNonOpenDataSource(sources) {
     return false;
 }
 
+function getFeatureVersion(feature) {
+    let newVersion = feature[0];
+    return newVersion.properties.version;
+}
+
+function getFeatureNameTranslations(feature) {
+    let translations = [];
+    let newVersion = feature[0];
+    let tags = newVersion.properties.tags;
+    for (var tag in tags) {
+        if (tag.indexOf('name') !== -1) translations.push(newVersion.properties.tags[tag]);
+    }
+    return translations;
+}
+
+function getDaysSinceLastEdit(feature) {
+    let newVersion = feature[0];
+    let oldVersion = feature[1];
+
+    return moment(newVersion.properties.timestamp).diff(moment(oldVersion.properties.timestamp), 'days');
+}
+
+function getPrimaryTags(feature) {
+    let newVersion = feature[0];
+    let primaryTags = [];
+    for (var tag in newVersion.properties.tags) {
+        if (PRIMARY_TAGS.indexOf(tag) !== -1) primaryTags.push(tag);
+    }
+    return primaryTags;
+}
+
+function getPrimaryTagsCount(primaryTags) {
+    let counts = [];
+    for (let tag of PRIMARY_TAGS) counts.push(0);
+
+    for (var i = 0; i < PRIMARY_TAGS.length; i++) {
+        if (primaryTags.indexOf(PRIMARY_TAGS[i]) !== -1) counts[i] += 1;
+    }
+    return counts;
+}
+
+function getFeatureArea(feature) {
+    return parseInt(turf.area(feature));
+}
+
+function getTagsCreated(feature) {
+    let tags = [];
+    let newVersionTags = feature[0].properties.tags;
+    let oldVersionTags = feature[1].properties.tags;
+
+    for (var tag in newVersionTags) {
+        if (!(tag in oldVersionTags)) tags.push(tag);
+    }
+    return tags;
+}
+
+function getTagsModified(feature) {
+    let tags = [];
+    let newVersionTags = feature[0].properties.tags;
+    let oldVersionTags = feature[1].properties.tags;
+
+    for (var tag in newVersionTags) {
+        if ((tag in oldVersionTags) && (newVersionTags[tag] !== oldVersionTags[tag])) tags.push(tag);
+    }
+    return tags;
+}
+
+function getTagsDeleted(feature) {
+    let tags = [];
+    let newVersionTags = feature[0].properties.tags;
+    let oldVersionTags = feature[1].properties.tags;
+
+    for (var tag in oldVersionTags) {
+        if (!(tag in newVersionTags)) tags.push(tag);
+    }
+    return tags;
+}
+
 function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
     let changesetID = row[0];
     let userName = row[1];
@@ -164,30 +272,61 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
     let featuresCreated = getFeaturesByAction(changeset, 'create');
     let featuresModified = getFeaturesByAction(changeset, 'modify');
     let featuresDeleted = getFeaturesByAction(changeset, 'delete');
-    let allFeatures = featuresCreated.concat(featuresModified, featuresDeleted);
+    let features = featuresCreated.concat(featuresModified, featuresDeleted);
 
     let changesetEditorCounts = getChangesetEditorCounts(realChangeset);
     let changesetImageryUsed = getChangesetImageryUsed(realChangeset);
     let changesetSource = getChangesetSource(realChangeset);
     let changesetComment = getChangesetComment(realChangeset);
     let changesetCommentNaughtyWordsCount = getNaughtyWordsCount(changesetComment, NAUGHTY_WORDS);
-    let nonOpenDataSource = checkNonOpenDataSource([changesetSource, changesetComment, changesetImageryUsed])
+    let nonOpenDataSource = checkNonOpenDataSource([changesetSource, changesetComment, changesetImageryUsed]);
 
-    let attributes = [
-        changesetID,
-        harmful,
-        featuresCreated.length,
-        featuresModified.length,
-        featuresDeleted.length,
-        changesetImageryUsed.length ? 1 : 0,
-        changesetSource.length ? 1 : 0,
-        changesetComment.length > 0 ? changesetComment.split(' ').length : 0,
-        changesetCommentNaughtyWordsCount,
-        getBBOXArea(realChangeset),
-        nonOpenDataSource ? 1 : 0,
-    ];
-    for (let count of changesetEditorCounts) attributes.push(count);
-    console.log(attributes.join(','));
+    for (let feature of features) {
+        let featureNameTranslations = getFeatureNameTranslations(feature);
+        let featureNameNaughtyWordsCount = 0;
+        for (let translation of featureNameTranslations) {
+            featureNameNaughtyWordsCount += getNaughtyWordsCount(translation);
+        }
+        let featureDaysSinceLastEdit = getDaysSinceLastEdit(feature);
+        let primaryTags = getPrimaryTags(feature);
+        let primaryTagsCount = getPrimaryTagsCount(primaryTags);
+
+        let tagsCreated = getTagsCreated(feature);
+        let tagsModified = getTagsModified(feature);
+        let tagsDeleted = getTagsDeleted(feature);
+
+        let attributes = [
+            changesetID,
+            harmful,
+            featuresCreated.length,
+            featuresModified.length,
+            featuresDeleted.length,
+            changesetImageryUsed.length ? 1 : 0,
+            changesetSource.length ? 1 : 0,
+            changesetComment.length > 0 ? changesetComment.split(' ').length : 0,
+            changesetCommentNaughtyWordsCount,
+            getBBOXArea(realChangeset),
+            nonOpenDataSource ? 1 : 0,
+            getFeatureVersion(feature),
+            featureNameNaughtyWordsCount,
+            featureDaysSinceLastEdit,
+            primaryTags.length,
+            getFeatureArea(feature[0]),
+            getFeatureArea(feature[1]),
+            Object.keys(feature[0].properties.tags).length,
+            featureNameTranslations.length,
+            feature[0].properties.tags.website ? 1 : 0,
+            feature[0].properties.tags.wikidata ? 1 : 0,
+            feature[0].properties.tags.wikipedia ? 1 : 0,
+            tagsCreated.length,
+            tagsModified.length,
+            tagsDeleted.length,
+            tagsCreated.length + tagsModified.length + tagsDeleted.length,
+        ];
+        for (let count of changesetEditorCounts) attributes.push(count);
+        for (let count of primaryTagsCount) attributes.push(count);
+        console.log(attributes.join(','));
+    }
     return callback();
 }
 
@@ -206,8 +345,24 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'changeset_comment_naughty_words_count',
         'changeset_bbox_area',
         'changeset_non_open_data_source',
+        'feature_version',
+        'feature_name_naughty_words_count',
+        'feature_days_since_last_edit',
+        'feature_primary_tags',
+        'feature_area',
+        'feature_old_area',
+        'feature_property_tags',
+        'feature_name_translations_count',
+        'feature_has_website',
+        'feature_has_wikidata',
+        'feature_has_wikipedia',
+        'feature_tags_created_count',
+        'feature_tags_modified_count',
+        'feature_tags_deleted_count',
+        'feature_tags_distance',
     ];
     for (let editor of EDITORS) header.push(editor);
+    for (let tag of PRIMARY_TAGS) header.push(tag);
     console.log(header.join(','));
 
     // Starting from the second row, skipping the header.
