@@ -9,6 +9,15 @@ const turf = require('@turf/turf');
 const parser = require('real-changesets-parser');
 const _ = require('underscore');
 
+// Prepare naughty words list.
+var NAUGHTY_WORDS = [];
+let naughtyWordsLanguages = [
+    'ar', 'zh', 'cs', 'da', 'nl', 'en', 'eo', 'fi', 'fr', 'de', 'hi', 'hu', 'it', 'ja', 'tlh', 'ko', 'no',
+    'fa', 'pl', 'pt', 'ru', 'es', 'sv', 'th', 'tr'];
+for (let naughtyWordsLanguage of naughtyWordsLanguages) {
+    NAUGHTY_WORDS = NAUGHTY_WORDS.concat(require('naughty-words/' + naughtyWordsLanguage + '.json'));
+}
+
 if (!argv.changesets || !argv.realChangesetsDir || !argv.userDetailsDir) {
     console.log('');
     console.log('USAGE: node extract-attributes.js OPTIONS');
@@ -91,6 +100,58 @@ function getChangesetImageryUsed(realChangeset) {
     return imageryUsed;
 }
 
+function getChangesetSource(realChangeset) {
+    let source = '';
+    let tags = realChangeset.metadata.tag;
+    for (let tag of tags) {
+        if (tag['k'] === 'source') {
+            source = tag['v'];
+            break;
+        }
+    }
+    return source;
+}
+
+function getChangesetComment(realChangeset) {
+    let comment = '';
+    let tags = realChangeset.metadata.tag;
+    for (let tag of tags) {
+        if (tag['k'] === 'comment') {
+            comment = tag['v'];
+            break;
+        }
+    }
+    return comment;
+}
+
+function getNaughtyWordsCount(s) {
+    let count = 0;
+    let words = s.split(' ');
+    for (let word of words) {
+        if (NAUGHTY_WORDS.indexOf(word) !== -1) count += 1;
+    }
+    return count;
+}
+
+function getBBOXArea(realChangeset) {
+    let meta = realChangeset['metadata'];
+    let bbox = [meta['min_lat'], meta['min_lon'], meta['max_lat'], meta['max_lon']].map(parseFloat);
+    var polygon = turf.bboxPolygon(bbox);
+    return parseInt(turf.area(polygon));
+}
+
+function checkNonOpenDataSource(sources) {
+    let nonOpenDataSources = ['google'];
+
+    for (let source of sources) {
+        source = source.toLowerCase();
+        for (let nonOpenDataSource of nonOpenDataSources) {
+            if (source.indexOf(nonOpenDataSource) !== -1) return true;
+        }
+    }
+    return false;
+}
+
 function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
     let changesetID = row[0];
     let userName = row[1];
@@ -106,7 +167,11 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
     let allFeatures = featuresCreated.concat(featuresModified, featuresDeleted);
 
     let changesetEditorCounts = getChangesetEditorCounts(realChangeset);
-    let imageryUsed = getChangesetImageryUsed(realChangeset);
+    let changesetImageryUsed = getChangesetImageryUsed(realChangeset);
+    let changesetSource = getChangesetSource(realChangeset);
+    let changesetComment = getChangesetComment(realChangeset);
+    let changesetCommentNaughtyWordsCount = getNaughtyWordsCount(changesetComment, NAUGHTY_WORDS);
+    let nonOpenDataSource = checkNonOpenDataSource([changesetSource, changesetComment, changesetImageryUsed])
 
     let attributes = [
         changesetID,
@@ -114,7 +179,12 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
         featuresCreated.length,
         featuresModified.length,
         featuresDeleted.length,
-        imageryUsed.length ? 1 : 0
+        changesetImageryUsed.length ? 1 : 0,
+        changesetSource.length ? 1 : 0,
+        changesetComment.length > 0 ? changesetComment.split(' ').length : 0,
+        changesetCommentNaughtyWordsCount,
+        getBBOXArea(realChangeset),
+        nonOpenDataSource ? 1 : 0,
     ];
     for (let count of changesetEditorCounts) attributes.push(count);
     console.log(attributes.join(','));
@@ -130,7 +200,12 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'changeset_features_created',
         'changeset_features_modified',
         'changeset_features_deleted',
-        'changeset_has_imagery_used'
+        'changeset_has_imagery_used',
+        'changeset_has_source',
+        'changeset_comment_number_of_words',
+        'changeset_comment_naughty_words_count',
+        'changeset_bbox_area',
+        'changeset_non_open_data_source',
     ];
     for (let editor of EDITORS) header.push(editor);
     console.log(header.join(','));
