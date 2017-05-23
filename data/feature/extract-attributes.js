@@ -260,14 +260,21 @@ function getTagsDeleted(feature) {
     return tags;
 }
 
+function getSpecialCharactersCount(s) {
+    let count = 0;
+    let specials = '0123456789~`!#$%^&*+=-[]\\\';,/{}|\":<>?';
+    for (let character of s) {
+        if (specials.indexOf(character) !== -1) count += 1;
+    }
+    return count;
+}
+
 function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
     let changesetID = row[0];
-    let userName = row[1];
     let harmful = row[15] === 'True' ? 1 : 0;
 
     let realChangeset = JSON.parse(fs.readFileSync(path.join(realChangesetsDir, changesetID + '.json')));
     let changeset = parser(realChangeset);
-    let userDetails = JSON.parse(fs.readFileSync(path.join(userDetailsDir, userName + '.json')));
 
     let featuresCreated = getFeaturesByAction(changeset, 'create');
     let featuresModified = getFeaturesByAction(changeset, 'modify');
@@ -280,6 +287,11 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
     let changesetComment = getChangesetComment(realChangeset);
     let changesetCommentNaughtyWordsCount = getNaughtyWordsCount(changesetComment, NAUGHTY_WORDS);
     let nonOpenDataSource = checkNonOpenDataSource([changesetSource, changesetComment, changesetImageryUsed]);
+
+    let userName = row[1];
+    let userNameNaughtyWordsCount = getNaughtyWordsCount(userName);
+    let userDetails = JSON.parse(fs.readFileSync(path.join(userDetailsDir, userName + '.json')));
+    let userNameSpecialCharactersCount = getSpecialCharactersCount(userName);
 
     for (let feature of features) {
         let featureNameTranslations = getFeatureNameTranslations(feature);
@@ -307,6 +319,13 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
             changesetCommentNaughtyWordsCount,
             getBBOXArea(realChangeset),
             nonOpenDataSource ? 1 : 0,
+            userNameNaughtyWordsCount,
+            userNameSpecialCharactersCount,
+            userDetails['changeset_count'],
+            userDetails['num_changes'],
+            userDetails['extra']['mapping_days'],
+            userDetails['extra']['total_discussions'],
+            userDetails['extra']['changesets_with_discussions'],
             getFeatureVersion(feature),
             featureNameNaughtyWordsCount,
             featureDaysSinceLastEdit,
@@ -345,6 +364,13 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'changeset_comment_naughty_words_count',
         'changeset_bbox_area',
         'changeset_non_open_data_source',
+        'user_name_naughty_words_count',
+        'user_name_special_characters_count',
+        'user_changesets_count',
+        'user_features_count',
+        'user_mapping_days_count',
+        'user_discussions_count',
+        'user_changesets_with_discussions_count',
         'feature_version',
         'feature_name_naughty_words_count',
         'feature_days_since_last_edit',
