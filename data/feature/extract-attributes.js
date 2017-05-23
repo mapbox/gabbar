@@ -152,13 +152,12 @@ function checkNonOpenDataSource(sources) {
     return false;
 }
 
-function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
+function extractChangesetAttributes(row, realChangesetsDir) {
     let changesetID = row[0];
     let userName = row[1];
     let harmful = row[15] === 'True' ? 1 : 0;
 
     let realChangeset = JSON.parse(fs.readFileSync(path.join(realChangesetsDir, changesetID + '.json')));
-    let userDetails = JSON.parse(fs.readFileSync(path.join(userDetailsDir, userName + '.json')));
     let changeset = parser(realChangeset);
 
     let featuresCreated = getFeaturesByAction(changeset, 'create');
@@ -174,8 +173,6 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
     let nonOpenDataSource = checkNonOpenDataSource([changesetSource, changesetComment, changesetImageryUsed])
 
     let attributes = [
-        changesetID,
-        harmful,
         featuresCreated.length,
         featuresModified.length,
         featuresDeleted.length,
@@ -187,6 +184,24 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
         nonOpenDataSource ? 1 : 0,
     ];
     for (let count of changesetEditorCounts) attributes.push(count);
+    return attributes;
+}
+
+function getUserAttributes(row, user, userDetailsDir) {
+    let userDetails = JSON.parse(fs.readFileSync(path.join(userDetailsDir, userName + '.json')));
+}
+
+function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
+    let changesetID = row[0];
+    let userName = row[1];
+    let harmful = row[15] === 'True' ? 1 : 0;
+
+    let changesetAttributes = extractChangesetAttributes(row, realChangesetsDir);
+    let attributes = [
+        changesetID,
+        harmful
+    ].concat(changesetAttributes);
+
     console.log(attributes.join(','));
     return callback();
 }
