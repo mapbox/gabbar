@@ -29,7 +29,7 @@ function downloadAndSaveURL(url, filepath, callback) {
 
     console.log(url);
     request(url, (error, response, body) => {
-        if (error || response.statusCode !== 200) return callback(error);
+        if (error || response.statusCode !== 200) return callback();
 
         fs.writeFileSync(filepath, body);
         return callback();
@@ -37,7 +37,7 @@ function downloadAndSaveURL(url, filepath, callback) {
 }
 
 csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
-    let q = queue(5);
+    let q = queue(1);
     let changesetID, url, filepath;
 
     for (var i = 0; i < changesets.length; i++) {
