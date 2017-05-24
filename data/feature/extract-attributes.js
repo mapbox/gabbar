@@ -270,89 +270,93 @@ function getSpecialCharactersCount(s) {
 }
 
 function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
-    let changesetID = row[0];
-    let harmful = row[15] === 'True' ? 1 : 0;
+    try {
+        let changesetID = row[0];
+        let harmful = row[15] === 'True' ? 1 : 0;
 
-    let realChangeset = JSON.parse(fs.readFileSync(path.join(realChangesetsDir, changesetID + '.json')));
-    let changeset = parser(realChangeset);
+        let realChangeset = JSON.parse(fs.readFileSync(path.join(realChangesetsDir, changesetID + '.json')));
+        let changeset = parser(realChangeset);
 
-    let featuresCreated = getFeaturesByAction(changeset, 'create');
-    let featuresModified = getFeaturesByAction(changeset, 'modify');
-    let featuresDeleted = getFeaturesByAction(changeset, 'delete');
-    let features = featuresCreated.concat(featuresModified, featuresDeleted);
+        let featuresCreated = getFeaturesByAction(changeset, 'create');
+        let featuresModified = getFeaturesByAction(changeset, 'modify');
+        let featuresDeleted = getFeaturesByAction(changeset, 'delete');
+        let features = featuresCreated.concat(featuresModified, featuresDeleted);
 
-    let changesetEditorCounts = getChangesetEditorCounts(realChangeset);
-    let changesetImageryUsed = getChangesetImageryUsed(realChangeset);
-    let changesetSource = getChangesetSource(realChangeset);
-    let changesetComment = getChangesetComment(realChangeset);
-    let changesetCommentNaughtyWordsCount = getNaughtyWordsCount(changesetComment, NAUGHTY_WORDS);
-    let nonOpenDataSource = checkNonOpenDataSource([changesetSource, changesetComment, changesetImageryUsed]);
+        let changesetEditorCounts = getChangesetEditorCounts(realChangeset);
+        let changesetImageryUsed = getChangesetImageryUsed(realChangeset);
+        let changesetSource = getChangesetSource(realChangeset);
+        let changesetComment = getChangesetComment(realChangeset);
+        let changesetCommentNaughtyWordsCount = getNaughtyWordsCount(changesetComment, NAUGHTY_WORDS);
+        let nonOpenDataSource = checkNonOpenDataSource([changesetSource, changesetComment, changesetImageryUsed]);
 
-    for (let feature of features) {
-        let userName = feature[0].properties['user'];
-        let userDetails = JSON.parse(fs.readFileSync(path.join(userDetailsDir, userName + '.json')));
+        for (let feature of features) {
+            let userName = feature[0].properties['user'];
+            let userDetails = JSON.parse(fs.readFileSync(path.join(userDetailsDir, userName + '.json')));
 
-        let oldUserName = feature[1].properties['user'];
-        let oldUserDetails = JSON.parse(fs.readFileSync(path.join(userDetailsDir, oldUserName + '.json')));
+            let oldUserName = feature[1].properties['user'];
+            let oldUserDetails = JSON.parse(fs.readFileSync(path.join(userDetailsDir, oldUserName + '.json')));
 
-        let featureNameTranslations = getFeatureNameTranslations(feature);
-        let featureNameNaughtyWordsCount = 0;
-        for (let translation of featureNameTranslations) {
-            featureNameNaughtyWordsCount += getNaughtyWordsCount(translation);
+            let featureNameTranslations = getFeatureNameTranslations(feature);
+            let featureNameNaughtyWordsCount = 0;
+            for (let translation of featureNameTranslations) {
+                featureNameNaughtyWordsCount += getNaughtyWordsCount(translation);
+            }
+            let featureDaysSinceLastEdit = getDaysSinceLastEdit(feature);
+            let primaryTags = getPrimaryTags(feature);
+            let primaryTagsCount = getPrimaryTagsCount(primaryTags);
+
+            let tagsCreated = getTagsCreated(feature);
+            let tagsModified = getTagsModified(feature);
+            let tagsDeleted = getTagsDeleted(feature);
+
+            let attributes = [
+                changesetID,
+                harmful,
+                featuresCreated.length,
+                featuresModified.length,
+                featuresDeleted.length,
+                changesetImageryUsed.length ? 1 : 0,
+                changesetSource.length ? 1 : 0,
+                changesetComment.length > 0 ? changesetComment.split(' ').length : 0,
+                changesetCommentNaughtyWordsCount,
+                getBBOXArea(realChangeset),
+                nonOpenDataSource ? 1 : 0,
+                getNaughtyWordsCount(userName),
+                getSpecialCharactersCount(userName),
+                userDetails['changeset_count'],
+                userDetails['num_changes'],
+                userDetails['extra']['mapping_days'],
+                userDetails['extra']['total_discussions'],
+                userDetails['extra']['changesets_with_discussions'],
+                getNaughtyWordsCount(oldUserName),
+                getSpecialCharactersCount(oldUserName),
+                oldUserDetails['changeset_count'],
+                oldUserDetails['num_changes'],
+                oldUserDetails['extra']['mapping_days'],
+                oldUserDetails['extra']['total_discussions'],
+                oldUserDetails['extra']['changesets_with_discussions'],
+                getFeatureVersion(feature),
+                featureNameNaughtyWordsCount,
+                featureDaysSinceLastEdit,
+                primaryTags.length,
+                getFeatureArea(feature[0]),
+                getFeatureArea(feature[1]),
+                Object.keys(feature[0].properties.tags).length,
+                featureNameTranslations.length,
+                feature[0].properties.tags.website ? 1 : 0,
+                feature[0].properties.tags.wikidata ? 1 : 0,
+                feature[0].properties.tags.wikipedia ? 1 : 0,
+                tagsCreated.length,
+                tagsModified.length,
+                tagsDeleted.length,
+                tagsCreated.length + tagsModified.length + tagsDeleted.length,
+            ];
+            for (let count of changesetEditorCounts) attributes.push(count);
+            for (let count of primaryTagsCount) attributes.push(count);
+            console.log(attributes.join(','));
         }
-        let featureDaysSinceLastEdit = getDaysSinceLastEdit(feature);
-        let primaryTags = getPrimaryTags(feature);
-        let primaryTagsCount = getPrimaryTagsCount(primaryTags);
-
-        let tagsCreated = getTagsCreated(feature);
-        let tagsModified = getTagsModified(feature);
-        let tagsDeleted = getTagsDeleted(feature);
-
-        let attributes = [
-            changesetID,
-            harmful,
-            featuresCreated.length,
-            featuresModified.length,
-            featuresDeleted.length,
-            changesetImageryUsed.length ? 1 : 0,
-            changesetSource.length ? 1 : 0,
-            changesetComment.length > 0 ? changesetComment.split(' ').length : 0,
-            changesetCommentNaughtyWordsCount,
-            getBBOXArea(realChangeset),
-            nonOpenDataSource ? 1 : 0,
-            getNaughtyWordsCount(userName),
-            getSpecialCharactersCount(userName),
-            userDetails['changeset_count'],
-            userDetails['num_changes'],
-            userDetails['extra']['mapping_days'],
-            userDetails['extra']['total_discussions'],
-            userDetails['extra']['changesets_with_discussions'],
-            getNaughtyWordsCount(oldUserName),
-            getSpecialCharactersCount(oldUserName),
-            oldUserDetails['changeset_count'],
-            oldUserDetails['num_changes'],
-            oldUserDetails['extra']['mapping_days'],
-            oldUserDetails['extra']['total_discussions'],
-            oldUserDetails['extra']['changesets_with_discussions'],
-            getFeatureVersion(feature),
-            featureNameNaughtyWordsCount,
-            featureDaysSinceLastEdit,
-            primaryTags.length,
-            getFeatureArea(feature[0]),
-            getFeatureArea(feature[1]),
-            Object.keys(feature[0].properties.tags).length,
-            featureNameTranslations.length,
-            feature[0].properties.tags.website ? 1 : 0,
-            feature[0].properties.tags.wikidata ? 1 : 0,
-            feature[0].properties.tags.wikipedia ? 1 : 0,
-            tagsCreated.length,
-            tagsModified.length,
-            tagsDeleted.length,
-            tagsCreated.length + tagsModified.length + tagsDeleted.length,
-        ];
-        for (let count of changesetEditorCounts) attributes.push(count);
-        for (let count of primaryTagsCount) attributes.push(count);
-        console.log(attributes.join(','));
+    } catch (error) {
+        // NOTE: Nothing to do here.
     }
     return callback();
 }
