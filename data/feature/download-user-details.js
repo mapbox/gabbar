@@ -9,11 +9,12 @@ const request = require('request');
 const mkdirp = require('mkdirp');
 const parser = require('real-changesets-parser');
 
-if (!argv.realChangesetsDirectory || !argv.directory) {
+if (!argv.changesets || !argv.realChangesetsDirectory || !argv.directory) {
     console.log('');
     console.log('USAGE: node download-user-details.js OPTIONS');
     console.log('');
     console.log('  OPTIONS');
+    console.log('    --changesets                   changesets.csv      Changesets dump from osmcha');
     console.log('    --realChangesetsDirectory      real-changesets/    Directory with real changesets');
     console.log('    --directory                    downloads/          Directory to download real changesets to');
     console.log('');
@@ -36,29 +37,32 @@ function downloadAndSaveURL(url, filepath, callback) {
         return callback();
     });
 }
-let q = queue(5);
-let userName, url, filepath;
+csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
+    let q = queue(1);
+    let userName, url, filepath, realChangeset;
 
-let files = fs.readdirSync(argv.realChangesetsDirectory);
-for (let file of files) {
-    if (file === '.DS_Store') continue;
+    for (var i = 1; i < changesets.length; i++) {
+        let changeset = changesets[i];
 
-    let realChangeset = JSON.parse(fs.readFileSync(path.join(argv.realChangesetsDirectory, file)));
-    for (let feature of realChangeset.elements) {
-        let userName = feature.user;
-        filepath = path.join(argv.directory, 'user-details', userName + '.json');
-        url = 'https://osm-comments-api.mapbox.com/api/v1/users/name/' + encodeURIComponent(userName) + '?extra=true';
-        q.defer(downloadAndSaveURL, url, filepath);
+        try {
+            realChangeset = JSON.parse(fs.readFileSync(path.join(argv.realChangesetsDirectory, changeset[0] + '.json')));
+            for (let feature of realChangeset.elements) {
+                let userName = feature.user;
+                filepath = path.join(argv.directory, 'user-details', userName + '.json');
+                url = 'https://osm-comments-api.mapbox.com/api/v1/users/name/' + encodeURIComponent(userName) + '?extra=true';
+                q.defer(downloadAndSaveURL, url, filepath);
 
-        if (feature.old) {
-            let oldUserName = feature.old.user;
-            filepath = path.join(argv.directory, 'user-details', oldUserName + '.json');
-            url = 'https://osm-comments-api.mapbox.com/api/v1/users/name/' + encodeURIComponent(oldUserName) + '?extra=true';
-            q.defer(downloadAndSaveURL, url, filepath);
+                let oldUserName = feature.old.user;
+                filepath = path.join(argv.directory, 'user-details', oldUserName + '.json');
+                url = 'https://osm-comments-api.mapbox.com/api/v1/users/name/' + encodeURIComponent(oldUserName) + '?extra=true';
+                q.defer(downloadAndSaveURL, url, filepath);
+            }
+        } catch (error) {
+            continue;
         }
     }
-}
 
-q.awaitAll((error, results) => {
-    if (error) throw error;
+    q.awaitAll((error, results) => {
+        if (error) throw error;
+    });
 });
