@@ -189,10 +189,8 @@ function getFeatureVersion(feature) {
 
 function getFeatureNameTranslations(feature) {
     let translations = [];
-    let newVersion = feature[0];
-    let tags = newVersion.properties.tags;
-    for (var tag in tags) {
-        if (tag.indexOf('name') !== -1) translations.push(newVersion.properties.tags[tag]);
+    for (var tag in feature.properties.tags) {
+        if (tag.indexOf('name') !== -1) translations.push(feature.properties.tags[tag]);
     }
     return translations;
 }
@@ -304,7 +302,8 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
             let oldUserName = feature[1].properties['user'];
             let oldUserDetails = JSON.parse(fs.readFileSync(path.join(userDetailsDir, oldUserName + '.json')));
 
-            let featureNameTranslations = getFeatureNameTranslations(feature);
+            let featureNameTranslations = getFeatureNameTranslations(feature[0]);
+            let featureNameTranslationsOld = getFeatureNameTranslations(feature[1]);
             let featureDaysSinceLastEdit = getDaysSinceLastEdit(feature);
             let primaryTags = getPrimaryTags(feature);
             let primaryTagsCount = getPrimaryTagsCount(primaryTags);
@@ -353,6 +352,7 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
                 tagsModified.length,
                 tagsDeleted.length,
                 tagsCreated.length + tagsModified.length + tagsDeleted.length,
+                getFeatureNameNaughtyWordsCount(featureNameTranslations),
                 getFeatureArea(feature[1]),
             ];
             for (let count of changesetEditorCounts) attributes.push(count);
@@ -408,6 +408,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'feature_tags_modified_count',
         'feature_tags_deleted_count',
         'feature_tags_distance',
+        'feature_name_naughty_words_count_old',
         'feature_area_old',
     ];
     for (let editor of EDITORS) header.push(editor);
