@@ -309,6 +309,31 @@ function getPrimaryTagValuesPopularity(feature) {
     return [min, max, mean, stddev];
 }
 
+function getNumberOfSimilarTags(feature) {
+    let count = 0;
+    let tags = Object.keys(feature.properties.tags);
+    let primaryTags = getPrimaryTags(feature);
+
+    for (var i = 0; i < tags.length; i++) {
+        for (var j = 0; j < tags.length; j++) {
+            if (i === j) continue;
+
+            let isPrimaryTag = false;
+            for (let primaryTag of primaryTags) {
+                if ((tags[i].indexOf(primaryTag) !== -1) && (tags[j].indexOf(primaryTag) !== -1)) {
+                    isPrimaryTag = true;
+                    break;
+                }
+            }
+            if (isPrimaryTag && ((tags[i].indexOf('_') !== -1) || (tags[j].indexOf('_') !== -1)) && ((tags[i].indexOf(tags[j]) !== -1) || (tags[j].indexOf(tags[i]) !== -1))) count += 1;
+        }
+    }
+
+    // Things are counted twice, so divide by 2.
+    count = count / 2;
+    return count;
+}
+
 function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
     try {
         let changesetID = row[0];
@@ -348,10 +373,10 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
 
             let primaryTagValuesModifiedCounts = getPrimaryTagValuesModifiedCounts(feature);
 
-
             let featureNameTranslationsOld = getFeatureNameTranslations(feature[1]);
             let primaryTagsOld = getPrimaryTags(feature[1]);
             let primaryTagsCountOld = getPrimaryTagsCount(primaryTagsOld);
+            let similarTagsCountOld = getNumberOfSimilarTags(feature[1]);
 
             let attributes = [
                 changesetID,
@@ -393,7 +418,8 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
                 tagsModified.length,
                 tagsDeleted.length,
                 tagsCreated.length + tagsModified.length + tagsDeleted.length,
-                getFeatureNameNaughtyWordsCount(featureNameTranslations),
+                getNumberOfSimilarTags(feature[0]),
+                getFeatureNameNaughtyWordsCount(featureNameTranslationsOld),
                 primaryTagsOld.length,
                 getFeatureArea(feature[1]),
                 Object.keys(feature[1].properties.tags).length,
@@ -401,6 +427,7 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
                 feature[1].properties.tags.website ? 1 : 0,
                 feature[1].properties.tags.wikidata ? 1 : 0,
                 feature[1].properties.tags.wikipedia ? 1 : 0,
+                getNumberOfSimilarTags(feature[1]),
             ];
             for (let count of changesetEditorCounts) attributes.push(count);
             for (let count of primaryTagsCount) attributes.push(count);
@@ -459,6 +486,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'feature_tags_modified_count',
         'feature_tags_deleted_count',
         'feature_tags_distance',
+        'feature_similar_tags_count',
         'feature_name_naughty_words_count_old',
         'feature_primary_tags_old',
         'feature_area_old',
@@ -467,6 +495,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'feature_has_website_old',
         'feature_has_wikidata_old',
         'feature_has_wikipedia_old',
+        'feature_similar_tags_count_old',
     ];
     for (let editor of EDITORS) header.push(editor);
     for (let tag of PRIMARY_TAGS) header.push(tag);
