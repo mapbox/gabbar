@@ -27,7 +27,6 @@
   },
   "homepage": "https://github.com/mapbox/gabbar#readme",
   "dependencies": {
-    "@mapbox/osm-compare": "^7.4.1",
     "@turf/turf": "^4.1.0",
     "csv": "^1.1.1",
     "d3-queue": "^3.0.5",
@@ -37,6 +36,7 @@
     "naughty-words": "^1.0.1",
     "real-changesets-parser": "^1.2.3",
     "request": "^2.81.0",
+    "simple-statistics": "^4.1.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {

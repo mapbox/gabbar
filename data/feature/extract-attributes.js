@@ -9,6 +9,8 @@ const turf = require('@turf/turf');
 const parser = require('real-changesets-parser');
 const _ = require('underscore');
 const moment = require('moment');
+const osmCompare = require('@mapbox/osm-compare');
+const simpleStatistics = require('simple-statistics');
 
 if (!argv.changesets || !argv.realChangesetsDir || !argv.userDetailsDir) {
     console.log('');
@@ -287,6 +289,26 @@ function getPrimaryTagValuesModifiedCounts(versions) {
     return counts;
 }
 
+function getPrimaryTagValuesPopularity(feature) {
+    let primaryTags = getPrimaryTags(feature);
+
+    let popularity = [];
+    for (let primaryTag of primaryTags) {
+        let primaryTagValue = feature.properties.tags[primaryTag];
+        let popularities = require('@mapbox/osm-compare/common_tag_values/' + primaryTag + '.json');
+        for (let item of popularities.data) {
+            if (item.value === primaryTagValue) {
+                popularity.push(item.fraction);
+            }
+        }
+    }
+    let min = parseFloat(simpleStatistics.min(popularity).toFixed(4));
+    let max = parseFloat(simpleStatistics.max(popularity).toFixed(4));
+    let mean = parseFloat(simpleStatistics.mean(popularity).toFixed(4));
+    let stddev = parseFloat(simpleStatistics.standardDeviation(popularity).toFixed(4));
+    return [min, max, mean, stddev];
+}
+
 function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
     try {
         let changesetID = row[0];
@@ -318,12 +340,14 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
             let featureDaysSinceLastEdit = getDaysSinceLastEdit(feature);
             let primaryTags = getPrimaryTags(feature[0]);
             let primaryTagsCount = getPrimaryTagsCount(primaryTags);
+            let tagValuesPopularity = getPrimaryTagValuesPopularity(feature[0]);
 
             let tagsCreated = getTagsCreated(feature);
             let tagsModified = getTagsModified(feature);
             let tagsDeleted = getTagsDeleted(feature);
 
             let primaryTagValuesModifiedCounts = getPrimaryTagValuesModifiedCounts(feature);
+
 
             let featureNameTranslationsOld = getFeatureNameTranslations(feature[1]);
             let primaryTagsOld = getPrimaryTags(feature[1]);
@@ -382,6 +406,8 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
             for (let count of primaryTagsCount) attributes.push(count);
             for (let count of primaryTagsCountOld) attributes.push(count);
             for (let count of primaryTagValuesModifiedCounts) attributes.push(count);
+            for (let count of tagValuesPopularity) attributes.push(count);
+
             console.log(attributes.join(','));
         }
     } catch (error) {
@@ -446,6 +472,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
     for (let tag of PRIMARY_TAGS) header.push(tag);
     for (let tag of PRIMARY_TAGS) header.push(tag + '_old');
     for (let tag of PRIMARY_TAGS) header.push(tag + '_modified');
+    for (let tag of ['tag_values_popularity_min', 'tag_values_popularity_max', 'tag_values_popularity_mean', 'tag_values_popularity_stddev']) header.push(tag);
     console.log(header.join(','));
 
     // Starting from the second row, skipping the header.
