@@ -203,9 +203,8 @@ function getDaysSinceLastEdit(feature) {
 }
 
 function getPrimaryTags(feature) {
-    let newVersion = feature[0];
     let primaryTags = [];
-    for (var tag in newVersion.properties.tags) {
+    for (var tag in feature.properties.tags) {
         if (PRIMARY_TAGS.indexOf(tag) !== -1) primaryTags.push(tag);
     }
     return primaryTags;
@@ -303,14 +302,17 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
             let oldUserDetails = JSON.parse(fs.readFileSync(path.join(userDetailsDir, oldUserName + '.json')));
 
             let featureNameTranslations = getFeatureNameTranslations(feature[0]);
-            let featureNameTranslationsOld = getFeatureNameTranslations(feature[1]);
             let featureDaysSinceLastEdit = getDaysSinceLastEdit(feature);
-            let primaryTags = getPrimaryTags(feature);
+            let primaryTags = getPrimaryTags(feature[0]);
             let primaryTagsCount = getPrimaryTagsCount(primaryTags);
 
             let tagsCreated = getTagsCreated(feature);
             let tagsModified = getTagsModified(feature);
             let tagsDeleted = getTagsDeleted(feature);
+
+            let featureNameTranslationsOld = getFeatureNameTranslations(feature[1]);
+            let primaryTagsOld = getPrimaryTags(feature[1]);
+            let primaryTagsCountOld = getPrimaryTagsCount(primaryTagsOld);
 
             let attributes = [
                 changesetID,
@@ -353,10 +355,12 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
                 tagsDeleted.length,
                 tagsCreated.length + tagsModified.length + tagsDeleted.length,
                 getFeatureNameNaughtyWordsCount(featureNameTranslations),
+                primaryTagsOld.length,
                 getFeatureArea(feature[1]),
             ];
             for (let count of changesetEditorCounts) attributes.push(count);
             for (let count of primaryTagsCount) attributes.push(count);
+            for (let count of primaryTagsCountOld) attributes.push(count);
             console.log(attributes.join(','));
         }
     } catch (error) {
@@ -409,10 +413,12 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'feature_tags_deleted_count',
         'feature_tags_distance',
         'feature_name_naughty_words_count_old',
+        'feature_primary_tags_old',
         'feature_area_old',
     ];
     for (let editor of EDITORS) header.push(editor);
     for (let tag of PRIMARY_TAGS) header.push(tag);
+    for (let tag of PRIMARY_TAGS) header.push(tag + '_old');
     console.log(header.join(','));
 
     // Starting from the second row, skipping the header.
