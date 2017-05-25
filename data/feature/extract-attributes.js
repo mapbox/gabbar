@@ -274,6 +274,19 @@ function getFeatureNameNaughtyWordsCount(translations){
     return count;
 }
 
+function getPrimaryTagValuesModifiedCounts(versions) {
+    let newVersion = versions[0];
+    let oldVersion = versions[1];
+
+    let counts = [];
+    for (let primaryTag of PRIMARY_TAGS) {
+        if (!(primaryTag in newVersion.properties.tags) || !(primaryTag in oldVersion.properties.tags)) counts.push(0);
+        else if (newVersion.properties.tags[primaryTag] !== oldVersion.properties.tags[primaryTag]) counts.push(1);
+        else counts.push(0);
+    }
+    return counts;
+}
+
 function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
     try {
         let changesetID = row[0];
@@ -309,6 +322,8 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
             let tagsCreated = getTagsCreated(feature);
             let tagsModified = getTagsModified(feature);
             let tagsDeleted = getTagsDeleted(feature);
+
+            let primaryTagValuesModifiedCounts = getPrimaryTagValuesModifiedCounts(feature);
 
             let featureNameTranslationsOld = getFeatureNameTranslations(feature[1]);
             let primaryTagsOld = getPrimaryTags(feature[1]);
@@ -366,6 +381,7 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
             for (let count of changesetEditorCounts) attributes.push(count);
             for (let count of primaryTagsCount) attributes.push(count);
             for (let count of primaryTagsCountOld) attributes.push(count);
+            for (let count of primaryTagValuesModifiedCounts) attributes.push(count);
             console.log(attributes.join(','));
         }
     } catch (error) {
@@ -429,6 +445,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
     for (let editor of EDITORS) header.push(editor);
     for (let tag of PRIMARY_TAGS) header.push(tag);
     for (let tag of PRIMARY_TAGS) header.push(tag + '_old');
+    for (let tag of PRIMARY_TAGS) header.push(tag + '_modified');
     console.log(header.join(','));
 
     // Starting from the second row, skipping the header.
