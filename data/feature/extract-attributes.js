@@ -357,6 +357,11 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
                 getFeatureNameNaughtyWordsCount(featureNameTranslations),
                 primaryTagsOld.length,
                 getFeatureArea(feature[1]),
+                Object.keys(feature[1].properties.tags).length,
+                featureNameTranslationsOld.length,
+                feature[1].properties.tags.website ? 1 : 0,
+                feature[1].properties.tags.wikidata ? 1 : 0,
+                feature[1].properties.tags.wikipedia ? 1 : 0,
             ];
             for (let count of changesetEditorCounts) attributes.push(count);
             for (let count of primaryTagsCount) attributes.push(count);
@@ -415,6 +420,11 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'feature_name_naughty_words_count_old',
         'feature_primary_tags_old',
         'feature_area_old',
+        'feature_property_tags_old',
+        'feature_name_translations_count_old',
+        'feature_has_website_old',
+        'feature_has_wikidata_old',
+        'feature_has_wikipedia_old',
     ];
     for (let editor of EDITORS) header.push(editor);
     for (let tag of PRIMARY_TAGS) header.push(tag);
