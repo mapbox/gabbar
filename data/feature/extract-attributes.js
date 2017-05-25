@@ -269,6 +269,14 @@ function getSpecialCharactersCount(s) {
     return count;
 }
 
+function getFeatureNameNaughtyWordsCount(translations){
+    let count = 0;
+    for (let translation of translations) {
+        count += getNaughtyWordsCount(translation);
+    }
+    return count;
+}
+
 function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
     try {
         let changesetID = row[0];
@@ -297,10 +305,6 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
             let oldUserDetails = JSON.parse(fs.readFileSync(path.join(userDetailsDir, oldUserName + '.json')));
 
             let featureNameTranslations = getFeatureNameTranslations(feature);
-            let featureNameNaughtyWordsCount = 0;
-            for (let translation of featureNameTranslations) {
-                featureNameNaughtyWordsCount += getNaughtyWordsCount(translation);
-            }
             let featureDaysSinceLastEdit = getDaysSinceLastEdit(feature);
             let primaryTags = getPrimaryTags(feature);
             let primaryTagsCount = getPrimaryTagsCount(primaryTags);
@@ -336,7 +340,7 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
                 oldUserDetails['extra']['total_discussions'],
                 oldUserDetails['extra']['changesets_with_discussions'],
                 getFeatureVersion(feature),
-                featureNameNaughtyWordsCount,
+                getFeatureNameNaughtyWordsCount(featureNameTranslations),
                 featureDaysSinceLastEdit,
                 primaryTags.length,
                 getFeatureArea(feature[0]),
