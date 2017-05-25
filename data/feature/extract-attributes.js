@@ -340,7 +340,6 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
                 featureDaysSinceLastEdit,
                 primaryTags.length,
                 getFeatureArea(feature[0]),
-                getFeatureArea(feature[1]),
                 Object.keys(feature[0].properties.tags).length,
                 featureNameTranslations.length,
                 feature[0].properties.tags.website ? 1 : 0,
@@ -350,6 +349,7 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
                 tagsModified.length,
                 tagsDeleted.length,
                 tagsCreated.length + tagsModified.length + tagsDeleted.length,
+                getFeatureArea(feature[1]),
             ];
             for (let count of changesetEditorCounts) attributes.push(count);
             for (let count of primaryTagsCount) attributes.push(count);
@@ -395,7 +395,6 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'feature_days_since_last_edit',
         'feature_primary_tags',
         'feature_area',
-        'feature_old_area',
         'feature_property_tags',
         'feature_name_translations_count',
         'feature_has_website',
@@ -405,6 +404,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'feature_tags_modified_count',
         'feature_tags_deleted_count',
         'feature_tags_distance',
+        'feature_area_old',
     ];
     for (let editor of EDITORS) header.push(editor);
     for (let tag of PRIMARY_TAGS) header.push(tag);
