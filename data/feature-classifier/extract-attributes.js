@@ -212,12 +212,23 @@ function getPrimaryTags(feature) {
     return primaryTags;
 }
 
-function getPrimaryTagsCount(primaryTags) {
+function getPrimaryTagsCount(feature) {
+    // Initialize counts to 0.
     let counts = [];
     for (let tag of PRIMARY_TAGS) counts.push(0);
 
-    for (var i = 0; i < PRIMARY_TAGS.length; i++) {
-        if (primaryTags.indexOf(PRIMARY_TAGS[i]) !== -1) counts[i] += 1;
+    for (var tag in feature.properties.tags) {
+        if (PRIMARY_TAGS.indexOf(tag) !== -1) {
+            let popularities = require('@mapbox/osm-compare/common_tag_values/' + tag + '.json');
+
+            for (let item of popularities.data) {
+                if (item.value === feature.properties.tags[tag]) {
+                    let fraction = item.fraction * 100;  // Converting into a percentage.
+                    counts[PRIMARY_TAGS.indexOf(tag)] = fraction;
+                }
+            }
+
+        }
     }
     return counts;
 }
@@ -368,7 +379,7 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
             let featureNameTranslations = getFeatureNameTranslations(feature[0]);
             let featureDaysSinceLastEdit = getDaysSinceLastEdit(feature);
             let primaryTags = getPrimaryTags(feature[0]);
-            let primaryTagsCount = getPrimaryTagsCount(primaryTags);
+            let primaryTagsCount = getPrimaryTagsCount(feature[0]);
             let tagValuesPopularity = getPrimaryTagValuesPopularity(feature[0]);
 
             let tagsCreated = getTagsCreated(feature);
@@ -379,7 +390,7 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
 
             let featureNameTranslationsOld = getFeatureNameTranslations(feature[1]);
             let primaryTagsOld = getPrimaryTags(feature[1]);
-            let primaryTagsCountOld = getPrimaryTagsCount(primaryTagsOld);
+            let primaryTagsCountOld = getPrimaryTagsCount(feature[1]);
             let similarTagsCountOld = getNumberOfSimilarTags(feature[1]);
 
             let attributes = [
