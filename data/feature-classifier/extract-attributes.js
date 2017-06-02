@@ -337,7 +337,11 @@ function getNumberOfSimilarTags(feature) {
 function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
     try {
         let changesetID = row[0];
-        let harmful = row[15] === 'True' ? 1 : 0;
+
+        // Handle case when changeset is not reviewed.
+        let harmful = '';
+        if (row[15] === 'True') harmful = 1;
+        else if (row[15] === 'False') harmful =0;
 
         let realChangeset = JSON.parse(fs.readFileSync(path.join(realChangesetsDir, changesetID + '.json')));
         let changeset = parser(realChangeset);
