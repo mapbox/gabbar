@@ -1,5 +1,57 @@
 # Datasets for feature classifier
 
+#### 1. Get changesets from osmcha.
+
+```sh
+# Download changesets from osmcha for training and validation.
+# All single feature modification changesets reviewed on osmcha from 1st Jan, 2017 till 31st May, 2017.
+wget 'https://osmcha.mapbox.com/?date__gte=2017-01-01&date__lte=2017-05-31&create__gte=0&create__lte=0&modify__gte=1&modify__lte=1&delete__gte=0&delete__lte=0&is_suspect=False&is_whitelisted=All&harmful=None&checked=True&all_reason=True&render_csv=True' -O downloads/feature-classifier/labelled-changesets.csv
+
+# Number of rows: 12061
+wc -l downloads/feature-classifier/labelled-changesets.csv
+
+
+# Download changesets from osmcha for testing.
+# All single feature modification changesets not reviewed on osmcha from 1st May, 2017 till 7th May, 2017.
+wget 'https://osmcha.mapbox.com/?date__gte=2017-05-01&date__lte=2017-05-07&create__gte=0&create__lte=0&modify__gte=1&modify__lte=1&delete__gte=0&delete__lte=0&is_suspect=False&is_whitelisted=All&harmful=None&checked=False&all_reason=True&render_csv=True' -O downloads/feature-classifier/unlabelled-changesets.csv
+
+# Number of rows: 22213
+wc -l downloads/feature-classifier/unlabelled-changesets.csv
+
+
+# Merge both labelled and unlabelled changesets.
+cat downloads/feature-classifier/labelled-changesets.csv downloads/feature-classifier/unlabelled-changesets.csv > downloads/feature-classifier/changesets.csv
+
+# Number of rows: 34274
+wc -l downloads/feature-classifier/changesets.csv
+```
+
+#### 2. Download more data about changesets.
+```sh
+
+# Download real changesets.
+node data/feature-classifier/download-real-changesets.js \
+    --changesets downloads/feature-classifier/changesets.csv \
+    --directory downloads/feature-classifier/
+
+# Download user details.
+node data/feature-classifier/download-user-details.js \
+    --changesets downloads/feature-classifier/changesets.csv \
+    --realChangesetsDirectory downloads/feature-classifier/real-changesets/ \
+    --directory downloads/feature-classifier/
+```
+
+
+#### 3. Extract attributes.
+
+```sh
+# Extract attributes using changesets from osmcha, real changesets and user details.
+node data/feature-classifier/extract-attributes.js \
+    --changesets downloads/feature-classifier/changesets.csv \
+    --realChangesetsDir downloads/feature-classifier/real-changesets/ \
+    --userDetailsDir downloads/feature-classifier/user-details/
+```
+
 
 ## Locally
 
