@@ -8,6 +8,14 @@ const queue = require('d3-queue').queue;
 const turf = require('@turf/turf');
 const parser = require('real-changesets-parser');
 const _ = require('underscore');
+const nullIslandCF = require('@mapbox/osm-compare/comparators/null_island.js');
+const addedPlaceCF = require('@mapbox/osm-compare/comparators/added_place.js');
+const commonTagValuesCF = require('@mapbox/osm-compare/comparators/common_tag_values.js');
+const draggedHighwayWaterwayCF = require('@mapbox/osm-compare/comparators/dragged_highway_waterway.js');
+const largeBuildingCF = require('@mapbox/osm-compare/comparators/large_building.js');
+const majorNameModificationCF = require('@mapbox/osm-compare/comparators/major_name_modification.js');
+const majorRoadChangedCF = require('@mapbox/osm-compare/comparators/major_road_changed.js');
+const pokemonEditsCF = require('@mapbox/osm-compare/comparators/pokemon_edits.js');
 
 if (!argv.changesets || !argv.realChangesets || !argv.userDetails) {
     console.log('');
@@ -242,6 +250,33 @@ function getPrimaryTagCounts(features) {
     return counts;
 }
 
+function mergeTagsIntoProperties(features) {
+    let mergedFeatures = [];
+    for (let versions of features) {
+        let newVersion = versions[0];
+        let oldVersion = versions[1];
+
+        if (newVersion && (Object.keys(newVersion.properties.tags).length > 0)) {
+            newVersion.properties = Object.assign(newVersion.properties, newVersion.properties.tags);
+        }
+        if (oldVersion && (Object.keys(oldVersion.properties.tags).length > 0)) {
+            oldVersion.properties = Object.assign(oldVersion.properties, oldVersion.properties.tags);
+        }
+        mergedFeatures.push([newVersion, oldVersion]);
+    }
+    return mergedFeatures;
+}
+
+function typeACompareFunction(compareFunction, features) {
+    let count = 0;
+    let result;
+    for (let feature of features) {
+        result = compareFunction(feature[0], feature[1]);
+        if (result) count += 1;
+    }
+    return count;
+}
+
 function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
     try {
         let changesetID = row[0];
@@ -266,6 +301,8 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
         let featureTypeCounts = getFeatureTypeCounts(allFeatures);
         let primaryTagActionCounts = getPrimaryTagActionCounts(allFeatures);
         let primaryTagCounts = getPrimaryTagCounts(allFeatures);
+
+        let allFeaturesMerged = mergeTagsIntoProperties(allFeatures);
 
         let attributes = [
             changesetID,
@@ -293,6 +330,14 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
             primaryTagActionCounts['created'],
             primaryTagActionCounts['modified'],
             primaryTagActionCounts['deleted'],
+            typeACompareFunction(nullIslandCF, allFeaturesMerged),
+            typeACompareFunction(addedPlaceCF, allFeaturesMerged),
+            typeACompareFunction(commonTagValuesCF, allFeaturesMerged),
+            typeACompareFunction(draggedHighwayWaterwayCF, allFeaturesMerged),
+            typeACompareFunction(largeBuildingCF, allFeaturesMerged),
+            typeACompareFunction(majorNameModificationCF, allFeaturesMerged),
+            typeACompareFunction(majorRoadChangedCF, allFeaturesMerged),
+            typeACompareFunction(pokemonEditsCF, allFeaturesMerged),
         ];
 
         // Concat primary tag counts.
@@ -335,6 +380,14 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'primary_tags_created',
         'primary_tags_modified',
         'primary_tags_deleted',
+        'cf_null_island',
+        'cf_added_place',
+        'cf_common_tag_values',
+        'cf_dragged_highway_waterway',
+        'cf_large_building',
+        'cf_major_name_modification',
+        'cf_major_road_changed',
+        'cf_pokemon_edits',
     ]
     for (let primaryTag of PRIMARY_TAGS) header.push(primaryTag);
     console.log(header.join(','));

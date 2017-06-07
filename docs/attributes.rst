@@ -48,7 +48,7 @@ Extract attributes
     vim ~/extract-attributes.js
 
     # Install required packages for the extract features script.
-    npm install minimist csv d3-queue @turf/turf real-changesets-parser underscore
+    npm install minimist csv d3-queue @turf/turf real-changesets-parser underscore @mapbox/osm-compare
 
     # Extract features passing all the datasets.
     node ~/extract-attributes.js \
