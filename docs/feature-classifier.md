@@ -10,6 +10,10 @@ wget 'https://osmcha.mapbox.com/?date__gte=2017-01-01&date__lte=2017-05-31&creat
 # Number of rows: 12061
 wc -l downloads/feature-classifier/labelled-changesets.csv
 
+# Compress.
+downloads/feature-classifier/labelled-changesets.csv
+tar -czf "downloads/feature-classifier/" -C "$quadkey_directory" "$increment"
+
 
 # Download changesets from osmcha for testing.
 # All single feature modification changesets not reviewed on osmcha from 1st May, 2017 till 7th May, 2017.
@@ -28,6 +32,8 @@ wc -l downloads/feature-classifier/changesets.csv
 
 #### 2. Download more data about changesets.
 ```sh
+
+npm install minimist csv d3-queue request mkdirp real-changesets-parser @turf/turf underscore moment @mapbox/osm-compare simple-statistics
 
 # Download real changesets.
 node data/feature-classifier/download-real-changesets.js \
@@ -49,7 +55,7 @@ node data/feature-classifier/download-user-details.js \
 node data/feature-classifier/extract-attributes.js \
     --changesets downloads/feature-classifier/changesets.csv \
     --realChangesetsDir downloads/feature-classifier/real-changesets/ \
-    --userDetailsDir downloads/feature-classifier/user-details/
+    --userDetailsDir downloads/feature-classifier/user-details/ > downloads/feature-classifier/attributes.csv
 ```
 
 
