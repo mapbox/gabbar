@@ -33,7 +33,7 @@ wc -l downloads/feature-classifier/changesets.csv
 #### 2. Download more data about changesets.
 ```sh
 
-npm install minimist csv d3-queue request mkdirp real-changesets-parser @turf/turf underscore moment @mapbox/osm-compare simple-statistics
+npm install minimist csv d3-queue request mkdirp real-changesets-parser @turf/turf underscore  moment @mapbox/osm-compare simple-statistics naughty-words
 
 # Download real changesets.
 node data/feature-classifier/download-real-changesets.js \
