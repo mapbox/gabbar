@@ -209,13 +209,13 @@ function getPrimaryTagActionCounts(features) {
         'created': 0,
         'modified': 0,
         'deleted': 0
-    }
+    };
     for (let versions of features) {
         let newVersion = versions[0];
         let action = newVersion.properties.action;
         if (action === 'create') counts['created'] += getPrimaryTags(newVersion).length;
         if (action === 'delete') counts['deleted'] += getPrimaryTags(newVersion).length;
-        if (action == 'modify') {
+        if (action === 'modify') {
             let newTags = newVersion.properties.tags;
             let newPrimaryTags = getPrimaryTags(newVersion);
 
@@ -347,7 +347,7 @@ function extractFeatures(row, realChangesetsDir, userDetailsDir, callback) {
 
         console.log(attributes.join(','));
         return callback();
-    } catch(error) {
+    } catch (error) {
         // NOTE: Skipping on error for now.
         return callback();
     }
@@ -380,15 +380,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'primary_tags_created',
         'primary_tags_modified',
         'primary_tags_deleted',
-        'cf_null_island',
-        'cf_added_place',
-        'cf_common_tag_values',
-        'cf_dragged_highway_waterway',
-        'cf_large_building',
-        'cf_major_name_modification',
-        'cf_major_road_changed',
-        'cf_pokemon_edits',
-    ]
+    ];
     for (let primaryTag of PRIMARY_TAGS) header.push(primaryTag);
     console.log(header.join(','));
     let features = [];

@@ -8,9 +8,9 @@
     "test": "tests"
   },
   "scripts": {
-    "lint": "eslint index.js */*/*.js",
+    "lint": "eslint index.js **/*.js --ignore-pattern '!node_modules/*'",
     "pretest": "npm run lint",
-    "test": "py.test -v"
+    "test": "tape tests/**/*.js"
   },
   "repository": {
     "type": "git",
@@ -27,18 +27,21 @@
   },
   "homepage": "https://github.com/mapbox/gabbar#readme",
   "dependencies": {
-    "@mapbox/osm-compare": "^7.4.1",
     "@turf/turf": "^4.1.0",
     "csv": "^1.1.1",
     "d3-queue": "^3.0.5",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
+    "moment": "^2.18.1",
+    "naughty-words": "^1.0.1",
     "real-changesets-parser": "^1.2.3",
     "request": "^2.81.0",
+    "simple-statistics": "^4.1.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
     "eslint": "^3.19.0",
-    "eslint-config-mourner": "^2.0.1"
+    "eslint-config-mourner": "^2.0.1",
+    "tape": "^4.6.3"
   }
 }

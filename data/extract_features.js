@@ -77,7 +77,7 @@ function extract(filename, userDetails, harmful) {
             }
             csv.stringify([features], function (error, result) {
                 if (!error) process.stdout.write(result);
-            })
+            });
         })
         .catch(error => {
             throw error;
@@ -95,7 +95,7 @@ Promise.all(q)
     csv.stringify([header], (error, headerAsString) => {
         process.stdout.write(headerAsString);
         extract(argv.realChangesets, results[0], results[1]);
-    })
+    });
 })
 .catch(error => {
     throw error;
