@@ -535,6 +535,7 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
                 nodeDistances.length > 0 ? simpleStatistics.standardDeviation(nodeDistances) : 0,
                 kinks.features.length,
                 feature_area,
+                getFeatureNameNaughtyWordsCount(getFeatureNameTranslations(newVersion))
             ];
             for (let count of changesetEditorCounts) attributes.push(count);
             for (let count of primaryTagsCount) attributes.push(count);
@@ -577,6 +578,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
         'feature_node_distance_stddev',
         'feature_kinks',
         'feature_area',
+        'feature_name_profanity',
     ];
     for (let editor of EDITORS) header.push(editor);
     for (let tag of PRIMARY_TAGS) header.push(tag);
