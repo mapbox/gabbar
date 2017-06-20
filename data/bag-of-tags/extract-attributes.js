@@ -45,7 +45,11 @@ function getFeaturesByAction(changeset, action) {
 csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
 
     let attributes = [];
-    attributes.push(['changeset_id', 'changeset_harmful', 'tags']);
+    attributes.push([
+        'changeset_id',
+        'changeset_harmful',
+        'tags'
+    ]);
 
     let changesets = new Set([]);
     for (let row of rows) {
@@ -80,6 +84,9 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
 
         // Skip changesets from user "chinakz"
         if (newVersion.properties.user === 'chinakz') continue;
+
+        // Skip changesets where there was a feature modification.
+        if (oldVersion && (JSON.stringify(newVersion.geometry) !== JSON.stringify(oldVersion.geometry))) continue;
 
         if (!changesets.has(changesetID)) {
             changesets.add(changesetID)
