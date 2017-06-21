@@ -1,5 +1,4 @@
-# Bag of Words
-
+# Bag of Tags
 
 
 ```bash
