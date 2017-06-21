@@ -338,8 +338,8 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
 
         // Handle case when changeset is not reviewed.
         let harmful = '';
-        if (row[15] === 'True') harmful = 1;
-        else if (row[15] === 'False') harmful =0;
+        if (row[1] === 'true') harmful = 1;
+        else if (row[1] === 'false') harmful = 0;
 
         let realChangeset = JSON.parse(fs.readFileSync(path.join(realChangesetsDir, changesetID + '.json')));
         let changeset = parser(realChangeset);
