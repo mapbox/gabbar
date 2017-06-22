@@ -6,12 +6,13 @@ const path = require('path');
 const parser = require('real-changesets-parser');
 const csv = require('csv');
 
-if (!argv.realChangesets || !argv.changesets) {
+if (!argv.realChangesets || !argv.changesets || !argv.userDetailsDir) {
     console.log('');
     console.log('USAGE: node extract-attributes.js OPTIONS');
     console.log('');
     console.log('  OPTIONS');
     console.log('    --realChangesets   real-changesets/    Directory with real changesets');
+    console.log('    --userDetailsDir   user-details/       Directory with user details');
     console.log('    --changesets       changesets.csv      Dump of changesets from osmcha');
     console.log('');
     process.exit(0);
@@ -73,6 +74,13 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
     attributes.push([
         'changeset_id',
         'changeset_harmful',
+        'type_node',
+        'type_way',
+        'type_relation',
+        'line_length',
+        'kinks',
+        'old_user_mapping_days',
+        'new_user_mapping_days',
         'old_tags',
         'new_tags',
     ]);
@@ -113,17 +121,53 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
         // Skip changesets where there was a feature modification.
         if (oldVersion && (JSON.stringify(newVersion.geometry) !== JSON.stringify(oldVersion.geometry))) continue;
 
-        if (!changesets.has(changesetID)) {
-            changesets.add(changesetID)
-            attributes.push([
-                changesetID,
-                row[1],
-                objectToString(oldVersion.properties.tags, newVersion.properties.tags),
-                objectToString(newVersion.properties.tags, oldVersion.properties.tags),
-            ]);
+        // If changeset already seen, skip.
+        if (changesets.has(changesetID)) continue;
+
+        let lineLength = 0;
+        try {
+            lineLength = turf.lineDistance(newVersion);
+        } catch (error) {
+            // Nothing to do.
         }
 
-        // if (attributes.length > 50) break;
+        let kinks = 0;
+        try {
+            // Number of self-intersection points.
+            kinks = turf.kinks(newVersion).features.length;
+        } catch(error) {
+            // Nothing to do.
+        }
+
+        let newUserDetails;
+        try {
+            let newUserDetails = JSON.parse(fs.readFileSync(path.join(argv.userDetailsDir, newVersion.properties.user + '.json')));
+        } catch (error) {
+            // Nothing to do.
+        }
+
+        let oldUserDetails;
+
+        try {
+            oldUserDetails = JSON.parse(fs.readFileSync(path.join(argv.userDetailsDir, oldVersion.properties.user + '.json')));
+        } catch (error) {
+            // Nothing to do.
+        }
+
+        changesets.add(changesetID)
+        attributes.push([
+            changesetID,
+            row[1],
+            newVersion.properties.type === 'node' ? 1 : 0,
+            newVersion.properties.type === 'way' ? 1 : 0,
+            newVersion.properties.type === 'relation' ? 1 : 0,
+            lineLength,
+            kinks,
+            oldUserDetails ? oldUserDetails.extra.mapping_days : 0,
+            newUserDetails ? newUserDetails.extra.mapping_days : 0,
+            objectToString(oldVersion.properties.tags, newVersion.properties.tags),
+            objectToString(newVersion.properties.tags, oldVersion.properties.tags),
+        ]);
     }
 
     csv.stringify(attributes, (error, asString) => {
