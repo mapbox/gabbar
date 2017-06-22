@@ -1,7 +1,7 @@
 {
   "name": "gabbar",
   "version": "0.2.4",
-  "description": "Guarding OSM from invalid or suspicious edits!",
+  "description": "Guarding OpenStreetMap from invalid or suspicious edits!",
   "main": "index.js",
   "directories": {
     "doc": "docs",
@@ -17,15 +17,18 @@
     "url": "git+https://github.com/mapbox/gabbar.git"
   },
   "keywords": [
-    "osm",
-    "ml"
+    "machine-learning",
+    "openstreetmap",
+    "scikit-learn",
+    "jupyter-notebook",
+    "vandalism"
   ],
   "author": "Mapbox",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/mapbox/gabbar/issues"
   },
-  "homepage": "https://github.com/mapbox/gabbar#readme",
+  "homepage": "https://github.com/mapbox/gabbar",
   "dependencies": {
     "@mapbox/osm-compare": "^7.4.2",
     "@turf/turf": "^4.4.0",

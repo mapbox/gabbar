@@ -1,5 +1,0 @@
-Date,Gitsha,Model,Features,Labelled changesets,Cross validation score,"True,True","True,False","False,True","False,False",Unlabelled changesets,True,False,Features
-2017-04-20,7b54739,SVC,3,,0.926,57,1597,0,20682,,0,26191,"features_created,features_modified_features_deleted"
-2017-04-21,25ec9c0,SVC,5,,0.932,57,1392,0,19885,,1,26173,"features_created,features_modified_features_deleted, user_changesets,user_features"
-2017-04-21,8d06b98,SVC,51,,0.932,144,1305,0,19889,,2,26073,"User, Feature and Changeset related features"
-2017-04-22,72c4b28,SCV,51,,0.8383,1201,248,1964,17925,,1775,24300,Tuning parameters of the SVC model

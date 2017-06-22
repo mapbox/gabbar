@@ -1,8 +1,0 @@
-Date,Labelled harmful + Predicted harmful,Labelled harmful + Predicted not harmful,Labelled not harmful + Predicted harmful,Labelled not harmful + Predicted not harmful,Harmful hit rate,Not harmful hit rate
-2017-04-17,28,16,96,195,22.58064516,92.41706161
-2017-04-18,27,19,63,198,30,91.24423963
-2017-04-19,23,37,111,336,17.1641791,90.08042895
-2017-04-20,29,25,80,253,26.60550459,91.00719424
-2017-04-21,19,13,62,224,23.45679012,94.51476793
-2017-04-22,12,15,60,98,16.66666667,86.72566372
-2017-04-23,10,12,56,63,15.15151515,84
