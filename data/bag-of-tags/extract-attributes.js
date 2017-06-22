@@ -42,20 +42,27 @@ function getFeaturesByAction(changeset, action) {
     return features;
 }
 
-function objectToString(object) {
-    let toSkipEqual = ['name', 'old_name', 'int_name', 'description', 'note', 'source', 'website', 'wikidata', 'wikipedia'];
-    let toSkipIn = ['name:', 'tiger:', 'gnis:', 'addr:'];
+function objectToString(object, anotherObject) {
+    let toSkipEqual = ['name', 'old_name', 'int_name', 'description', 'note', 'source', 'website', 'wikidata', 'wikipedia', 'email', 'FIXME', 'alt_name', 'phone'];
+    let toSkipIn = ['name:', 'tiger:', 'gnis:', 'addr:', 'name_', 'old_name_'];
 
     let results = [];
     for (var key in object) {
-        if (object.hasOwnProperty(key)) {
-            if (toSkipEqual.indexOf(key) !== -1) continue;
-            let skip = false;
-            for (let item of toSkipIn) {
-                if (key.indexOf(item) !== -1) skip = true;
-            }
-            if (!skip) results.push('{' + key + '=' + object[key] + '}');
+
+        if (toSkipEqual.indexOf(key) !== -1) continue;
+        let skip = false;
+        for (let item of toSkipIn) {
+            if (key.indexOf(item) !== -1) skip = true;
         }
+        if (skip) continue;
+
+        // Interested only when things change.
+        try {
+            if (object[key] === anotherObject[key]) continue;
+        } catch (error) {
+            // When anotherObject is None, nothing extra to do.
+        }
+        results.push('{' + key + '=' + object[key] + '}');
     }
     return results.join(' ');
 }
@@ -66,8 +73,8 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
     attributes.push([
         'changeset_id',
         'changeset_harmful',
+        'old_tags',
         'new_tags',
-        'old_tags'
     ]);
 
     let changesets = new Set([]);
@@ -111,8 +118,8 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
             attributes.push([
                 changesetID,
                 row[1],
-                objectToString(newVersion.properties.tags),
-                objectToString(oldVersion.properties.tags)
+                objectToString(oldVersion.properties.tags, newVersion.properties.tags),
+                objectToString(newVersion.properties.tags, oldVersion.properties.tags),
             ]);
         }
 
