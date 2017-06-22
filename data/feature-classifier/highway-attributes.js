@@ -14,7 +14,7 @@ const simpleStatistics = require('simple-statistics');
 
 if (!argv.changesets || !argv.realChangesetsDir || !argv.userDetailsDir) {
     console.log('');
-    console.log('USAGE: node extract-attributes.js OPTIONS');
+    console.log('USAGE: node highway-attributes.js OPTIONS');
     console.log('');
     console.log('  OPTIONS');
     console.log('    --changesets           changesets.csv      Changesets dump from osmcha');
@@ -60,6 +60,60 @@ var PRIMARY_TAGS = [
     'sport',
     'tourism',
     'waterway'
+];
+
+let HIGHWAY_VALUES = [
+    'residential',
+    'service',
+    'track',
+    'unclassified',
+    'footway',
+    'path',
+    'tertiary',
+    'secondary',
+    'crossing',
+    'primary',
+    'bus_stop',
+    'turning_circle',
+    'other',
+];
+
+let HIGHWAY_COMBINATIONS = [
+    'name',
+    'source',
+    'surface',
+    'tiger:cfcc',
+    'tiger:county',
+    'tiger:reviewed',
+    'oneway',
+    'tiger:name_base',
+    'maxspeed',
+    'lanes',
+    'tiger:name_type',
+    'ref',
+    'service',
+    'tiger:source',
+    'tiger:tlid',
+    'tracktype',
+    'access',
+    'tiger:upload_uuid',
+    'yh:WIDTH',
+    'tiger:zip_left',
+    'tiger:separated',
+    'tiger:zip_right',
+    'foot',
+    'bicycle',
+    'yh:TOTYUMONO',
+    'yh:WIDTH_RANK',
+    'yh:STRUCTURE',
+    'yh:TYPE',
+    'bridge',
+    'layer',
+    'lit',
+    'crossing',
+    'tiger:name_direction_prefix',
+    'width',
+    'other'
 ];
 
 let EDITORS = [
@@ -169,7 +223,7 @@ function getBBOXArea(realChangeset) {
     let meta = realChangeset['metadata'];
     let bbox = [meta['min_lat'], meta['min_lon'], meta['max_lat'], meta['max_lon']].map(parseFloat);
     var polygon = turf.bboxPolygon(bbox);
-    return parseInt(turf.area(polygon));
+    return turf.area(polygon);
 }
 
 function checkNonOpenDataSource(sources) {
@@ -234,7 +288,7 @@ function getPrimaryTagsCount(feature) {
 }
 
 function getFeatureArea(feature) {
-    return parseInt(turf.area(feature));
+    return turf.area(feature);
 }
 
 function getTagsCreated(feature) {
@@ -309,27 +363,78 @@ function getPrimaryTagValuesPopularity(feature) {
 
 function getNumberOfSimilarTags(feature) {
     let count = 0;
-    let tags = Object.keys(feature.properties.tags);
-    let primaryTags = getPrimaryTags(feature);
-
-    for (var i = 0; i < tags.length; i++) {
-        for (var j = 0; j < tags.length; j++) {
-            if (i === j) continue;
-
-            let isPrimaryTag = false;
-            for (let primaryTag of primaryTags) {
-                if ((tags[i].indexOf(primaryTag) !== -1) && (tags[j].indexOf(primaryTag) !== -1)) {
-                    isPrimaryTag = true;
-                    break;
-                }
-            }
-            if (isPrimaryTag && ((tags[i].indexOf('_') !== -1) || (tags[j].indexOf('_') !== -1)) && ((tags[i].indexOf(tags[j]) !== -1) || (tags[j].indexOf(tags[i]) !== -1))) count += 1;
+    let similars = ['name_', 'landuse_', 'surface_']
+    for (let similar of similars) {
+        for (let tag in feature.properties.tags) {
+            if (tag.toLowerCase().indexOf(similar) !== -1) count += 1;
         }
     }
-
-    // Things are counted twice, so divide by 2.
-    count = count / 2;
     return count;
+}
+
+function getDaysBetween(date, anotherDate) {
+    return moment(date).diff(moment(anotherDate), 'days');
+}
+
+function isNamePersonal(feature) {
+
+    let count = 0;
+    let personals = ['my', 'home', 'house'];
+    let names = ['name', 'name:en'];
+
+    for (let name of names) {
+        if (name in feature.properties.tags) {
+            for (let personal of personals) {
+                let value = feature.properties.tags[name].toLowerCase();
+                personal = personal.toLowerCase();
+                if (value.indexOf(personal) !== -1) count += 1;
+            }
+        }
+    }
+    return count;
+}
+
+function getGeometryType(feature) {
+    return feature.geometry.type;
+}
+
+function getNodeDistances(feature) {
+    let distances = [];
+    for (var i = 0; i < feature.geometry.coordinates.length - 1; i++) {
+        let first = turf.point(feature.geometry.coordinates[i]);
+        let second = turf.point(feature.geometry.coordinates[i + 1]);
+        distances.push(turf.distance(first, second));
+    }
+    return distances;
+}
+
+function getHighwayValueCounts(feature) {
+    let counts = [];
+
+    // Initialize to zero.
+    for (let value of HIGHWAY_VALUES) counts.push(0);
+
+    if (!('highway' in feature.properties.tags)) return counts;
+
+    let value = feature.properties.tags.highway;
+    if (HIGHWAY_VALUES.indexOf(value) !== -1) counts[HIGHWAY_VALUES.indexOf(value)] = 1;
+    else counts[HIGHWAY_VALUES.indexOf('other')] = 1;
+
+    return counts;
+}
+
+function getHighwayCombinationCounts(feature) {
+    let counts = [];
+
+    // Initialize to zero.
+    for (let value of HIGHWAY_COMBINATIONS) counts.push(0);
+
+    for (var tag in feature.properties.tags) {
+        if (HIGHWAY_COMBINATIONS.indexOf(tag) !== -1) counts[HIGHWAY_COMBINATIONS.indexOf(tag)] += 1
+        else counts[HIGHWAY_COMBINATIONS.indexOf('other')] += 1
+    }
+
+    return counts;
 }
 
 function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
@@ -338,11 +443,13 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
 
         // Handle case when changeset is not reviewed.
         let harmful = '';
-        if (row[1] === 'true') harmful = 1;
-        else if (row[1] === 'false') harmful = 0;
+        if (row[15] === 'True') harmful = 1;
+        else if (row[15] === 'False') harmful =0;
 
         let realChangeset = JSON.parse(fs.readFileSync(path.join(realChangesetsDir, changesetID + '.json')));
         let changeset = parser(realChangeset);
+        // if (realChangeset.metadata.id === '48745375') console.log(JSON.stringify(changeset));
+
 
         let featuresCreated = getFeaturesByAction(changeset, 'create');
         let featuresModified = getFeaturesByAction(changeset, 'modify');
@@ -350,95 +457,95 @@ function extractAttributes(row, realChangesetsDir, userDetailsDir, callback) {
         let features = featuresCreated.concat(featuresModified, featuresDeleted);
 
         let changesetEditorCounts = getChangesetEditorCounts(realChangeset);
-        let changesetImageryUsed = getChangesetImageryUsed(realChangeset);
-        let changesetSource = getChangesetSource(realChangeset);
-        let changesetComment = getChangesetComment(realChangeset);
-        let changesetCommentNaughtyWordsCount = getNaughtyWordsCount(changesetComment, NAUGHTY_WORDS);
-        let nonOpenDataSource = checkNonOpenDataSource([changesetSource, changesetComment, changesetImageryUsed]);
+        for (let versions of features) {
+            let newVersion = versions[0];
 
-        for (let feature of features) {
-            let userName = feature[0].properties['user'];
+            // We are intersted only in highway features.
+            if (!('highway' in newVersion.properties.tags)) continue;
+
+            // Skipping due to http://www.openstreetmap.org/user_blocks/1147
+            if (newVersion.properties.user === 'chinakz') continue;
+
+            let userName = newVersion.properties['user'];
             let userDetails = JSON.parse(fs.readFileSync(path.join(userDetailsDir, userName + '.json')));
 
-            let oldUserName = feature[1].properties['user'];
-            let oldUserDetails = JSON.parse(fs.readFileSync(path.join(userDetailsDir, oldUserName + '.json')));
+            let action = newVersion.properties.action;
+            let primaryTagsCount = getPrimaryTagsCount(newVersion);
 
-            let featureNameTranslations = getFeatureNameTranslations(feature[0]);
-            let featureDaysSinceLastEdit = getDaysSinceLastEdit(feature);
-            let primaryTags = getPrimaryTags(feature[0]);
-            let primaryTagsCount = getPrimaryTagsCount(feature[0]);
-            let tagValuesPopularity = getPrimaryTagValuesPopularity(feature[0]);
+            let lineDistance;
+            try {
+                lineDistance = turf.lineDistance(newVersion);
+            } catch (error) {
+                lineDistance = 0;
+            }
 
-            let tagsCreated = getTagsCreated(feature);
-            let tagsModified = getTagsModified(feature);
-            let tagsDeleted = getTagsDeleted(feature);
+            let distance;
+            try {
+                distance = turf.distance(
+                    turf.point(newVersion.geometry.coordinates[0]),
+                    turf.point(newVersion.geometry.coordinates[newVersion.geometry.coordinates.length - 1])
+                );
+            } catch (error) {
+                distance = 0;
+            }
 
-            let featureNameTranslationsOld = getFeatureNameTranslations(feature[1]);
-            let primaryTagsOld = getPrimaryTags(feature[1]);
-            let primaryTagsCountOld = getPrimaryTagsCount(feature[1]);
-            let similarTagsCountOld = getNumberOfSimilarTags(feature[1]);
+            let nodeDistances = [];
+            try {
+                nodeDistances = getNodeDistances(newVersion);
+            } catch (error) {
+                // Nothing do to here.
+            }
+
+            let kinks = turf.featureCollection([]);
+            try {
+                kinks = turf.kinks(newVersion);
+            } catch (error) {
+                // Nothing to do here.
+            }
+
+            let feature_area = 0;
+            try {
+                feature_area = turf.area(turf.bboxPolygon(turf.bbox(newVersion)));
+            } catch (error) {
+                // Nothing to do here.
+            }
 
             let attributes = [
                 changesetID,
                 harmful,
-                featuresCreated.length,
-                featuresModified.length,
-                featuresDeleted.length,
-                changesetImageryUsed.length ? 1 : 0,
-                changesetSource.length ? 1 : 0,
-                changesetComment.length > 0 ? changesetComment.split(' ').length : 0,
-                changesetCommentNaughtyWordsCount,
                 getBBOXArea(realChangeset),
-                nonOpenDataSource ? 1 : 0,
-                getSpecialCharactersCount(changesetComment),
-                getNaughtyWordsCount(userName),
-                getSpecialCharactersCount(userName),
                 userDetails['changeset_count'],
                 userDetails['num_changes'],
                 userDetails['extra']['mapping_days'],
-                userDetails['extra']['total_discussions'],
-                userDetails['extra']['changesets_with_discussions'],
-                getNaughtyWordsCount(oldUserName),
-                getSpecialCharactersCount(oldUserName),
-                oldUserDetails['changeset_count'],
-                oldUserDetails['num_changes'],
-                oldUserDetails['extra']['mapping_days'],
-                oldUserDetails['extra']['total_discussions'],
-                oldUserDetails['extra']['changesets_with_discussions'],
-                getFeatureVersion(feature),
-                getFeatureNameNaughtyWordsCount(featureNameTranslations),
-                featureDaysSinceLastEdit,
-                primaryTags.length,
-                getFeatureArea(feature[0]),
-                Object.keys(feature[0].properties.tags).length,
-                featureNameTranslations.length,
-                feature[0].properties.tags.website ? 1 : 0,
-                feature[0].properties.tags.wikidata ? 1 : 0,
-                feature[0].properties.tags.wikipedia ? 1 : 0,
-                tagsCreated.length,
-                tagsModified.length,
-                tagsDeleted.length,
-                tagsCreated.length + tagsModified.length + tagsDeleted.length,
-                getNumberOfSimilarTags(feature[0]),
-                getFeatureNameNaughtyWordsCount(featureNameTranslationsOld),
-                primaryTagsOld.length,
-                getFeatureArea(feature[1]),
-                Object.keys(feature[1].properties.tags).length,
-                featureNameTranslationsOld.length,
-                feature[1].properties.tags.website ? 1 : 0,
-                feature[1].properties.tags.wikidata ? 1 : 0,
-                feature[1].properties.tags.wikipedia ? 1 : 0,
-                getNumberOfSimilarTags(feature[1]),
+                getDaysBetween(newVersion.properties.timestamp, userDetails.first_edit),
+                action === 'create' ? 1 : 0,
+                action === 'modify' ? 1 : 0,
+                action === 'delete' ? 1 : 0,
+                parseInt(newVersion.properties.version),
+                Object.keys(newVersion.properties.tags).length,
+                isNamePersonal(newVersion),
+                getNumberOfSimilarTags(newVersion),
+                getGeometryType(newVersion) === 'Point' ? 1 : 0,
+                getGeometryType(newVersion) === 'LineString' ? 1 : 0,
+                getGeometryType(newVersion) === 'Polygon' ? 1 : 0,
+                distance,
+                lineDistance,
+                getGeometryType(newVersion) === 'Point' ? 1 : turf.getCoords(newVersion.geometry.coordinates).length,
+                nodeDistances.length > 0 ? simpleStatistics.mean(nodeDistances) : 0,
+                nodeDistances.length > 0 ? simpleStatistics.standardDeviation(nodeDistances) : 0,
+                kinks.features.length,
+                feature_area,
+                getFeatureNameNaughtyWordsCount(getFeatureNameTranslations(newVersion))
             ];
             for (let count of changesetEditorCounts) attributes.push(count);
             for (let count of primaryTagsCount) attributes.push(count);
-            for (let count of primaryTagsCountOld) attributes.push(count);
-            for (let count of tagValuesPopularity) attributes.push(count);
-
+            for (let count of getHighwayValueCounts(newVersion)) attributes.push(count);
+            for (let count of getHighwayCombinationCounts(newVersion)) attributes.push(count);
             console.log(attributes.join(','));
         }
     } catch (error) {
         // NOTE: Nothing to do here.
+        // throw (error)
     }
     return callback();
 }
@@ -449,68 +556,50 @@ csv.parse(fs.readFileSync(argv.changesets), (error, changesets) => {
     let header = [
         'changeset_id',
         'changeset_harmful',
-        'changeset_features_created',
-        'changeset_features_modified',
-        'changeset_features_deleted',
-        'changeset_has_imagery_used',
-        'changeset_has_source',
-        'changeset_comment_number_of_words',
-        'changeset_comment_naughty_words_count',
         'changeset_bbox_area',
-        'changeset_non_open_data_source',
-        'changeset_comment_special_characters_count',
-        'user_name_naughty_words_count',
-        'user_name_special_characters_count',
-        'user_changesets_count',
-        'user_features_count',
-        'user_mapping_days_count',
-        'user_discussions_count',
-        'user_changesets_with_discussions_count',
-        'old_user_name_naughty_words_count',
-        'old_user_name_special_characters_count',
-        'old_user_changesets_count',
-        'old_user_features_count',
-        'old_user_mapping_days_count',
-        'old_user_discussions_count',
-        'old_user_changesets_with_discussions_count',
+        'user_changesets',
+        'user_features',
+        'user_mapping_days',
+        'user_days_since_first_edit',
+        'feature_action_create',
+        'feature_action_modify',
+        'feature_action_delete',
         'feature_version',
-        'feature_name_naughty_words_count',
-        'feature_days_since_last_edit',
-        'feature_primary_tags',
-        'feature_area',
-        'feature_property_tags',
-        'feature_name_translations_count',
-        'feature_has_website',
-        'feature_has_wikidata',
-        'feature_has_wikipedia',
-        'feature_tags_created_count',
-        'feature_tags_modified_count',
-        'feature_tags_deleted_count',
-        'feature_tags_distance',
+        'feature_total_tags',
+        'feature_personal_count',
         'feature_similar_tags_count',
-        'feature_name_naughty_words_count_old',
-        'feature_primary_tags_old',
-        'feature_area_old',
-        'feature_property_tags_old',
-        'feature_name_translations_count_old',
-        'feature_has_website_old',
-        'feature_has_wikidata_old',
-        'feature_has_wikipedia_old',
-        'feature_similar_tags_count_old',
+        'feature_point',
+        'feature_linestring',
+        'feature_polygon',
+        'feature_distance',
+        'feature_line_distance',
+        'feature_node_count',
+        'feature_node_distance_mean',
+        'feature_node_distance_stddev',
+        'feature_kinks',
+        'feature_area',
+        'feature_name_profanity',
     ];
     for (let editor of EDITORS) header.push(editor);
     for (let tag of PRIMARY_TAGS) header.push(tag);
-    for (let tag of PRIMARY_TAGS) header.push(tag + '_old');
-    for (let tag of ['tag_values_popularity_min', 'tag_values_popularity_max', 'tag_values_popularity_mean', 'tag_values_popularity_stddev']) header.push(tag);
+    for (let value of HIGHWAY_VALUES) header.push(value);
+    for (let value of HIGHWAY_COMBINATIONS) header.push(value);
     console.log(header.join(','));
+
+    let set = new Set([]);
 
     // Starting from the second row, skipping the header.
     for (var i = 1; i < changesets.length; i++) {
         let changeset = changesets[i];
+
+        // Skip duplicate changesets.
+        if (set.has(changeset[0])) continue;
+        set.add(changeset[0]);
+
         q.defer(extractAttributes, changeset, argv.realChangesetsDir, argv.userDetailsDir);
     }
 
     q.awaitAll((error, results) => {
-        if (error) console.log(error);
+        if (error) throw (error);
     })
 });

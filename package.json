@@ -28,7 +28,7 @@
   "homepage": "https://github.com/mapbox/gabbar#readme",
   "dependencies": {
     "@mapbox/osm-compare": "^7.4.2",
-    "@turf/turf": "^4.1.0",
+    "@turf/turf": "^4.4.0",
     "csv": "^1.1.1",
     "d3-queue": "^3.0.5",
     "minimist": "^1.2.0",
