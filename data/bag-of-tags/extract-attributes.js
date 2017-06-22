@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const parser = require('real-changesets-parser');
 const csv = require('csv');
+const turf = require('@turf/turf');
 
 if (!argv.realChangesets || !argv.changesets || !argv.userDetailsDir) {
     console.log('');
@@ -43,12 +44,15 @@ function getFeaturesByAction(changeset, action) {
     return features;
 }
 
-function objectToString(object, anotherObject) {
+function objectToString(feature, anotherFeature) {
+    let tags = feature ? feature.properties.tags : {};
+    let anotherTags = anotherFeature ? anotherFeature.properties.tags : {};
+
     let toSkipEqual = ['name', 'old_name', 'int_name', 'description', 'note', 'source', 'website', 'wikidata', 'wikipedia', 'email', 'FIXME', 'alt_name', 'phone'];
     let toSkipIn = ['name:', 'tiger:', 'gnis:', 'addr:', 'name_', 'old_name_'];
 
     let results = [];
-    for (var key in object) {
+    for (var key in tags) {
 
         if (toSkipEqual.indexOf(key) !== -1) continue;
         let skip = false;
@@ -59,11 +63,11 @@ function objectToString(object, anotherObject) {
 
         // Interested only when things change.
         try {
-            if (object[key] === anotherObject[key]) continue;
+            if (tags[key] === anotherTags[key]) continue;
         } catch (error) {
-            // When anotherObject is None, nothing extra to do.
+            // When anotherTags is None, nothing extra to do.
         }
-        results.push('{' + key + '=' + object[key] + '}');
+        results.push('{' + key + '=' + tags[key] + '}');
     }
     return results.join(' ');
 }
@@ -74,6 +78,9 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
     attributes.push([
         'changeset_id',
         'changeset_harmful',
+        'created',
+        'modified',
+        'deleted',
         'type_node',
         'type_way',
         'type_relation',
@@ -89,6 +96,9 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
     for (let row of rows) {
         let changesetID = row[0];
 
+        // If changeset already seen, skip.
+        if (changesets.has(changesetID)) continue;
+
         let realChangeset;
         try {
             realChangeset = JSON.parse(fs.readFileSync(path.join(argv.realChangesets, changesetID + '.json')));
@@ -101,12 +111,14 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
         let featuresCreated = getFeaturesByAction(changeset, 'create');
         let featuresModified = getFeaturesByAction(changeset, 'modify');
         let featuresDeleted = getFeaturesByAction(changeset, 'delete');
+        let features = featuresCreated.concat(featuresModified, featuresDeleted);
 
-        // Filtering changesets where one feature was modified.
-        if (!((featuresCreated.length === 0) && (featuresModified.length == 1) && (featuresDeleted.length == 0))) continue;
+        // Filtering changesets with only one feature touched.
+        if (features.length !== 1) continue;
+        // if (!((featuresCreated.length === 0) && (featuresModified.length == 1) && (featuresDeleted.length == 0))) continue;
 
         // Get the only feature in the array.
-        let feature = featuresModified[0];
+        let feature = features[0];
 
         // The first item in the array is new version of feature, second is old version.
         let newVersion = feature[0];
@@ -117,12 +129,6 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
 
         // Skip changesets from user "chinakz"
         if (newVersion.properties.user === 'chinakz') continue;
-
-        // Skip changesets where there was a feature modification.
-        if (oldVersion && (JSON.stringify(newVersion.geometry) !== JSON.stringify(oldVersion.geometry))) continue;
-
-        // If changeset already seen, skip.
-        if (changesets.has(changesetID)) continue;
 
         let lineLength = 0;
         try {
@@ -141,7 +147,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
 
         let newUserDetails;
         try {
-            let newUserDetails = JSON.parse(fs.readFileSync(path.join(argv.userDetailsDir, newVersion.properties.user + '.json')));
+            newUserDetails = JSON.parse(fs.readFileSync(path.join(argv.userDetailsDir, newVersion.properties.user + '.json')));
         } catch (error) {
             // Nothing to do.
         }
@@ -158,6 +164,9 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
         attributes.push([
             changesetID,
             row[1],
+            featuresCreated.length,
+            featuresModified.length,
+            featuresDeleted.length,
             newVersion.properties.type === 'node' ? 1 : 0,
             newVersion.properties.type === 'way' ? 1 : 0,
             newVersion.properties.type === 'relation' ? 1 : 0,
@@ -165,9 +174,10 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
             kinks,
             oldUserDetails ? oldUserDetails.extra.mapping_days : 0,
             newUserDetails ? newUserDetails.extra.mapping_days : 0,
-            objectToString(oldVersion.properties.tags, newVersion.properties.tags),
-            objectToString(newVersion.properties.tags, oldVersion.properties.tags),
+            objectToString(oldVersion, newVersion),
+            objectToString(newVersion, oldVersion),
         ]);
+        // console.log(attributes[attributes.length - 1]);
     }
 
     csv.stringify(attributes, (error, asString) => {
