@@ -50,15 +50,15 @@ function getPropertyActions(newVersion, oldVersion) {
         'delete': []
     };
 
-    for (var tag in newVersion.properties.tags) {
+    for (let tag in newVersion.properties.tags) {
         if (!(tag in oldVersion.properties.tags)) {
             actions.create.push(tag);
-        } else if(newVersion.properties.tags[tag] !== oldVersion.properties.tags[tag]) {
+        } else if (newVersion.properties.tags[tag] !== oldVersion.properties.tags[tag]) {
             actions.modify.push(tag);
         }
     }
 
-    for (var tag in oldVersion.properties.tags) {
+    for (let tag in oldVersion.properties.tags) {
         if (!(tag in newVersion.properties.tags)) {
             actions.delete.push(tag);
         }
