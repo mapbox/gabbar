@@ -42,13 +42,32 @@ function getFeaturesByAction(changeset, action) {
     return features;
 }
 
+function objectToString(object) {
+    let toSkipEqual = ['name', 'old_name', 'int_name', 'description', 'note', 'source', 'website', 'wikidata', 'wikipedia'];
+    let toSkipIn = ['name:', 'tiger:', 'gnis:', 'addr:'];
+
+    let results = [];
+    for (var key in object) {
+        if (object.hasOwnProperty(key)) {
+            if (toSkipEqual.indexOf(key) !== -1) continue;
+            let skip = false;
+            for (let item of toSkipIn) {
+                if (key.indexOf(item) !== -1) skip = true;
+            }
+            if (!skip) results.push('{' + key + '=' + object[key] + '}');
+        }
+    }
+    return results.join(' ');
+}
+
 csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
 
     let attributes = [];
     attributes.push([
         'changeset_id',
         'changeset_harmful',
-        'tags'
+        'new_tags',
+        'old_tags'
     ]);
 
     let changesets = new Set([]);
@@ -67,13 +86,12 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
         let featuresCreated = getFeaturesByAction(changeset, 'create');
         let featuresModified = getFeaturesByAction(changeset, 'modify');
         let featuresDeleted = getFeaturesByAction(changeset, 'delete');
-        let features = featuresCreated.concat(featuresModified, featuresDeleted);
 
-        // Filtering changesets where one feature was created or modified.
-        if (!(features.length === 1 && featuresDeleted.length === 0)) continue;
+        // Filtering changesets where one feature was modified.
+        if (!((featuresCreated.length === 0) && (featuresModified.length == 1) && (featuresDeleted.length == 0))) continue;
 
         // Get the only feature in the array.
-        let feature = features[0];
+        let feature = featuresModified[0];
 
         // The first item in the array is new version of feature, second is old version.
         let newVersion = feature[0];
@@ -92,8 +110,9 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
             changesets.add(changesetID)
             attributes.push([
                 changesetID,
-                row[15],
-                Object.keys(newVersion.properties.tags).join(' ')
+                row[1],
+                objectToString(newVersion.properties.tags),
+                objectToString(oldVersion.properties.tags)
             ]);
         }
 
