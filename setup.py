@@ -15,7 +15,7 @@ with open(version_filepath) as f:
 
 setup(name='gabbar',
       version=version,
-      description=u"Guarding OSM from invalid or suspicious edits!",
+      description=u"Guarding OpenStreetMap from invalid or suspicious edits!",
       long_description=long_description,
       classifiers=[
         'Development Status :: 3 - Alpha',
@@ -27,7 +27,7 @@ setup(name='gabbar',
       author_email='team@mapbox.com',
       url='https://github.com/mapbox/gabbar',
       license='MIT',
-      packages=find_packages(exclude=['ez_setup', 'data', 'docs', 'notebooks', 'tests']),
+      packages=find_packages(exclude=['ez_setup', 'data', 'docs', 'notebooks', 'scripts', 'tests']),
       package_data={'gabbar': ['trained/scaler.pkl', 'trained/model.pkl', 'helpers/real_changesets.js']},
       include_package_data=True,
       zip_safe=False,
