@@ -9,7 +9,6 @@
   },
   "scripts": {
     "lint": "eslint index.js **/*.js --ignore-pattern '!node_modules/*'",
-    "pretest": "npm run lint",
     "test": "tape tests/**/*.js"
   },
   "repository": {
