@@ -21,7 +21,7 @@ mv downloads/highway-classifier/unlabelled-2017-06-22 downloads/highway-classifi
 
 ```bash
 # Prepare a small sample for testing the scripts.
-head -n100 downloads/highway-classifier/labelled/changesets.csv > downloads/highway-classifier/labelled/sample-changesets.csv
+head -n1000 downloads/highway-classifier/labelled/changesets.csv > downloads/highway-classifier/labelled/sample-changesets.csv
 
 # Get attributes for labelled samples.
 node datasets/highway-attributes.js \
@@ -30,7 +30,7 @@ node datasets/highway-attributes.js \
     --changesets downloads/highway-classifier/labelled/sample-changesets.csv > downloads/highway-classifier/labelled/attributes.csv
 
 # Prepare a small sample for testing the scripts.
-head -n100 downloads/highway-classifier/unlabelled/changesets.csv > downloads/highway-classifier/unlabelled/sample-changesets.csv
+head -n1000 downloads/highway-classifier/unlabelled/changesets.csv > downloads/highway-classifier/unlabelled/sample-changesets.csv
 
 # Get attributes for unlabelled samples.
 node datasets/highway-attributes.js \
