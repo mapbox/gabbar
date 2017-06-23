@@ -12,7 +12,7 @@ module.exports = {
 
 function getLineDistance(feature) {
     try {
-        return turf.lineDistance(feature);
+        return parseFloat(turf.lineDistance(feature).toFixed(3));
     } catch (error) {
         return 0;
     }
