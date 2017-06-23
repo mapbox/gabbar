@@ -10,6 +10,8 @@ const getSamples = require('../gabbar/filters/highway').getSamples;
 
 const featureAttributes = require('../gabbar/attributes/feature');
 const highwayAttributes = require('../gabbar/attributes/highway');
+const userAttributes = require('../gabbar/attributes/user');
+const userDatasources = require('../gabbar/datasources/user');
 
 
 if (!argv.changesets || !argv.realChangesetsDir || !argv.userDetailsDir) {
@@ -37,6 +39,8 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
         'geometry_type_relation',
         'geometry_line_distance',
         'geometry_kinks',
+        'old_user_mapping_days',
+        'new_user_mapping_days',
     ];
     let attributes = [];
     attributes.push(header);
@@ -67,6 +71,12 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
             let newVersion = sample[0];
             let oldVersion = sample[1];
 
+            let newUsername = featureAttributes.getUsername(newVersion);
+            let newUserDetails = userDatasources.getUserDetails(newUsername, argv.userDetailsDir);
+
+            let oldUsername = featureAttributes.getUsername(oldVersion);
+            let oldUserDetails = userDatasources.getUserDetails(oldUsername, argv.userDetailsDir);
+
             attributes.push([
                 changesetID,
                 harmful,
@@ -78,6 +88,8 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
                 featureAttributes.getGeometryType(newVersion) === 'relation' ? 1 : 0,
                 featureAttributes.getLineDistance(newVersion),
                 featureAttributes.getKinks(newVersion).length,
+                userAttributes.getMappingDays(oldUserDetails),
+                userAttributes.getMappingDays(newUserDetails),
             ]);
         }
 
