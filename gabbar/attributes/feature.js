@@ -4,6 +4,7 @@ const turf = require('@turf/turf');
 
 module.exports = {
     getFeatureID: getFeatureID,
+    getFeatureVersion: getFeatureVersion,
     getLineDistance: getLineDistance,
     getKinks: getKinks,
     getAction: getAction,
@@ -15,6 +16,15 @@ module.exports = {
 function getFeatureID(feature) {
     try {
         return feature.properties.id;
+    } catch (error) {
+        return '';
+    }
+}
+
+
+function getFeatureVersion(feature) {
+    try {
+        return parseInt(feature.properties.version);
     } catch (error) {
         return '';
     }
