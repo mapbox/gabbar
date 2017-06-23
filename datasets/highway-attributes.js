@@ -6,6 +6,7 @@ const path = require('path');
 const csv = require('csv');
 const turf = require('@turf/turf');
 const realChangesetToChangeset = require('../gabbar/utilities/real-changeset').realChangesetToChangeset;
+const getSamples = require('../gabbar/filters/highway').getSamples;
 
 if (!argv.changesets || !argv.realChangesetsDir || !argv.userDetailsDir) {
     console.log('');
@@ -28,8 +29,13 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
     let attributes = [];
     attributes.push(header);
 
+    let seenChangesets = new Set([]);
     for (let row of rows) {
         let changesetID = row[0];
+
+        // Checking for duplicate changesets.
+        if (seenChangesets.has(changesetID)) continue;
+        seenChangesets.add(changesetID)
 
         let realChangeset;
         try {
@@ -44,11 +50,15 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
         if (harmful === 'true') harmful = 1
         else if (harmful === 'false') harmful = 0
 
-        attributes.push([
-            changesetID,
-            harmful
-        ]);
-        // console.log(attributes[attributes.length - 1]);
+        let samples = getSamples(changeset);
+        for (let sample of samples) {
+            attributes.push([
+                changesetID,
+                harmful
+            ]);
+        }
+
+        // if (samples.length) console.log(attributes[attributes.length - 1]);
     }
     csv.stringify(attributes, (error, asString) => {
         console.log(asString);
