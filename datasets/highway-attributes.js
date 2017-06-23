@@ -65,8 +65,9 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
         let changeset = realChangesetToChangeset(realChangeset);
 
         let harmful = row[1];
-        if (harmful === 'true') harmful = 1
-        else if (harmful === 'false') harmful = 0
+        if (harmful === 'true') harmful = 1;
+        else if (harmful === 'false') harmful = 0;
+        else harmful = '';
 
         let samples = getSamples(changeset);
         for (let sample of samples) {
