@@ -14,7 +14,6 @@ function getUserDetails(username, directory) {
         try {
             return JSON.parse(fs.readFileSync(path.join(directory, username + '.json')));
         } catch (error) {
-            throw (error);
             // When local file for user does not exist.
             return getUserDetails(username);
         }

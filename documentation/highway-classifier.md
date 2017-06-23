@@ -27,7 +27,7 @@ head -n100 downloads/highway-classifier/labelled/changesets.csv > downloads/high
 node datasets/highway-attributes.js \
     --realChangesetsDir downloads/highway-classifier/labelled/real-changesets/ \
     --userDetailsDir downloads/highway-classifier/labelled/user-details/ \
-    --changesets downloads/highway-classifier/labelled/sample-changesets.csv
+    --changesets downloads/highway-classifier/labelled/changesets.csv > downloads/highway-classifier/labelled/attributes.csv
 
 # Get attributes for unlabelled samples.
 node datasets/highway-attributes.js \

@@ -41,6 +41,8 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
         'geometry_kinks',
         'old_user_mapping_days',
         'new_user_mapping_days',
+        'old_tags',
+        'new_tags',
     ];
     let attributes = [];
     attributes.push(header);
@@ -90,10 +92,10 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
                 featureAttributes.getKinks(newVersion).length,
                 userAttributes.getMappingDays(oldUserDetails),
                 userAttributes.getMappingDays(newUserDetails),
+                highwayAttributes.tagsToString(oldVersion, newVersion),
+                highwayAttributes.tagsToString(newVersion, oldVersion),
             ]);
         }
-
-        // if (samples.length) console.log(attributes[attributes.length - 1]);
     }
     csv.stringify(attributes, (error, asString) => {
         console.log(asString);
