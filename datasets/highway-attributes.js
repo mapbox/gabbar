@@ -31,6 +31,8 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
     let header = [
         'changeset_id',
         'changeset_harmful',
+        'feature_id',
+        'feature_version',
         'action_create',
         'action_modify',
         'action_delete',
@@ -83,6 +85,8 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
             attributes.push([
                 changesetID,
                 harmful,
+                featureAttributes.getFeatureID(newVersion),
+                featureAttributes.getFeatureVersion(newVersion),
                 featureAttributes.getAction(newVersion) === 'create' ? 1 : 0,
                 featureAttributes.getAction(newVersion) === 'modify' ? 1 : 0,
                 featureAttributes.getAction(newVersion) === 'delete' ? 1 : 0,
