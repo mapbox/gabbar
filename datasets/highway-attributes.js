@@ -82,6 +82,10 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
             let oldUsername = featureAttributes.getUsername(oldVersion);
             let oldUserDetails = userDatasources.getUserDetails(oldUsername, argv.userDetailsDir);
 
+            // Skipping changesets from user labelled due to user_block.
+            if (newUsername === 'chinakz') continue;
+            if (oldUsername === 'chinakz') continue;
+
             attributes.push([
                 changesetID,
                 harmful,
