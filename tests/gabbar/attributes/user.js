@@ -5,14 +5,15 @@ var fs = require('fs');
 var path = require('path');
 
 var getMappingDays = require('../../../gabbar/attributes/user').getMappingDays;
+var getUserDetails = require('../../../gabbar/datasources/user').getUserDetails;
 
 
 test('Get user mapping days', function (t) {
-    let userPath = path.join(__dirname, '../../fixtures/users/amaper.json');
-    let user = JSON.parse(fs.readFileSync(userPath));
+    let username = 'amaper';
+    let userDetailsDir = path.join(__dirname, '../../fixtures/users/');
 
-    let expected = user.extra.mapping_days;
-    let actual = getMappingDays(user.name, user)
-    t.equal(actual, 2);
+    let userDetails = getUserDetails(username, userDetailsDir);
+
+    t.equal(getMappingDays(userDetails), 2);
     t.end();
 });
