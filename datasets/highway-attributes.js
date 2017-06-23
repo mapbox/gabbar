@@ -8,6 +8,10 @@ const turf = require('@turf/turf');
 const realChangesetToChangeset = require('../gabbar/utilities/real-changeset').realChangesetToChangeset;
 const getSamples = require('../gabbar/filters/highway').getSamples;
 
+const featureAttributes = require('../gabbar/attributes/feature');
+const highwayAttributes = require('../gabbar/attributes/highway');
+
+
 if (!argv.changesets || !argv.realChangesetsDir || !argv.userDetailsDir) {
     console.log('');
     console.log('USAGE: node highway-attributes.js OPTIONS');
@@ -25,6 +29,14 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
     let header = [
         'changeset_id',
         'changeset_harmful',
+        'action_create',
+        'action_modify',
+        'action_delete',
+        'geometry_type_node',
+        'geometry_type_way',
+        'geometry_type_relation',
+        'geometry_line_distance',
+        'geometry_kinks',
     ];
     let attributes = [];
     attributes.push(header);
@@ -52,9 +64,20 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
 
         let samples = getSamples(changeset);
         for (let sample of samples) {
+            let newVersion = sample[0];
+            let oldVersion = sample[1];
+
             attributes.push([
                 changesetID,
-                harmful
+                harmful,
+                featureAttributes.getAction(newVersion) === 'create' ? 1 : 0,
+                featureAttributes.getAction(newVersion) === 'modify' ? 1 : 0,
+                featureAttributes.getAction(newVersion) === 'delete' ? 1 : 0,
+                featureAttributes.getGeometryType(newVersion) === 'node' ? 1 : 0,
+                featureAttributes.getGeometryType(newVersion) === 'way' ? 1 : 0,
+                featureAttributes.getGeometryType(newVersion) === 'relation' ? 1 : 0,
+                featureAttributes.getLineDistance(newVersion),
+                featureAttributes.getKinks(newVersion).length,
             ]);
         }
 
