@@ -6,6 +6,7 @@ module.exports = {
     getLineDistance: getLineDistance,
     getKinks: getKinks,
     getAction: getAction,
+    getGeometryType: getGeometryType,
 };
 
 
@@ -28,6 +29,15 @@ function getKinks(feature) {
 function getAction(feature) {
     try {
         return feature.properties.action;
+    } catch (error) {
+        return '';
+    }
+}
+
+
+function getGeometryType(feature) {
+    try {
+        return feature.properties.type;
     } catch (error) {
         return '';
     }

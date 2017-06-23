@@ -51,3 +51,17 @@ test('Get action for a highway', function (t) {
 
     t.end();
 });
+
+
+test('Get geometry type for a highway', function (t) {
+    let changesetPath = path.join(__dirname, '../../fixtures/changesets/48255884.json');
+    let changeset = JSON.parse(fs.readFileSync(changesetPath));
+
+    let samples = getSamples(changeset);
+    for (let sample of samples) {
+        let newVersion = sample[0];
+        t.equal(fAttributes.getGeometryType(newVersion), 'way');
+    }
+
+    t.end();
+});
