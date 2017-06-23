@@ -30,5 +30,5 @@ function tagsToString(feature, anotherFeature) {
         }
         results.push('{' + key + '=' + tags[key] + '}');
     }
-    return results.join(' ');
+    return results.length ? results.join(' ') : '';
 }
