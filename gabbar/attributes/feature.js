@@ -4,7 +4,8 @@ const turf = require('@turf/turf');
 
 module.exports = {
     getLineDistance: getLineDistance,
-    getKinks: getKinks
+    getKinks: getKinks,
+    getAction: getAction,
 };
 
 
@@ -21,5 +22,13 @@ function getKinks(feature) {
         return turf.kinks(feature).features;
     } catch (error) {
         return [];
+    }
+}
+
+function getAction(feature) {
+    try {
+        return feature.properties.action;
+    } catch (error) {
+        return '';
     }
 }
