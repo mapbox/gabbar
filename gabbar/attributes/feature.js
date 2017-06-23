@@ -3,12 +3,22 @@
 const turf = require('@turf/turf');
 
 module.exports = {
+    getFeatureID: getFeatureID,
     getLineDistance: getLineDistance,
     getKinks: getKinks,
     getAction: getAction,
     getGeometryType: getGeometryType,
     getUsername: getUsername,
 };
+
+
+function getFeatureID(feature) {
+    try {
+        return feature.properties.id;
+    } catch (error) {
+        return '';
+    }
+}
 
 
 function getLineDistance(feature) {
@@ -19,6 +29,7 @@ function getLineDistance(feature) {
     }
 }
 
+
 function getKinks(feature) {
     try {
         return turf.kinks(feature).features;
@@ -26,6 +37,7 @@ function getKinks(feature) {
         return [];
     }
 }
+
 
 function getAction(feature) {
     try {
