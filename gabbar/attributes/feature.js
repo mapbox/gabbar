@@ -7,6 +7,7 @@ module.exports = {
     getKinks: getKinks,
     getAction: getAction,
     getGeometryType: getGeometryType,
+    getUsername: getUsername,
 };
 
 
@@ -38,6 +39,15 @@ function getAction(feature) {
 function getGeometryType(feature) {
     try {
         return feature.properties.type;
+    } catch (error) {
+        return '';
+    }
+}
+
+
+function getUsername(feature) {
+    try {
+        return feature.properties.user;
     } catch (error) {
         return '';
     }
