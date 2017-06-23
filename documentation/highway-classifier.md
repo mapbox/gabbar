@@ -29,9 +29,12 @@ node datasets/highway-attributes.js \
     --userDetailsDir downloads/highway-classifier/labelled/user-details/ \
     --changesets downloads/highway-classifier/labelled/changesets.csv > downloads/highway-classifier/labelled/attributes.csv
 
+# Prepare a small sample for testing the scripts.
+head -n10000 downloads/highway-classifier/unlabelled/changesets.csv > downloads/highway-classifier/unlabelled/sample-changesets.csv
+
 # Get attributes for unlabelled samples.
 node datasets/highway-attributes.js \
     --realChangesetsDir downloads/highway-classifier/unlabelled/real-changesets/ \
     --userDetailsDir downloads/highway-classifier/unlabelled/user-details/ \
-    --changesets downloads/highway-classifier/unlabelled/changesets.csv
+    --changesets downloads/highway-classifier/unlabelled/sample-changesets.csv > downloads/highway-classifier/unlabelled/attributes.csv
 ```
