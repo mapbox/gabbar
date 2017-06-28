@@ -18,7 +18,6 @@ function isNameModified(newVersion, oldVersion) {
     try {
         return newVersion.properties.tags.name === oldVersion.properties.tags.name ? 0 : 1;
     } catch (error) {
-        console.log(error);
         return 0;
     }
 }
