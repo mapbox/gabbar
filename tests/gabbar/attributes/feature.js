@@ -107,3 +107,32 @@ test('Get version of the feature highway', function (t) {
 
     t.end();
 });
+
+
+test('Test name modified of a feature with name modification', function (t) {
+    let changesetPath = path.join(__dirname, '../../fixtures/changesets/47734592.json');
+    let changeset = JSON.parse(fs.readFileSync(changesetPath));
+
+    let samples = getSamples(changeset);
+    for (let sample of samples) {
+        let newVersion = sample[0];
+        let oldVersion = sample[1];
+        t.equal(fAttributes.isNameModified(newVersion, oldVersion), 1);
+    }
+
+    t.end();
+});
+
+test('Test name modified of a feature without name modification', function (t) {
+    let changesetPath = path.join(__dirname, '../../fixtures/changesets/48255884.json');
+    let changeset = JSON.parse(fs.readFileSync(changesetPath));
+
+    let samples = getSamples(changeset);
+    for (let sample of samples) {
+        let newVersion = sample[0];
+        let oldVersion = sample[1];
+        t.equal(fAttributes.isNameModified(newVersion, oldVersion), 0);
+    }
+
+    t.end();
+});
