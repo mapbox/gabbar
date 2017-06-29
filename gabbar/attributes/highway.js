@@ -10,7 +10,7 @@ function tagsToString(feature, anotherFeature) {
     let anotherTags = anotherFeature ? anotherFeature.properties.tags : {};
 
     let toSkipEqual = ['name', 'old_name', 'int_name', 'description', 'note', 'source', 'website', 'wikidata', 'wikipedia', 'email', 'FIXME', 'alt_name', 'phone'];
-    let toSkipIn = ['name:', 'tiger:', 'gnis:', 'addr:', 'name_', 'old_name_'];
+    let toSkipIn = ['name:', 'tiger:', 'gnis:', 'addr:', 'name_', 'old_name_', 'yh:'];
 
     let results = [];
     for (var key in tags) {
