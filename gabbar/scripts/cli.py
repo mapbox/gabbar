@@ -61,7 +61,7 @@ def process_changeset(changeset_id):
     directory = os.path.dirname(os.path.realpath(__file__))
     version_filepath = os.path.join(directory, '../../VERSION')
     with open(version_filepath) as f:
-        version = float(f.read().strip())
+        version = f.read().strip()
 
 
     for i in range(len(data['attributes'])):
