@@ -5,6 +5,7 @@ import sys
 import os
 import datetime
 import json
+import subprocess
 
 import click
 
@@ -37,16 +38,18 @@ def getFeatureType(types):
         return 'relation'
 
 def process_changeset(changeset_id):
-    data = {
-        'header': ['changeset_id', 'changeset_harmful', 'feature_id', 'feature_version', 'action_create', 'action_modify', 'action_delete', 'geometry_type_node', 'geometry_type_way', 'geometry_type_relation', 'geometry_line_distance', 'geometry_kinks', 'old_user_mapping_days', 'new_user_mapping_days', 'old_tags', 'new_tags'],
-        'attributes': [
-            ['48255884', 0, '490324518', 2, 0, 1, 0, 0, 1, 0, 0.33, 0, 27, 27, '', '{landuse=forest}']
-        ]
-    }
+    # Run node.js script to download real changeset and extract features.
+    directory = os.path.dirname(os.path.realpath(__file__))
+    # Getting the parent directory.
+    directory = os.path.abspath(os.path.join(directory, os.pardir))
+    helper = os.path.join(directory, 'helpers/real_changeset.js')
+
+    # Arguments must contain only strings.
+    data = json.loads(subprocess.check_output([helper, '--changesetID', str(changeset_id)]))
 
     results = []
     # If there are no attributes, that means there were no interesting samples to process in this changeset.
-    if len(data['attributes']) == 0: return results;
+    if (not data) or (len(data['attributes']) == 0): return results;
 
     directory = os.path.dirname(os.path.realpath(__file__))
 
