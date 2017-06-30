@@ -37,4 +37,10 @@ node datasets/highway-attributes.js \
     --realChangesetsDir downloads/highway-classifier/unlabelled/real-changesets/ \
     --userDetailsDir downloads/highway-classifier/unlabelled/user-details/ \
     --changesets downloads/highway-classifier/unlabelled/sample-changesets.csv > downloads/highway-classifier/unlabelled/attributes.csv
+
+# Generating attributes for test fixtures.
+node datasets/highway-attributes.js \
+    --realChangesetsDir tests/fixtures/real_changesets/ \
+    --userDetailsDir tests/fixtures/users/ \
+    --changesets tests/fixtures/osmcha/highway.csv > tests/fixtures/model/highway.csv
 ```
