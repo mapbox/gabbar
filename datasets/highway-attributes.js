@@ -86,10 +86,6 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
             if (newUsername === 'chinakz') continue;
             if (oldUsername === 'chinakz') continue;
 
-            let nameModified = featureAttributes.isNameModified(newVersion, oldVersion);
-            // Skipping samples where a feature's name was modified.
-            if (nameModified === 1) continue;
-
             attributes.push([
                 changesetID,
                 harmful,

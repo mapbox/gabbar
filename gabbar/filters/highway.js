@@ -1,6 +1,7 @@
 'use strict';
 
 var getFeaturesByAction = require('../utilities/changeset').getFeaturesByAction;
+const featureAttributes = require('../attributes/feature');
 
 module.exports = {
     getSamples: getSamples
@@ -21,6 +22,10 @@ function getSamples(changeset) {
     for (let feature of features) {
         let newVersion = feature[0];
         let oldVersion = feature[1];
+
+        let nameModified = featureAttributes.isNameModified(newVersion, oldVersion);
+        // Skipping samples where a feature's name was modified.
+        if (nameModified === 1) continue;
 
         let interested = false;
         if (newVersion && ('highway' in newVersion.properties.tags)) interested = true;
