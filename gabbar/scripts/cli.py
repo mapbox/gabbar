@@ -52,14 +52,17 @@ def process_changeset(changeset_id):
     if (not data) or (len(data['attributes']) == 0): return results;
 
     directory = os.path.dirname(os.path.realpath(__file__))
+    directory = os.path.abspath(os.path.join(directory, os.pardir))
 
     # Load all pre-trained assets.
-    model = joblib.load(os.path.join(directory, '../trained/model.pkl'))
-    new_vectorizer = joblib.load(os.path.join(directory, '../trained/new_vectorizer.pkl'))
-    old_vectorizer = joblib.load(os.path.join(directory, '../trained/old_vectorizer.pkl'))
+    model = joblib.load(os.path.join(directory, 'trained/model.pkl'))
+    new_vectorizer = joblib.load(os.path.join(directory, 'trained/new_vectorizer.pkl'))
+    old_vectorizer = joblib.load(os.path.join(directory, 'trained/old_vectorizer.pkl'))
 
     directory = os.path.dirname(os.path.realpath(__file__))
-    version_filepath = os.path.join(directory, '../../VERSION')
+    directory = os.path.abspath(os.path.join(directory, os.pardir))
+    directory = os.path.abspath(os.path.join(directory, os.pardir))
+    version_filepath = os.path.join(directory, 'VERSION')
     with open(version_filepath) as f:
         version = f.read().strip()
 
