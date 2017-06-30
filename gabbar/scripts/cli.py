@@ -45,7 +45,7 @@ def process_changeset(changeset_id):
     helper = os.path.join(directory, 'helpers/real_changeset.js')
 
     # Arguments must contain only strings.
-    data = json.loads(subprocess.check_output([helper, '--changesetID', str(changeset_id)]))
+    data = json.loads(str(subprocess.check_output([helper, '--changesetID', str(changeset_id)], universal_newlines=True)))
 
     results = []
     # If there are no attributes, that means there were no interesting samples to process in this changeset.
