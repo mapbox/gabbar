@@ -1,9 +1,40 @@
 'use strict';
 
+
+const rcAttributes = require('./real_changeset');
+const fAttributes = require('./feature');
+const uAttributes = require('./user');
+const hAttributes = require('./highway');
+
+
 module.exports = {
     tagsToString: tagsToString,
     getAttributeHeaders: getAttributeHeaders,
+    getAttributes: getAttributes,
 };
+
+
+
+function getAttributes(realChangeset, changeset, newVersion, oldVersion, newUserDetails, oldUserDetails) {
+    return [
+        rcAttributes.getChangesetID(realChangeset),
+        rcAttributes.isChangesetHarmful(realChangeset),
+        fAttributes.getFeatureID(newVersion),
+        fAttributes.getFeatureVersion(newVersion),
+        fAttributes.getAction(newVersion) === 'create' ? 1 : 0,
+        fAttributes.getAction(newVersion) === 'modify' ? 1 : 0,
+        fAttributes.getAction(newVersion) === 'delete' ? 1 : 0,
+        fAttributes.getGeometryType(newVersion) === 'node' ? 1 : 0,
+        fAttributes.getGeometryType(newVersion) === 'way' ? 1 : 0,
+        fAttributes.getGeometryType(newVersion) === 'relation' ? 1 : 0,
+        fAttributes.getLineDistance(newVersion),
+        fAttributes.getKinks(newVersion).length,
+        uAttributes.getMappingDays(oldUserDetails),
+        uAttributes.getMappingDays(newUserDetails),
+        tagsToString(oldVersion, newVersion),
+        tagsToString(newVersion, oldVersion),
+    ];
+}
 
 function getAttributeHeaders() {
     return [
@@ -25,6 +56,7 @@ function getAttributeHeaders() {
         'new_tags',
     ];
 }
+
 
 function tagsToString(feature, anotherFeature) {
     let tags = feature ? feature.properties.tags : {};
