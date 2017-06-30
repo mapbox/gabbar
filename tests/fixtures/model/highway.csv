@@ -1,0 +1,3 @@
+changeset_id,changeset_harmful,feature_id,feature_version,action_create,action_modify,action_delete,geometry_type_node,geometry_type_way,geometry_type_relation,geometry_line_distance,geometry_kinks,old_user_mapping_days,new_user_mapping_days,old_tags,new_tags
+48255884,,490324518,2,0,1,0,0,1,0,0.33,0,27,27,,{landuse=forest}
+
