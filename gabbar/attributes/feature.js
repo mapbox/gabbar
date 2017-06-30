@@ -11,8 +11,21 @@ module.exports = {
     getGeometryType: getGeometryType,
     getUsername: getUsername,
     isNameModified: isNameModified,
+    getFeatureHash: getFeatureHash,
 };
 
+
+function getFeatureHash(feature) {
+    try {
+        return [
+            feature.properties.type,
+            feature.properties.id,
+            feature.properties.version
+        ].join('!');
+    } catch (error) {
+        return '';
+    }
+}
 
 function isNameModified(newVersion, oldVersion) {
     try {

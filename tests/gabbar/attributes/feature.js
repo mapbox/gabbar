@@ -136,3 +136,22 @@ test('Test name modified of a feature without name modification', function (t) {
 
     t.end();
 });
+
+
+test('Test name modified of a feature without name modification', function (t) {
+    let changesetPath = path.join(__dirname, '../../fixtures/changesets/48255884.json');
+    let changeset = JSON.parse(fs.readFileSync(changesetPath));
+
+    let samples = getSamples(changeset);
+    for (let sample of samples) {
+        let newVersion = sample[0];
+        let oldVersion = sample[1];
+        let actual = fAttributes.getFeatureHash(newVersion);
+
+        t.true(actual.indexOf(newVersion.properties.type) !== -1);
+        t.true(actual.indexOf(newVersion.properties.id) !== -1);
+        t.true(actual.indexOf(newVersion.properties.version) !== -1);
+    }
+
+    t.end();
+});
