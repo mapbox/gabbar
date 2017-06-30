@@ -55,7 +55,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
 
         // Checking for duplicate changesets.
         if (seenChangesets.has(changesetID)) continue;
-        seenChangesets.add(changesetID)
+        seenChangesets.add(changesetID);
 
         let realChangeset;
         try {
