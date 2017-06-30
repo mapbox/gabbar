@@ -5,7 +5,7 @@ var fs = require('fs');
 var path = require('path');
 
 var getFeaturesByAction = require('../../../gabbar/utilities/changeset').getFeaturesByAction;
-var tagsToString = require('../../../gabbar/attributes/highway').tagsToString;
+var hAttributes = require('../../../gabbar/attributes/highway');
 
 
 test('Convert tags into a string for tokenization', function (t) {
@@ -18,8 +18,15 @@ test('Convert tags into a string for tokenization', function (t) {
     let feature = modifiedFeatures[0];
 
     // Feature is an array in [newVersion, oldVersion] format.
-    let asString = tagsToString(feature[0], feature[1]);
+    let asString = hAttributes.tagsToString(feature[0], feature[1]);
 
     t.equal(asString, '{landuse=forest}');
+    t.end();
+});
+
+
+test('Get headers of attributes', function (t) {
+    let headers = hAttributes.getAttributeHeaders();
+    t.equal(headers.length, 16);
     t.end();
 });

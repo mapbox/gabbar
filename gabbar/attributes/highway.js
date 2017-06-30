@@ -1,9 +1,30 @@
 'use strict';
 
 module.exports = {
-    tagsToString: tagsToString
+    tagsToString: tagsToString,
+    getAttributeHeaders: getAttributeHeaders,
 };
 
+function getAttributeHeaders() {
+    return [
+        'changeset_id',
+        'changeset_harmful',
+        'feature_id',
+        'feature_version',
+        'action_create',
+        'action_modify',
+        'action_delete',
+        'geometry_type_node',
+        'geometry_type_way',
+        'geometry_type_relation',
+        'geometry_line_distance',
+        'geometry_kinks',
+        'old_user_mapping_days',
+        'new_user_mapping_days',
+        'old_tags',
+        'new_tags',
+    ];
+}
 
 function tagsToString(feature, anotherFeature) {
     let tags = feature ? feature.properties.tags : {};
