@@ -46,8 +46,8 @@ test('Get all attributes of the feature', function (t) {
     for (let sample of samples) {
         let attributes = hAttributes.getAttributes(realChangeset, changeset, sample[0], sample[1], newUserDetails, oldUserDetails);
         t.equal(attributes.length, 16);
-        t.true(attributes.indexOf(rcAttributes.getChangesetID(realChangeset)) !== -1);
-        t.true(attributes.indexOf(fAttributes.getFeatureID(sample[0])) !== -1);
+        t.equal(attributes.indexOf(rcAttributes.getChangesetID(realChangeset)), 0);
+        t.equal(attributes.indexOf(fAttributes.getFeatureID(sample[0])), 2);
     }
     t.end();
 });
