@@ -81,6 +81,20 @@ test('Get username for a highway', function (t) {
 });
 
 
+test('Get user ID for a highway', function (t) {
+    let changesetPath = path.join(__dirname, '../../fixtures/changesets/48255884.json');
+    let changeset = JSON.parse(fs.readFileSync(changesetPath));
+
+    let samples = getSamples(changeset);
+    for (let sample of samples) {
+        let newVersion = sample[0];
+        t.equal(fAttributes.getUserID(newVersion), '5748310');
+    }
+
+    t.end();
+});
+
+
 test('Get feature ID of highway', function (t) {
     let changesetPath = path.join(__dirname, '../../fixtures/changesets/48255884.json');
     let changeset = JSON.parse(fs.readFileSync(changesetPath));

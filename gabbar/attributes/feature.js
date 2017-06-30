@@ -10,6 +10,7 @@ module.exports = {
     getAction: getAction,
     getGeometryType: getGeometryType,
     getUsername: getUsername,
+    getUserID: getUserID,
     isNameModified: isNameModified,
     getFeatureHash: getFeatureHash,
 };
@@ -92,6 +93,15 @@ function getGeometryType(feature) {
 function getUsername(feature) {
     try {
         return feature.properties.user;
+    } catch (error) {
+        return '';
+    }
+}
+
+
+function getUserID(feature) {
+    try {
+        return feature.properties.uid;
     } catch (error) {
         return '';
     }
