@@ -1,0 +1,33 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "id": "4791320695",
+                "version": "1",
+                "timestamp": "2017-04-13T08:23:26Z",
+                "changeset": "47734592",
+                "uid": "5662807",
+                "user": "Bhuvan Anand",
+                "action": "create",
+                "type": "node",
+                "tags": {
+                    "addr:city": "à²¸à³\u0081à²\u00adà²¾à²·à³\u008d à²¨à²—à²°, à²•à³†à²‚à²—à³‡à²°à²¿ à²‰à²ªà²¨à²—à²°",
+                    "addr:postcode": "à³«à³¬à³¦à³¦à³¬à³¦",
+                    "addr:street": "à³\u00ad à²¨à³‡ à²•à³\u008dà²°à²¾à²¸à³\u008d",
+                    "amenity": "place_of_worship",
+                    "name": "à²¶à³\u008dà²°à³€ à²°à²¾à²˜à²µà³‡à²‚à²¦à³\u008dà²° à²¸à³\u008dà²µà²¾à²®à²¿ à²®à² "
+                },
+                "changeType": "added"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    77.4835478,
+                    12.9233976
+                ]
+            }
+        }
+    ]
+}

@@ -9,8 +9,7 @@
   },
   "scripts": {
     "lint": "eslint index.js **/*.js --ignore-pattern '!node_modules/*'",
-    "pretest": "npm run lint",
-    "test": "tape tests/**/*.js"
+    "test": "TAP_TIMEOUT=600 tap --coverage tests/**/*.js"
   },
   "repository": {
     "type": "git",
@@ -46,6 +45,7 @@
   "devDependencies": {
     "eslint": "^3.19.0",
     "eslint-config-mourner": "^2.0.1",
+    "tap": "^10.5.2",
     "tape": "^4.6.3"
   }
 }
