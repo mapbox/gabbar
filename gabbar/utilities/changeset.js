@@ -34,7 +34,6 @@ function getFeaturesByAction(changeset, action) {
     return features;
 }
 
-
 function getAllFeatures(changeset) {
     let features = [];
     let featuresCreated = getFeaturesByAction(changeset, 'create');
