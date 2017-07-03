@@ -15,17 +15,17 @@ function getSamples(changeset) {
     let featuresDeleted = getFeaturesByAction(changeset, 'delete');
     let features = featuresCreated.concat(featuresModified, featuresDeleted);
 
-    // NOTE: Currently processsing changesets with one feature modificaton.
-    if (features.length !== 1) return [];
+    // // NOTE: Currently processsing changesets with one feature modificaton.
+    // if (features.length !== 1) return [];
 
     let samples = [];
     for (let feature of features) {
         let newVersion = feature[0];
         let oldVersion = feature[1];
 
-        let nameModified = featureAttributes.isNameModified(newVersion, oldVersion);
-        // Skipping samples where a feature's name was modified.
-        if (nameModified === 1) continue;
+        // let nameModified = featureAttributes.isNameModified(newVersion, oldVersion);
+        // // Skipping samples where a feature's name was modified.
+        // if (nameModified === 1) continue;
 
         let interested = false;
         if (newVersion && ('highway' in newVersion.properties.tags)) interested = true;
