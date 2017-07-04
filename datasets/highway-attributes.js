@@ -52,6 +52,10 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
         'new_user_mapping_days',
         'difference_user_mapping_days',
         'ratio_user_mapping_days',
+        'old_number_of_tags',
+        'new_number_of_tags',
+        'difference_number_of_tags',
+        'ratio_number_of_tags',
         'old_tags',
         'new_tags',
     ];
@@ -119,6 +123,10 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
                 userAttributes.getMappingDays(newUserDetails),
                 userAttributes.getMappingDays(newUserDetails) - userAttributes.getMappingDays(oldUserDetails),
                 userAttributes.getMappingDays(oldUserDetails) ? userAttributes.getMappingDays(newUserDetails) / userAttributes.getMappingDays(oldUserDetails) : 0,
+                featureAttributes.getNumberOfTags(oldVersion),
+                featureAttributes.getNumberOfTags(newVersion),
+                featureAttributes.getNumberOfTags(newVersion) - featureAttributes.getNumberOfTags(oldVersion),
+                featureAttributes.getNumberOfTags(oldVersion) ? featureAttributes.getNumberOfTags(newVersion) / featureAttributes.getNumberOfTags(oldVersion) : 0,
                 highwayAttributes.tagsToString(oldVersion, newVersion),
                 highwayAttributes.tagsToString(newVersion, oldVersion),
             ]);
