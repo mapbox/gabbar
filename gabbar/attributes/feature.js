@@ -15,6 +15,7 @@ module.exports = {
     getFeatureHash: getFeatureHash,
     getNumberOfNodes: getNumberOfNodes,
     getDistanceBetweenVersions: getDistanceBetweenVersions,
+    getArea: getArea,
 };
 
 
@@ -123,6 +124,15 @@ function getUserID(feature) {
 function getDistanceBetweenVersions(newVersion, oldVersion) {
     try {
         return parseFloat(turf.distance(turf.centroid(newVersion), turf.centroid(oldVersion)).toFixed(4));
+    } catch (error) {
+        return 0;
+    }
+}
+
+
+function getArea(feature) {
+    try {
+        return parseFloat(turf.area(feature).toFixed(4));
     } catch (error) {
         return 0;
     }

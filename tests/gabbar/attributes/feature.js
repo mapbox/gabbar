@@ -201,3 +201,19 @@ test('Get distance between versions', function (t) {
 
     t.end();
 });
+
+
+test('Get get feture area', function (t) {
+    let changesetPath = path.join(__dirname, '../../fixtures/changesets/48648149.json');
+    let changeset = JSON.parse(fs.readFileSync(changesetPath));
+
+    let samples = getSamples(changeset);
+    for (let sample of samples) {
+        let newVersion = sample[0];
+        let oldVersion = sample[1];
+        t.equal(fAttributes.getArea(newVersion), 0);
+        t.equal(fAttributes.getArea(oldVersion), 0);
+    }
+
+    t.end();
+});
