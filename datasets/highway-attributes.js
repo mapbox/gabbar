@@ -39,7 +39,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
         'geometry_type_node',
         'geometry_type_way',
         'geometry_type_relation',
-        'geometry_distance_between_versions'
+        'geometry_distance_between_versions',
         'old_geometry_line_distance',
         'old_geometry_number_of_nodes',
         'old_geometry_kinks',
