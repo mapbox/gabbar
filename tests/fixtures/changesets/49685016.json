@@ -1,0 +1,125 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "id": "500704692",
+                "version": "3",
+                "timestamp": "2017-06-20T07:12:10Z",
+                "changeset": "49685016",
+                "uid": "6157629",
+                "user": "samkv",
+                "action": "modify",
+                "type": "way",
+                "tags": {
+                    "highway": "primary",
+                    "lanes": "4",
+                    "name": "Мельницка вулиця",
+                    "name:en": "Mel'nyts'ka Street",
+                    "name:ru": "Мельницкая улица",
+                    "name:uk": "Мельницка вулиця",
+                    "oneway": "no"
+                },
+                "changeType": "modifiedNew"
+            },
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        30.6918884,
+                        46.4606024
+                    ],
+                    [
+                        30.6917733,
+                        46.4605985
+                    ],
+                    [
+                        30.6916597,
+                        46.4605818
+                    ],
+                    [
+                        30.6912116,
+                        46.4605334
+                    ],
+                    [
+                        30.6910879,
+                        46.4605143
+                    ],
+                    [
+                        30.6910207,
+                        46.4605044
+                    ],
+                    [
+                        30.6896035,
+                        46.4602953
+                    ],
+                    [
+                        30.689276,
+                        46.4602036
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": "500704692",
+                "version": "2",
+                "timestamp": "2017-06-19T07:25:55Z",
+                "changeset": "49658670",
+                "uid": "904010",
+                "user": "~Jhellico",
+                "action": "modify",
+                "type": "way",
+                "tags": {
+                    "name": "Млинова вулиця",
+                    "name:en": "Mlynova Street",
+                    "name:uk": "Млинова вулиця",
+                    "highway": "primary",
+                    "lanes": "4",
+                    "name:ru": "Мельницкая улица",
+                    "oneway": "no"
+                },
+                "changeType": "modifiedOld"
+            },
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        30.6918884,
+                        46.4606024
+                    ],
+                    [
+                        30.6917733,
+                        46.4605985
+                    ],
+                    [
+                        30.6916597,
+                        46.4605818
+                    ],
+                    [
+                        30.6912116,
+                        46.4605334
+                    ],
+                    [
+                        30.6910879,
+                        46.4605143
+                    ],
+                    [
+                        30.6910207,
+                        46.4605044
+                    ],
+                    [
+                        30.6896035,
+                        46.4602953
+                    ],
+                    [
+                        30.689276,
+                        46.4602036
+                    ]
+                ]
+            }
+        }
+    ]
+}
