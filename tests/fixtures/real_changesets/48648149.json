@@ -1,0 +1,71 @@
+{
+    "elements": [
+        {
+            "id": "4851516076",
+            "lat": "34.1879966",
+            "lon": "-118.3726938",
+            "version": "2",
+            "timestamp": "2017-05-13T12:32:08Z",
+            "changeset": "48648149",
+            "uid": "5895135",
+            "user": "lVektorl",
+            "old": {
+                "id": "4851516076",
+                "lat": "34.1880099",
+                "lon": "-118.3726777",
+                "version": "1",
+                "timestamp": "2017-05-13T12:30:17Z",
+                "changeset": "48648112",
+                "uid": "5895135",
+                "user": "lVektorl",
+                "action": "modify",
+                "type": "node",
+                "tags": {
+                    "crossing": "zebra",
+                    "highway": "crossing"
+                }
+            },
+            "action": "modify",
+            "type": "node",
+            "tags": {
+                "crossing": "zebra",
+                "highway": "crossing"
+            }
+        }
+    ],
+    "metadata": {
+        "id": "48648149",
+        "created_at": "2017-05-13T12:32:08Z",
+        "closed_at": "2017-05-13T12:32:09Z",
+        "open": "false",
+        "user": "lVektorl",
+        "uid": "5895135",
+        "min_lat": "34.1879966",
+        "min_lon": "-118.3726938",
+        "max_lat": "34.1880099",
+        "max_lon": "-118.3726777",
+        "comments_count": "0",
+        "tag": [
+            {
+                "k": "comment",
+                "v": "Walk Path"
+            },
+            {
+                "k": "locale",
+                "v": "en-US"
+            },
+            {
+                "k": "host",
+                "v": "http://www.openstreetmap.org/edit"
+            },
+            {
+                "k": "imagery_used",
+                "v": "Bing aerial imagery"
+            },
+            {
+                "k": "created_by",
+                "v": "iD 2.2.1"
+            }
+        ]
+    }
+}

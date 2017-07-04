@@ -1,0 +1,55 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "id": "4851516076",
+                "version": "2",
+                "timestamp": "2017-05-13T12:32:08Z",
+                "changeset": "48648149",
+                "uid": "5895135",
+                "user": "lVektorl",
+                "action": "modify",
+                "type": "node",
+                "tags": {
+                    "crossing": "zebra",
+                    "highway": "crossing"
+                },
+                "changeType": "modifiedNew"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -118.3726938,
+                    34.1879966
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": "4851516076",
+                "version": "1",
+                "timestamp": "2017-05-13T12:30:17Z",
+                "changeset": "48648112",
+                "uid": "5895135",
+                "user": "lVektorl",
+                "action": "modify",
+                "type": "node",
+                "tags": {
+                    "crossing": "zebra",
+                    "highway": "crossing"
+                },
+                "changeType": "modifiedOld"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -118.3726777,
+                    34.1880099
+                ]
+            }
+        }
+    ]
+}
