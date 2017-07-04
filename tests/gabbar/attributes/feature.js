@@ -185,3 +185,19 @@ test('Test name modified of a feature without name modification', function (t) {
 
     t.end();
 });
+
+
+test('Get distance between versions', function (t) {
+    let changesetPath = path.join(__dirname, '../../fixtures/changesets/48648149.json');
+    let changeset = JSON.parse(fs.readFileSync(changesetPath));
+
+    let samples = getSamples(changeset);
+    for (let sample of samples) {
+        let newVersion = sample[0];
+        let oldVersion = sample[1];
+        let actual = fAttributes.getDistanceBetweenVersions(newVersion, oldVersion);
+        t.equal(actual, 0.0021);
+    }
+
+    t.end();
+});
