@@ -16,6 +16,7 @@ module.exports = {
     getNumberOfNodes: getNumberOfNodes,
     getDistanceBetweenVersions: getDistanceBetweenVersions,
     getArea: getArea,
+    getNumberOfTags: getNumberOfTags,
 };
 
 
@@ -133,6 +134,15 @@ function getDistanceBetweenVersions(newVersion, oldVersion) {
 function getArea(feature) {
     try {
         return parseFloat(turf.area(feature).toFixed(4));
+    } catch (error) {
+        return 0;
+    }
+}
+
+
+function getNumberOfTags(feature) {
+    try {
+        return Object.keys(feature.properties.tags).length;
     } catch (error) {
         return 0;
     }

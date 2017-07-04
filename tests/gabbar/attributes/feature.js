@@ -217,3 +217,20 @@ test('Get get feture area', function (t) {
 
     t.end();
 });
+
+
+
+test('Get tags of a feature', function (t) {
+    let changesetPath = path.join(__dirname, '../../fixtures/changesets/48648149.json');
+    let changeset = JSON.parse(fs.readFileSync(changesetPath));
+
+    let samples = getSamples(changeset);
+    for (let sample of samples) {
+        let newVersion = sample[0];
+        let oldVersion = sample[1];
+        t.equal(fAttributes.getNumberOfTags(newVersion), 2);
+        t.equal(fAttributes.getNumberOfTags(oldVersion), 2);
+    }
+
+    t.end();
+});
