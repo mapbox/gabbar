@@ -23,6 +23,22 @@ test('Get line distance for a highway', function (t) {
 });
 
 
+test('Get number of nodes in highway', function (t) {
+    let changesetPath = path.join(__dirname, '../../fixtures/changesets/48255884.json');
+    let changeset = JSON.parse(fs.readFileSync(changesetPath));
+
+    let samples = getSamples(changeset);
+    for (let sample of samples) {
+        let newVersion = sample[0];
+        let oldVersion = sample[1];
+        t.equal(fAttributes.getNumberOfNodes(newVersion), 20);
+        t.equal(fAttributes.getNumberOfNodes(oldVersion), 20);
+    }
+
+    t.end();
+});
+
+
 test('Get kinks for a highway', function (t) {
     let changesetPath = path.join(__dirname, '../../fixtures/changesets/48255884.json');
     let changeset = JSON.parse(fs.readFileSync(changesetPath));

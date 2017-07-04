@@ -13,6 +13,7 @@ module.exports = {
     getUserID: getUserID,
     isNameModified: isNameModified,
     getFeatureHash: getFeatureHash,
+    getNumberOfNodes: getNumberOfNodes,
 };
 
 
@@ -59,6 +60,16 @@ function getLineDistance(feature) {
         return parseFloat(turf.lineDistance(feature).toFixed(3));
     } catch (error) {
         return 0;
+    }
+}
+
+
+function getNumberOfNodes(feature) {
+    try {
+        return feature.geometry.coordinates.length;
+    } catch (error) {
+        // Return a default length of 1.
+        return 1;
     }
 }
 
