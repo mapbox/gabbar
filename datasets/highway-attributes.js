@@ -50,6 +50,8 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
         'new_geometry_area',
         'old_user_mapping_days',
         'new_user_mapping_days',
+        'difference_user_mapping_days',
+        'ratio_user_mapping_days',
         'old_tags',
         'new_tags',
     ];
@@ -115,6 +117,8 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
                 featureAttributes.getArea(newVersion),
                 userAttributes.getMappingDays(oldUserDetails),
                 userAttributes.getMappingDays(newUserDetails),
+                userAttributes.getMappingDays(newUserDetails) - userAttributes.getMappingDays(oldUserDetails),
+                userAttributes.getMappingDays(oldUserDetails) ? userAttributes.getMappingDays(newUserDetails) / userAttributes.getMappingDays(oldUserDetails) : 0,
                 highwayAttributes.tagsToString(oldVersion, newVersion),
                 highwayAttributes.tagsToString(newVersion, oldVersion),
             ]);
