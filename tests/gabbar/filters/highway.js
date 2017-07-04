@@ -26,3 +26,18 @@ test('Get samples for changeset without a highway', function (t) {
 
     t.end();
 });
+
+test('Get samples with a name modification with forTraining', function (t) {
+    let changesetPath = path.join(__dirname, '../../fixtures/changesets/49685016.json');
+    let changeset = JSON.parse(fs.readFileSync(changesetPath));
+
+    // Get samples for training.
+    let actual = getSamples(changeset, true);
+    t.equal(actual.length, 0);
+
+    // Get samples during deployment.
+    actual = getSamples(changeset, false);
+    t.equal(actual.length, 1);
+
+    t.end();
+});
