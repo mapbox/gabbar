@@ -36,7 +36,7 @@ function download(url, callback) {
 
 let q = queue(1);
 console.log('changeset_id,harmful');
-for (var i = 1; i < 100; i++) {
+for (var i = 1; i < 1000; i++) {
     let pageURL = url + '&page=' + i;
     q.defer(download, pageURL);
 }
