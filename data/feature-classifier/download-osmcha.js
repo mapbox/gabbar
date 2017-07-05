@@ -12,8 +12,7 @@ if (argv.help) {
 }
 
 // Url to download checked chagesets with one feature modifications.
-let url = 'https://osmcha.mapbox.com/api/v1/changesets/?page_size=500&checked=1&create__gte=0&create__lte=0&modify__gte=1&modify__lte=1&delete__gte=0&delete__lte=0&format=json'
-
+let url = 'https://osmcha.mapbox.com/api/v1/changesets/?page_size=500&format=json&checked=1&date__gte=2017-01-01'
 
 function download(url, callback) {
     process.stderr.write(url + '\n');
