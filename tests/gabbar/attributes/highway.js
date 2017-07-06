@@ -92,7 +92,7 @@ test('Check tag value difference for highway tag modified', function (t) {
         let oldVersion = sample[1];
 
         let actual = hAttributes.getHighwayValueDifference(newVersion, oldVersion);
-        t.equal(actual, -5);
+        t.equal(actual, -41);
     }
     t.end();
 });
