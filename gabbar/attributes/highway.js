@@ -109,7 +109,6 @@ function getHighwayValueDifference(newVersion, oldVersion) {
         'primary',
         'secondary',
         'tertiary',
-        'unclassified',
         'residential',
         'service',
         'motorway_link',
@@ -146,6 +145,7 @@ function getHighwayValueDifference(newVersion, oldVersion) {
         'stop',
         'traffic_signals',
         'turning_circle',
+        'unclassified',
     ];
 
     try {
