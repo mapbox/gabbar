@@ -12,6 +12,7 @@ module.exports = {
     getAttributeHeaders: getAttributeHeaders,
     getAttributes: getAttributes,
     isHighwayTagDeleted: isHighwayTagDeleted,
+    isHighwayTagCreated: isHighwayTagCreated,
     getHighwayValueDifference: getHighwayValueDifference,
 };
 
@@ -100,6 +101,18 @@ function isHighwayTagDeleted(newVersion, oldVersion) {
         return 0;
     }
 }
+
+
+function isHighwayTagCreated(newVersion, oldVersion) {
+    try {
+        if (!oldVersion && ('highway' in newVersion.properties.tags)) return 1;
+        else if (('highway' in newVersion.properties.tags) && !('highway' in oldVersion.properties.tags)) return 1;
+        else return 0;
+    } catch (error) {
+        return 0;
+    }
+}
+
 
 function getHighwayValueDifference(newVersion, oldVersion) {
     // In the order listed here: https://wiki.openstreetmap.org/wiki/Key:highway

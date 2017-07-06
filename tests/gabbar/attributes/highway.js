@@ -68,6 +68,21 @@ test('Check if highway tag is deleted', function (t) {
 });
 
 
+test('Check if highway tag is created', function (t) {
+    let changeset = JSON.parse(fs.readFileSync(path.join(__dirname, '../../fixtures/changesets/47608743.json')));
+    let samples = hFilters.getSamples(changeset);
+
+    for (let sample of samples) {
+        let newVersion = sample[0];
+        let oldVersion = sample[1];
+
+        let actual = hAttributes.isHighwayTagCreated(newVersion, oldVersion);
+        t.equal(actual, 1);
+    }
+    t.end();
+});
+
+
 test('Check tag value difference for highway tag not modified', function (t) {
     let changeset = JSON.parse(fs.readFileSync(path.join(__dirname, '../../fixtures/changesets/48255884.json')));
     let samples = hFilters.getSamples(changeset);
