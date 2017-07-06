@@ -258,3 +258,16 @@ test('Get primary tags', function (t) {
     t.equal(actual.length, 26);
     t.end();
 });
+
+
+test('Get get area of feature bbox', function (t) {
+    let changesetPath = path.join(__dirname, '../../fixtures/changesets/48255884.json');
+    let changeset = JSON.parse(fs.readFileSync(changesetPath));
+
+    let sample = getSamples(changeset)[0];
+    let newVersion = sample[0];
+
+    let actual = fAttributes.getBBOXArea(newVersion);
+    t.equal(actual, 39420.1294);
+    t.end();
+});

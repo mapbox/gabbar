@@ -19,6 +19,7 @@ module.exports = {
     getArea: getArea,
     getNumberOfTags: getNumberOfTags,
     getPrimaryTagCount: getPrimaryTagCount,
+    getBBOXArea: getBBOXArea,
 };
 
 const PRIMARY_TAGS = [
@@ -200,5 +201,16 @@ function getPrimaryTagCount(feature) {
             count.push(0);
         }
         return count;
+    }
+}
+
+
+function getBBOXArea(feature) {
+    try {
+        let bbox = turf.bboxPolygon(turf.bbox(feature));
+        return parseFloat(turf.area(bbox).toFixed(4));
+    } catch (error) {
+        console.log(error);
+        return 0;
     }
 }
