@@ -1,5 +1,6 @@
 # Anomaly detection
 
+
 Todo
 - Prepare dataset for training, validation and testing
     - Iteration 1
@@ -191,6 +192,9 @@ aws s3 cp s3://mapbox-gabbar/dumps/anomaly-detection-2017-07-05.tar.gz . --regio
 ```sh
 # Labelled samples.
 head -n1000 downloads/anomaly-detection/labelled/changesets.csv > downloads/anomaly-detection/labelled/sample-changesets.csv
+
+mkdir -p datasets
+vim datasets/anomaly-detection.js
 
 node datasets/anomaly-detection.js \
     --changesets downloads/anomaly-detection/labelled/changesets.csv \
