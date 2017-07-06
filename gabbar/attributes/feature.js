@@ -3,6 +3,7 @@
 const turf = require('@turf/turf');
 
 module.exports = {
+    getPrimaryTags: getPrimaryTags,
     getFeatureID: getFeatureID,
     getFeatureVersion: getFeatureVersion,
     getLineDistance: getLineDistance,
@@ -17,8 +18,41 @@ module.exports = {
     getDistanceBetweenVersions: getDistanceBetweenVersions,
     getArea: getArea,
     getNumberOfTags: getNumberOfTags,
+    getPrimaryTagCount: getPrimaryTagCount,
 };
 
+const PRIMARY_TAGS = [
+    'aerialway',
+    'aeroway',
+    'amenity',
+    'barrier',
+    'boundary',
+    'building',
+    'craft',
+    'emergency',
+    'geological',
+    'highway',
+    'historic',
+    'landuse',
+    'leisure',
+    'man_made',
+    'military',
+    'natural',
+    'office',
+    'place',
+    'power',
+    'public_transport',
+    'railway',
+    'route',
+    'shop',
+    'sport',
+    'tourism',
+    'waterway'
+];
+
+function getPrimaryTags() {
+    return PRIMARY_TAGS;
+}
 
 function getFeatureHash(feature) {
     try {
@@ -145,5 +179,26 @@ function getNumberOfTags(feature) {
         return Object.keys(feature.properties.tags).length;
     } catch (error) {
         return 0;
+    }
+}
+
+
+function getPrimaryTagCount(feature) {
+    try {
+        let count = [];
+        for (let primaryTag of PRIMARY_TAGS) {
+            if (primaryTag in feature.properties.tags) {
+                count.push(1);
+            } else {
+                count.push(0);
+            }
+        }
+        return count;
+    } catch(error) {
+        let count = [];
+        for (let primaryTag of PRIMARY_TAGS) {
+            count.push(0);
+        }
+        return count;
     }
 }

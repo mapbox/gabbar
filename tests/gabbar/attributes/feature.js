@@ -234,3 +234,27 @@ test('Get tags of a feature', function (t) {
 
     t.end();
 });
+
+
+test('Get primary tag count of a feature', function (t) {
+    let changesetPath = path.join(__dirname, '../../fixtures/changesets/48648149.json');
+    let changeset = JSON.parse(fs.readFileSync(changesetPath));
+
+    let samples = getSamples(changeset);
+    for (let sample of samples) {
+        let newVersion = sample[0];
+        let oldVersion = sample[1];
+
+        let newCount = fAttributes.getPrimaryTagCount(newVersion);
+        t.equal(newCount[9], 1);
+    }
+
+    t.end();
+});
+
+
+test('Get primary tags', function (t) {
+    let actual = fAttributes.getPrimaryTags();
+    t.equal(actual.length, 26);
+    t.end();
+});
