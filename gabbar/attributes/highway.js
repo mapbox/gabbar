@@ -12,6 +12,7 @@ module.exports = {
     getAttributeHeaders: getAttributeHeaders,
     getAttributes: getAttributes,
     isHighwayTagDeleted: isHighwayTagDeleted,
+    getHighwayValueDifference: getHighwayValueDifference,
 };
 
 
@@ -95,6 +96,65 @@ function isHighwayTagDeleted(newVersion, oldVersion) {
         } else {
             return 0;
         }
+    } catch (error) {
+        return 0;
+    }
+}
+
+function getHighwayValueDifference(newVersion, oldVersion) {
+    let classification = [
+        'motorway',
+        'trunk',
+        'primary',
+        'secondary',
+        'tertiary',
+        'unclassified',
+        'residential',
+        'service',
+        'motorway_link',
+        'trunk_link',
+        'primary_link',
+        'secondary_link',
+        'tertiary_link',
+        'living_street',
+        'pedestrian',
+        'track',
+        'bus_guideway',
+        'escape',
+        'raceway',
+        'road',
+        'footway',
+        'bridleway',
+        'steps',
+        'path',
+        'cycleway',
+        'proposed',
+        'construction',
+        'bus_stop',
+        'crossing',
+        'elevator',
+        'emergency_access_point',
+        'give_way',
+        'mini_roundabout',
+        'motorway_junction',
+        'passing_place',
+        'rest_area',
+        'speed_camera',
+        'street_lamp',
+        'services',
+        'stop',
+        'traffic_signals',
+        'turning_circle',
+    ];
+
+    try {
+        let newValue = newVersion.properties.tags.highway;
+        let oldValue = oldVersion.properties.tags.highway;
+
+        let newClassification = classification.indexOf(newValue) !== -1 ? classification.indexOf(newValue) : classification.length;
+        let oldClassification = classification.indexOf(oldValue) !== -1 ? classification.indexOf(oldValue) : classification.length;
+
+        return newClassification - oldClassification;
     } catch (error) {
         return 0;
     }
