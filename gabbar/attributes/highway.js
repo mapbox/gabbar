@@ -11,6 +11,7 @@ module.exports = {
     tagsToString: tagsToString,
     getAttributeHeaders: getAttributeHeaders,
     getAttributes: getAttributes,
+    isHighwayTagDeleted: isHighwayTagDeleted,
 };
 
 
@@ -84,4 +85,17 @@ function tagsToString(feature, anotherFeature) {
         results.push('{' + key + '=' + tags[key] + '}');
     }
     return results.length ? results.join(' ') : '';
+}
+
+
+function isHighwayTagDeleted(newVersion, oldVersion) {
+    try {
+        if (('highway' in oldVersion.properties.tags) && !('highway' in newVersion.properties.tags)) {
+            return 1;
+        } else {
+            return 0;
+        }
+    } catch (error) {
+        return 0;
+    }
 }

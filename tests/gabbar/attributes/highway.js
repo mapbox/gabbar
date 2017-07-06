@@ -51,3 +51,18 @@ test('Get all attributes of the feature', function (t) {
     }
     t.end();
 });
+
+
+test('Check if highway tag is deleted', function (t) {
+    let changeset = JSON.parse(fs.readFileSync(path.join(__dirname, '../../fixtures/changesets/48255884.json')));
+    let samples = hFilters.getSamples(changeset);
+
+    for (let sample of samples) {
+        let newVersion = sample[0];
+        let oldVersion = sample[1];
+
+        let actual = hAttributes.isHighwayTagDeleted(newVersion, oldVersion);
+        t.equal(actual, 0);
+    }
+    t.end();
+});
