@@ -102,6 +102,7 @@ function isHighwayTagDeleted(newVersion, oldVersion) {
 }
 
 function getHighwayValueDifference(newVersion, oldVersion) {
+    // In the order listed here: https://wiki.openstreetmap.org/wiki/Key:highway
     let classification = [
         'motorway',
         'trunk',
