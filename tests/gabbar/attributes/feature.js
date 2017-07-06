@@ -271,3 +271,16 @@ test('Get get area of feature bbox', function (t) {
     t.equal(actual, 39420.1294);
     t.end();
 });
+
+
+test('Get length of longest segment', function (t) {
+    let changesetPath = path.join(__dirname, '../../fixtures/changesets/48255884.json');
+    let changeset = JSON.parse(fs.readFileSync(changesetPath));
+
+    let sample = getSamples(changeset)[0];
+    let newVersion = sample[0];
+
+    let actual = fAttributes.getLengthOfLongestSegment(newVersion);
+    t.equal(actual, 0.033);
+    t.end();
+});

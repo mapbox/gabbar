@@ -1,6 +1,7 @@
 'use strict';
 
 const turf = require('@turf/turf');
+const simpleStatistics = require('simple-statistics');
 
 module.exports = {
     getPrimaryTags: getPrimaryTags,
@@ -20,6 +21,7 @@ module.exports = {
     getNumberOfTags: getNumberOfTags,
     getPrimaryTagCount: getPrimaryTagCount,
     getBBOXArea: getBBOXArea,
+    getLengthOfLongestSegment: getLengthOfLongestSegment,
 };
 
 const PRIMARY_TAGS = [
@@ -210,7 +212,22 @@ function getBBOXArea(feature) {
         let bbox = turf.bboxPolygon(turf.bbox(feature));
         return parseFloat(turf.area(bbox).toFixed(4));
     } catch (error) {
-        console.log(error);
+        return 0;
+    }
+}
+
+
+function getLengthOfLongestSegment(feature) {
+    try {
+        let distances = [];
+        let coordinates = feature.geometry.coordinates;
+        for (var i = 1; i < coordinates.length; i++) {
+            let point = turf.point(coordinates[i-1]);
+            let anotherPoint = turf.point(coordinates[i]);
+            distances.push(turf.distance(point, anotherPoint));
+        }
+        return parseFloat(simpleStatistics.max(distances).toFixed(4));
+    } catch (error) {
         return 0;
     }
 }
