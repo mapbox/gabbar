@@ -36,8 +36,9 @@ test('Get samples with a name modification with forTraining', function (t) {
     t.equal(actual.length, 0);
 
     // Get samples during deployment.
+    // NOTE: Temporarily having the same behaviour both in training and production.
     actual = getSamples(changeset, false);
-    t.equal(actual.length, 1);
+    t.equal(actual.length, 0);
 
     t.end();
 });

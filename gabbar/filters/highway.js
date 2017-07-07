@@ -9,14 +9,14 @@ module.exports = {
 
 
 // Return an array of samples from the changeset for the model.
-function getSamples(changeset, forTraining) {
+function getSamples(changeset) {
     let featuresCreated = getFeaturesByAction(changeset, 'create');
     let featuresModified = getFeaturesByAction(changeset, 'modify');
     let featuresDeleted = getFeaturesByAction(changeset, 'delete');
     let features = featuresCreated.concat(featuresModified, featuresDeleted);
 
     // NOTE: Currently processsing changesets with one feature modificaton.
-    if (forTraining && features.length !== 1) return [];
+    if (features.length !== 1) return [];
 
     let samples = [];
     for (let feature of features) {

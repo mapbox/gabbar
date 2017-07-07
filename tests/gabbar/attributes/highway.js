@@ -30,7 +30,7 @@ test('Convert tags into a string for tokenization', function (t) {
 
 test('Get headers of attributes', function (t) {
     let headers = hAttributes.getAttributeHeaders();
-    t.equal(headers.length, 16);
+    t.equal(headers.length, 14);
     t.end();
 });
 
@@ -45,7 +45,7 @@ test('Get all attributes of the feature', function (t) {
 
     for (let sample of samples) {
         let attributes = hAttributes.getAttributes(realChangeset, changeset, sample[0], sample[1], newUserDetails, oldUserDetails);
-        t.equal(attributes.length, 16);
+        t.equal(attributes.length, 14);
         t.equal(attributes.indexOf(rcAttributes.getChangesetID(realChangeset)), 0);
         t.equal(attributes.indexOf(fAttributes.getFeatureID(sample[0])), 2);
     }
