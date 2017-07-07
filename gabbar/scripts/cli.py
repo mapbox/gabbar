@@ -95,11 +95,62 @@ def process_changeset(changeset_id):
     return results
 
 
+def anomaly_detection(changeset_id):
+    # Run node.js script to download real changeset and extract features.
+    directory = os.path.dirname(os.path.realpath(__file__))
+    # Getting the parent directory.
+    directory = os.path.abspath(os.path.join(directory, os.pardir))
+    helper = os.path.join(directory, 'helpers/real_changeset.js')
+
+    # Arguments must contain only strings.
+    data = json.loads(str(subprocess.check_output([helper, '--changesetID', str(changeset_id)], universal_newlines=True)))
+
+    results = []
+    # If there are no attributes, that means there were no interesting samples to process in this changeset.
+    if (not data) or (len(data['attributes']) == 0): return results;
+
+    directory = os.path.dirname(os.path.realpath(__file__))
+    directory = os.path.abspath(os.path.join(directory, os.pardir))
+
+    # Load all pre-trained assets.
+    model = joblib.load(os.path.join(directory, 'trained/model.pkl'))
+
+    directory = os.path.dirname(os.path.realpath(__file__))
+    directory = os.path.abspath(os.path.join(directory, os.pardir))
+    directory = os.path.abspath(os.path.join(directory, os.pardir))
+    version_filepath = os.path.join(directory, 'VERSION')
+    with open(version_filepath) as f:
+        version = f.read().strip()
+
+    for i in range(len(data['attributes'])):
+        attributes = data['attributes'][i]
+
+        mapping = dict(zip(data['header'], attributes))
+
+        # Leaving out non training parameters.
+        model_attribute_keys = data['header'][3:]
+        model_attribute_values = list(attributes[3:])
+
+        prediction = int(model.predict([model_attribute_values])[0])
+
+        result = {
+            'changeset_id': attributes[0],
+            'feature_id': attributes[2],
+            'feature_type': getFeatureType(attributes[7:10]),  # TODO
+            'attributes': dict(zip(model_attribute_keys, model_attribute_values)),
+            'prediction': prediction,
+            'timestamp': datetime.datetime.now(),
+            'version': version,
+        }
+        results.append(result)
+    return results
+
+
 @click.command('gabbar')
 @click.argument('changeset', type=str, metavar='changeset')
 def cli(changeset):
 
-    results = process_changeset(changeset)
+    results = anomaly_detection(changeset)
     print(json.dumps(results, sort_keys=True, default=converter, indent=4))
 
     # results = get_prediction(changeset);
