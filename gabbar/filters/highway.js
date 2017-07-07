@@ -25,7 +25,7 @@ function getSamples(changeset, forTraining) {
 
         let nameModified = featureAttributes.isNameModified(newVersion, oldVersion);
         // Skipping samples where a feature's name was modified.
-        if (forTraining && nameModified === 1) continue;
+        if (nameModified === 1) continue;
 
         let interested = false;
         if (newVersion && ('highway' in newVersion.properties.tags)) interested = true;
