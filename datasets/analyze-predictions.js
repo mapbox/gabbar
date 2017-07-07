@@ -33,10 +33,12 @@ console.log('Total predictions: ' + predictions.length);
 
 let harmfuls = [], goods = [];
 for (let prediction of predictions) {
+    if (prediction === '.DS_Store') continue;
+
     prediction = JSON.parse(fs.readFileSync(path.join(argv.predictionsDir, prediction)));
 
-    if (prediction == 1) harmfuls.push(prediction)
-    else goods.push(prediction)
+    if (prediction.prediction === -1) harmfuls.push(prediction);
+    else goods.push(prediction);
 }
 console.log('Features predicted good: ' + goods.length);
 console.log('Features predicted harmful: ' + harmfuls.length);
@@ -46,14 +48,31 @@ console.log('\nChangesets predicted good ...');
 let goodChangesets = new Set([]);
 while (true) {
     // To review a sample of 25 changesets.
-    if (goodChangesets.size > 25) break;
+    if ((goodChangesets.size >= goods.length) || (goodChangesets.size > 25)) break;
 
     // Randomly select a good changeset.
-    let good = goods[getRandomIntInclusive(0, goods.length)];
+    let good = goods[getRandomIntInclusive(0, goods.length - 1)];
 
     // If changeset is already seen, skip.
     if (goodChangesets.has(good.changeset_id)) continue;
 
     console.log(OSMCHA_URL + good.changeset_id + '/' + '\t' + getFeatureHash(good) + '.json');
     goodChangesets.add(good.changeset_id);
+}
+
+
+console.log('\nChangesets predicted harmful ...');
+let harmfulChangesets = new Set([]);
+while (true) {
+    // To review a sample of 25 changesets.
+    if ((harmfulChangesets.size >= harmfuls.length) || (harmfulChangesets.size > 25)) break;
+
+    // Randomly select a good changeset.
+    let harmful = harmfuls[getRandomIntInclusive(0, harmfuls.length - 1)];
+
+    // If changeset is already seen, skip.
+    if (harmfulChangesets.has(harmful.changeset_id)) continue;
+
+    console.log(OSMCHA_URL + harmful.changeset_id + '/' + '\t' + getFeatureHash(harmful) + '.json');
+    harmfulChangesets.add(harmful.changeset_id);
 }
