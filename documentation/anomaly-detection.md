@@ -218,6 +218,26 @@ wc -l downloads/anomaly-detection/unlabelled/attributes.csv
 ```
 
 
+### Analyze attributes
+
+```bash
+node datasets/analyze-predictions.js --predictionsDir downloads/predictions/anomaly-detection
+```
+
+
+### Extract feature
+
+```bash
+
+node datasets/extract-feature.js \
+    --realChangesetsDir downloads/anomaly-detection/large/labelled/real-changesets/ \
+    --changesetID 46637047 \
+    --featureType "node" \
+    --featureID 4635066575 > downloads/feature.json
+
+```
+
+## Error analysis
 
 ```bash
 
@@ -347,5 +367,68 @@ Labelled good 	182 	1636
 Predicted harmful 	Predicted good
 Labelled harmful 	40 	15
 Labelled good 	41 	358
+
+
+# 1,000 labelled samples
+
+- Training
+Predicted harmful 	Predicted good
+Labelled harmful 	0 	0
+Labelled good 	70 	628
+
+- Validation
+Predicted harmful 	Predicted good
+Labelled harmful 	26 	101
+Labelled good 	17 	158
+
+# 10,000 labelled samples
+
+- Training
+Predicted harmful 	Predicted good
+Labelled harmful 	0 	0
+Labelled good 	696 	6263
+
+- Validation
+Predicted harmful 	Predicted good
+Labelled harmful 	210 	1091
+Labelled good 	205 	1535
+
+# 100,000 labelled samples
+
+- Training
+Predicted harmful 	Predicted good
+Labelled harmful 	0 	0
+Labelled good 	6950 	62549
+
+- Validation
+Predicted harmful 	Predicted good
+Labelled harmful 	1929 	11197
+Labelled good 	1789 	15586
+
+# Entire dataset 321,657
+
+- Training
+Predicted harmful 	Predicted good
+Labelled harmful 	0 	0
+Labelled good 	22334 	200971
+
+- Validation
+Predicted harmful 	Predicted good
+Labelled harmful 	6201 	36325
+Labelled good 	5632 	50194
+
+
+# GridSearch with 1000 samples
+
+- Training
+Predicted harmful 	Predicted good
+Labelled harmful 	0 	0
+Labelled good 	7 	691
+
+- Validation
+Predicted harmful 	Predicted good
+Labelled harmful 	2 	125
+Labelled good 	4 	171
+
 
 ```
