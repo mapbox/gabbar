@@ -128,15 +128,15 @@ def anomaly_detection(changeset_id):
         mapping = dict(zip(data['header'], attributes))
 
         # Leaving out non training parameters.
-        model_attribute_keys = data['header'][3:]
-        model_attribute_values = list(attributes[3:])
+        model_attribute_keys = data['header'][4:]
+        model_attribute_values = list(attributes[4:])
 
         prediction = int(model.predict([model_attribute_values])[0])
 
         result = {
             'changeset_id': attributes[0],
             'feature_id': attributes[2],
-            'feature_type': getFeatureType(attributes[7:10]),  # TODO
+            'feature_type': attributes[3],
             'attributes': dict(zip(model_attribute_keys, model_attribute_values)),
             'prediction': prediction,
             'timestamp': datetime.datetime.now(),
