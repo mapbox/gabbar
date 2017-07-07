@@ -4,8 +4,7 @@
 const rcAttributes = require('./real_changeset');
 const fAttributes = require('./feature');
 const uAttributes = require('./user');
-const hAttributes = require('./highway');
-
+const simpleStatistics = require('simple-statistics');
 
 module.exports = {
     tagsToString: tagsToString,
@@ -18,25 +17,26 @@ module.exports = {
 
 
 
-function getAttributes(realChangeset, changeset, newVersion, oldVersion, newUserDetails, oldUserDetails) {
-    return [
-        rcAttributes.getChangesetID(realChangeset),
-        rcAttributes.isChangesetHarmful(realChangeset),
-        fAttributes.getFeatureID(newVersion),
-        fAttributes.getFeatureVersion(newVersion),
-        fAttributes.getAction(newVersion) === 'create' ? 1 : 0,
-        fAttributes.getAction(newVersion) === 'modify' ? 1 : 0,
-        fAttributes.getAction(newVersion) === 'delete' ? 1 : 0,
-        fAttributes.getGeometryType(newVersion) === 'node' ? 1 : 0,
-        fAttributes.getGeometryType(newVersion) === 'way' ? 1 : 0,
-        fAttributes.getGeometryType(newVersion) === 'relation' ? 1 : 0,
-        fAttributes.getLineDistance(newVersion),
-        fAttributes.getKinks(newVersion).length,
-        uAttributes.getMappingDays(oldUserDetails),
-        uAttributes.getMappingDays(newUserDetails),
-        tagsToString(oldVersion, newVersion),
-        tagsToString(newVersion, oldVersion),
-    ];
+function getAttributes(realChangeset, changeset, newVersion, oldVersion) {
+    try {
+        return [
+            rcAttributes.getChangesetID(realChangeset),
+            rcAttributes.isChangesetHarmful(realChangeset),
+            fAttributes.getFeatureID(newVersion),
+            fAttributes.getAction(newVersion) === 'create' ? 1 : 0,
+            fAttributes.getAction(newVersion) === 'modify' ? 1 : 0,
+            fAttributes.getAction(newVersion) === 'delete' ? 1 : 0,
+            fAttributes.getFeatureVersion(newVersion),
+            isHighwayTagCreated(newVersion, oldVersion),
+            isHighwayTagDeleted(newVersion, oldVersion),
+            getHighwayValueDifference(newVersion, oldVersion),
+            simpleStatistics.sumSimple(fAttributes.getPrimaryTagCount(newVersion)) - simpleStatistics.sumSimple(fAttributes.getPrimaryTagCount(oldVersion)),
+            fAttributes.getBBOXArea(newVersion),
+            fAttributes.getLengthOfLongestSegment(newVersion),
+        ];
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 function getAttributeHeaders() {
@@ -44,19 +44,16 @@ function getAttributeHeaders() {
         'changeset_id',
         'changeset_harmful',
         'feature_id',
-        'feature_version',
         'action_create',
         'action_modify',
         'action_delete',
-        'geometry_type_node',
-        'geometry_type_way',
-        'geometry_type_relation',
-        'geometry_line_distance',
-        'geometry_kinks',
-        'old_user_mapping_days',
-        'new_user_mapping_days',
-        'old_tags',
-        'new_tags',
+        'feature_version',
+        'highway_tag_created',
+        'highway_tag_deleted',
+        'highway_value_difference',
+        'primary_tags_difference',
+        'area_of_feature_bbox',
+        'length_of_longest_segment',
     ];
 }
 
