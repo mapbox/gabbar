@@ -41,26 +41,27 @@ npm install
 
 ```bash
 # A prediction of "-1" represents that this feature is an anomaly (outlier).
-gabbar 49563062
+gabbar 49172351
 [
     {
         "attributes": {
             "action_create": 0,
             "action_delete": 0,
             "action_modify": 1,
-            "area_of_feature_bbox": 111330.9543,
-            "feature_version": 15,
-            "highway_tag_created": 0,
+            "area_of_feature_bbox": 109591.9146,
+            "feature_name_touched": 0,
+            "feature_version": 17,
+            "highway_tag_created": 41,
             "highway_tag_deleted": 0,
-            "highway_value_difference": 36,
-            "length_of_longest_segment": 0.1122,
-            "primary_tags_difference": 0
+            "highway_value_difference": 0,
+            "length_of_longest_segment": 0.1577,
+            "primary_tags_difference": 1
         },
-        "changeset_id": "49563062",
-        "feature_id": "103217436",
+        "changeset_id": "49172351",
+        "feature_id": "124863896",
         "feature_type": "way",
         "prediction": -1,
-        "timestamp": "2017-07-07 06:55:36.906220",
+        "timestamp": "2017-07-08 22:40:19.342254",
         "version": "0.6"
     }
 ]
