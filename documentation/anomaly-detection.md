@@ -432,3 +432,42 @@ Labelled good 	4 	171
 
 
 ```
+
+```bash
+aws s3 ls s3://mapbox-gabbar/public/predictions/ --region 'us-west-2'
+
+aws s3 cp s3://mapbox-gabbar/public/predictions/anomaly-detection/way-4949430-29.json - --region 'us-west-2'
+```
+
+
+#### Error analysis of false positives
+
+- The `highway_value_difference` is noisy for newly created features
+    - When an highway is created, there isn't any old version. Ex: 48665521
+- Move up tertiary back to the top
+    - A transformation from `unclassified` -> `tertiary` is pretty common. Ex: 49633151
+- Adding a name translation to a highway (1)
+    - A user who knows a different language comes along and adds translation of highway name.
+    - Ex: `name:zh:` was added in 46407682
+- Highway has other primary tags (1)
+    - `highway=pedestrian` and `amenity=marketplace` in 46407682
+- Highway has `area=yes` (1)
+    - Ex: 46407682, 48096223
+- Highway importance from Wikipedia tag
+    - Wikipedia links to marketplace instead of highway in 46407682
+- Highway is a polygon
+    - This means, the highway's area can be calculated in 46407682
+- Length of highway could become an anomaly based on highway classification
+    - A long footway is less common in comparison to a long tertiary road in 48035438
+- Use same in both new and old version of feature
+    - Ex: User `aris hidayanto` in 50124294
+- Adding surface to a highway is a very common thing.
+    - Adding `surface=asphalt` in 47477375
+- Adding `oneway=yes`
+    - This is very common operation. Something we could use Telemetry for. Ex: 47201618
+    - What we might be interested in is when `oneway=yes` become `oneway=no`, the modification.
+    - Creation of the oneway tag might not be so anomalous
+    - Should we not worry about the oneway field at the moment?
+- Geometry playing a majority role
+    - The top 10 most anomalous are currently the top 10 largest highways
+    - The number of samples could be less in this category which could be affecting things
