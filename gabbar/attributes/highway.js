@@ -22,6 +22,7 @@ let CLASSIFICATION = [
     'primary',
     'secondary',
     'tertiary',
+    'unclassified',
     'residential',
     'service',
     'motorway_link',
@@ -58,7 +59,6 @@ let CLASSIFICATION = [
     'stop',
     'traffic_signals',
     'turning_circle',
-    'unclassified',
 ];
 
 
@@ -137,7 +137,8 @@ function tagsToString(feature, anotherFeature) {
 function isHighwayTagDeleted(newVersion, oldVersion) {
     try {
         if (('highway' in oldVersion.properties.tags) && !('highway' in newVersion.properties.tags)) {
-            return 1;
+            let value = oldVersion.properties.tags.highway;
+            return (CLASSIFICATION.indexOf(value) !== -1) ? CLASSIFICATION.length - CLASSIFICATION.indexOf(value) : CLASSIFICATION.length;
         } else {
             return 0;
         }
