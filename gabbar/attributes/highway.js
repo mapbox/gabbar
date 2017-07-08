@@ -16,6 +16,51 @@ module.exports = {
 };
 
 
+let CLASSIFICATION = [
+    'motorway',
+    'trunk',
+    'primary',
+    'secondary',
+    'tertiary',
+    'residential',
+    'service',
+    'motorway_link',
+    'trunk_link',
+    'primary_link',
+    'secondary_link',
+    'tertiary_link',
+    'living_street',
+    'pedestrian',
+    'track',
+    'bus_guideway',
+    'escape',
+    'raceway',
+    'road',
+    'footway',
+    'bridleway',
+    'steps',
+    'path',
+    'cycleway',
+    'proposed',
+    'construction',
+    'bus_stop',
+    'crossing',
+    'elevator',
+    'emergency_access_point',
+    'give_way',
+    'mini_roundabout',
+    'motorway_junction',
+    'passing_place',
+    'rest_area',
+    'speed_camera',
+    'street_lamp',
+    'services',
+    'stop',
+    'traffic_signals',
+    'turning_circle',
+    'unclassified',
+];
+
 
 function getAttributes(realChangeset, changeset, newVersion, oldVersion) {
     try {
@@ -104,9 +149,17 @@ function isHighwayTagDeleted(newVersion, oldVersion) {
 
 function isHighwayTagCreated(newVersion, oldVersion) {
     try {
-        if (!oldVersion && ('highway' in newVersion.properties.tags)) return 1;
-        else if (('highway' in newVersion.properties.tags) && !('highway' in oldVersion.properties.tags)) return 1;
-        else return 0;
+        if (!oldVersion && ('highway' in newVersion.properties.tags)) {
+            let value = newVersion.properties.tags.highway;
+            return (CLASSIFICATION.indexOf(value) !== -1) ? CLASSIFICATION.length - CLASSIFICATION.indexOf(value) : CLASSIFICATION.length;
+        }
+        else if (('highway' in newVersion.properties.tags) && !('highway' in oldVersion.properties.tags)) {
+            let value = newVersion.properties.tags.highway;
+            return (CLASSIFICATION.indexOf(value) !== -1) ? CLASSIFICATION.length - CLASSIFICATION.indexOf(value) : CLASSIFICATION.length;
+        }
+        else {
+            return 0;
+        }
     } catch (error) {
         return 0;
     }
@@ -115,50 +168,6 @@ function isHighwayTagCreated(newVersion, oldVersion) {
 
 function getHighwayValueDifference(newVersion, oldVersion) {
     // In the order listed here: https://wiki.openstreetmap.org/wiki/Key:highway
-    let classification = [
-        'motorway',
-        'trunk',
-        'primary',
-        'secondary',
-        'tertiary',
-        'residential',
-        'service',
-        'motorway_link',
-        'trunk_link',
-        'primary_link',
-        'secondary_link',
-        'tertiary_link',
-        'living_street',
-        'pedestrian',
-        'track',
-        'bus_guideway',
-        'escape',
-        'raceway',
-        'road',
-        'footway',
-        'bridleway',
-        'steps',
-        'path',
-        'cycleway',
-        'proposed',
-        'construction',
-        'bus_stop',
-        'crossing',
-        'elevator',
-        'emergency_access_point',
-        'give_way',
-        'mini_roundabout',
-        'motorway_junction',
-        'passing_place',
-        'rest_area',
-        'speed_camera',
-        'street_lamp',
-        'services',
-        'stop',
-        'traffic_signals',
-        'turning_circle',
-        'unclassified',
-    ];
 
     try {
         let newValue = newVersion.properties.tags.highway;
@@ -167,8 +176,8 @@ function getHighwayValueDifference(newVersion, oldVersion) {
         // When the highway tag does not exist in either new or old version. Skip.
         if (!newValue || !oldValue) return 0;
 
-        let newClassification = classification.indexOf(newValue) !== -1 ? classification.indexOf(newValue) : classification.length;
-        let oldClassification = classification.indexOf(oldValue) !== -1 ? classification.indexOf(oldValue) : classification.length;
+        let newClassification = CLASSIFICATION.indexOf(newValue) !== -1 ? CLASSIFICATION.indexOf(newValue) : CLASSIFICATION.length;
+        let oldClassification = CLASSIFICATION.indexOf(oldValue) !== -1 ? CLASSIFICATION.indexOf(oldValue) : CLASSIFICATION.length;
 
         return newClassification - oldClassification;
     } catch (error) {

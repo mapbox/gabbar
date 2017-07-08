@@ -77,7 +77,7 @@ test('Check if highway tag is created', function (t) {
         let oldVersion = sample[1];
 
         let actual = hAttributes.isHighwayTagCreated(newVersion, oldVersion);
-        t.equal(actual, 1);
+        t.equal(actual, 37);
     }
     t.end();
 });
