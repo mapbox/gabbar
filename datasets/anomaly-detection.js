@@ -44,6 +44,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
         'primary_tags_difference',
         'area_of_feature_bbox',
         'length_of_longest_segment',
+        'feature_name_touched',
         // 'geometry_distance_between_versions',
         // 'old_geometry_line_distance',
         // 'old_geometry_number_of_nodes',
@@ -64,6 +65,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
         // 'old_tags',
         // 'new_tags',
     ];
+    // for (let item of featureAttributes.getPrimaryTags()) header.push(item);
 
     let attributes = [];
     attributes.push(header);
@@ -106,7 +108,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
             if (newUsername === 'chinakz') continue;
             if (oldUsername === 'chinakz') continue;
 
-            attributes.push([
+            let sampleAttributes = [
                 changesetID,
                 harmful,
                 featureAttributes.getFeatureID(newVersion),
@@ -121,6 +123,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
                 simpleStatistics.sumSimple(featureAttributes.getPrimaryTagCount(newVersion)) - simpleStatistics.sumSimple(featureAttributes.getPrimaryTagCount(oldVersion)),
                 featureAttributes.getBBOXArea(newVersion),
                 featureAttributes.getLengthOfLongestSegment(newVersion),
+                featureAttributes.isNameTouched(newVersion, oldVersion),
                 // featureAttributes.getDistanceBetweenVersions(newVersion, oldVersion),
                 // featureAttributes.getLineDistance(oldVersion),
                 // featureAttributes.getNumberOfNodes(oldVersion),
@@ -140,7 +143,9 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
                 // featureAttributes.getNumberOfTags(oldVersion) ? featureAttributes.getNumberOfTags(newVersion) / featureAttributes.getNumberOfTags(oldVersion) : 0,
                 // highwayAttributes.tagsToString(oldVersion, newVersion),
                 // highwayAttributes.tagsToString(newVersion, oldVersion),
-            ]);
+            ];
+            // for (let item of featureAttributes.getPrimaryTagCount(newVersion)) sampleAttributes.push(item);
+            attributes.push(sampleAttributes);
         }
     }
     csv.stringify(attributes, (error, asString) => {
