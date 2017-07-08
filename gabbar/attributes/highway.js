@@ -79,6 +79,7 @@ function getAttributes(realChangeset, changeset, newVersion, oldVersion) {
             simpleStatistics.sumSimple(fAttributes.getPrimaryTagCount(newVersion)) - simpleStatistics.sumSimple(fAttributes.getPrimaryTagCount(oldVersion)),
             fAttributes.getBBOXArea(newVersion),
             fAttributes.getLengthOfLongestSegment(newVersion),
+            fAttributes.isNameTouched(newVersion, oldVersion),
         ];
     } catch (error) {
         console.log(error);
@@ -101,6 +102,7 @@ function getAttributeHeaders() {
         'primary_tags_difference',
         'area_of_feature_bbox',
         'length_of_longest_segment',
+        'feature_name_touched',
     ];
 }
 
