@@ -191,7 +191,7 @@ aws s3 cp s3://mapbox-gabbar/dumps/anomaly-detection-2017-07-05.tar.gz . --regio
 
 ```sh
 # Labelled samples.
-head -n1000 downloads/anomaly-detection/labelled/changesets.csv > downloads/anomaly-detection/labelled/sample-changesets.csv
+head -n100 downloads/anomaly-detection/labelled/changesets.csv > downloads/anomaly-detection/labelled/sample-changesets.csv
 
 mkdir -p datasets
 vim datasets/anomaly-detection.js
@@ -203,6 +203,38 @@ node datasets/anomaly-detection.js \
 
 # Number of rows: 2274
 wc -l downloads/anomaly-detection/labelled/attributes.csv
+
+
+# Unlabelled samples.
+head -n10000 downloads/anomaly-detection/unlabelled/changesets.csv > downloads/anomaly-detection/unlabelled/sample-changesets.csv
+
+node datasets/anomaly-detection.js \
+    --changesets downloads/anomaly-detection/unlabelled/sample-changesets.csv \
+    --realChangesetsDir downloads/anomaly-detection/unlabelled/real-changesets/ \
+    --userDetailsDir downloads/anomaly-detection/unlabelled/user-details/ > downloads/anomaly-detection/unlabelled/attributes.csv
+
+# Number of rows: 2274
+wc -l downloads/anomaly-detection/unlabelled/attributes.csv
+```
+
+
+
+#### Extract attributes large
+
+```sh
+# Labelled samples.
+head -n100 downloads/anomaly-detection/large/labelled/changesets.csv > downloads/anomaly-detection/large/labelled/sample-changesets.csv
+
+mkdir -p datasets
+vim datasets/anomaly-detection.js
+
+node datasets/anomaly-detection.js \
+    --changesets downloads/anomaly-detection/large/labelled/changesets.csv \
+    --realChangesetsDir downloads/anomaly-detection/large/labelled/real-changesets/ \
+    --userDetailsDir downloads/anomaly-detection/large/labelled/user-details/ > downloads/anomaly-detection/large/labelled/attributes.csv
+
+# Number of rows: 2274
+wc -l downloads/anomaly-detection/large/labelled/attributes.csv
 
 
 # Unlabelled samples.
@@ -430,7 +462,80 @@ Predicted harmful 	Predicted good
 Labelled harmful 	2 	125
 Labelled good 	4 	171
 
+##########################################################################
 
+# Current setup
+
+- Training
+Predicted harmful 	Predicted good
+Labelled harmful 	0 	0
+Labelled good 	182 	1636
+
+- Validation
+Predicted harmful 	Predicted good
+Labelled harmful 	40 	15
+Labelled good 	41 	358
+
+# highway_value_difference only for modification and not for create or delete
+
+- Training
+Predicted harmful 	Predicted good
+Labelled harmful 	0 	0
+Labelled good 	182 	1636
+
+- Validation
+Predicted harmful 	Predicted good
+Labelled harmful 	40 	15
+Labelled good 	41 	358
+
+# Have classification score instead of just 1 for highway created and deleted
+
+- Training
+Predicted harmful 	Predicted good
+Labelled harmful 	0 	0
+Labelled good 	182 	1636
+
+- Validation
+Predicted harmful 	Predicted good
+Labelled harmful 	41 	14
+Labelled good 	42 	357
+
+
+# Move up unclassified back to the top
+
+- Training
+Predicted harmful 	Predicted good
+Labelled harmful 	0 	0
+Labelled good 	182 	1636
+
+- Validation
+Predicted harmful 	Predicted good
+Labelled harmful 	37 	18
+Labelled good 	40 	359
+
+# OneHotEncode presence of other primary tags
+
+- Training
+Predicted harmful 	Predicted good
+Labelled harmful 	0 	0
+Labelled good 	182 	1636
+
+- Validation
+Predicted harmful 	Predicted good
+Labelled harmful 	33 	22
+Labelled good 	42 	357
+
+# Normalizer and StandardScaler
+
+- Training
+Predicted harmful 	Predicted good
+Labelled harmful 	0 	0
+Labelled good 	182 	1636
+
+- Validation
+Predicted harmful 	Predicted good
+Labelled harmful 	23 	32
+Labelled good 	38 	361
 ```
 
 ```bash
@@ -444,11 +549,19 @@ aws s3 cp s3://mapbox-gabbar/public/predictions/anomaly-detection/way-4949430-29
 
 - The `highway_value_difference` is noisy for newly created features
     - When an highway is created, there isn't any old version. Ex: 48665521
-- Move up tertiary back to the top
+- Instead of just a boolean for highway delete, can it be a priority?
+    - Ex: trunk = 40, primary = 39, etc
+- Move up unclassified back to the top
     - A transformation from `unclassified` -> `tertiary` is pretty common. Ex: 49633151
 - Adding a name translation to a highway (1)
     - A user who knows a different language comes along and adds translation of highway name.
     - Ex: `name:zh:` was added in 46407682
+
+- Adding `oneway=yes`
+    - This is very common operation. Something we could use Telemetry for. Ex: 47201618
+    - What we might be interested in is when `oneway=yes` become `oneway=no`, the modification.
+    - Creation of the oneway tag might not be so anomalous
+    - Should we not worry about the oneway field at the moment?
 - Highway has other primary tags (1)
     - `highway=pedestrian` and `amenity=marketplace` in 46407682
 - Highway has `area=yes` (1)
@@ -463,11 +576,6 @@ aws s3 cp s3://mapbox-gabbar/public/predictions/anomaly-detection/way-4949430-29
     - Ex: User `aris hidayanto` in 50124294
 - Adding surface to a highway is a very common thing.
     - Adding `surface=asphalt` in 47477375
-- Adding `oneway=yes`
-    - This is very common operation. Something we could use Telemetry for. Ex: 47201618
-    - What we might be interested in is when `oneway=yes` become `oneway=no`, the modification.
-    - Creation of the oneway tag might not be so anomalous
-    - Should we not worry about the oneway field at the moment?
 - Geometry playing a majority role
     - The top 10 most anomalous are currently the top 10 largest highways
     - The number of samples could be less in this category which could be affecting things
