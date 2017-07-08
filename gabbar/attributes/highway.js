@@ -164,6 +164,9 @@ function getHighwayValueDifference(newVersion, oldVersion) {
         let newValue = newVersion.properties.tags.highway;
         let oldValue = oldVersion.properties.tags.highway;
 
+        // When the highway tag does not exist in either new or old version. Skip.
+        if (!newValue || !oldValue) return 0;
+
         let newClassification = classification.indexOf(newValue) !== -1 ? classification.indexOf(newValue) : classification.length;
         let oldClassification = classification.indexOf(oldValue) !== -1 ? classification.indexOf(oldValue) : classification.length;
 
