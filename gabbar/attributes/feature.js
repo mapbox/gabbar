@@ -22,6 +22,7 @@ module.exports = {
     getPrimaryTagCount: getPrimaryTagCount,
     getBBOXArea: getBBOXArea,
     getLengthOfLongestSegment: getLengthOfLongestSegment,
+    isNameTouched: isNameTouched,
 };
 
 const PRIMARY_TAGS = [
@@ -52,6 +53,35 @@ const PRIMARY_TAGS = [
     'tourism',
     'waterway'
 ];
+
+function isNameTouched(newVersion, oldVersion) {
+    try {
+        if (!oldVersion) {
+            if ('name' in newVersion.properties.tags) return 1;
+
+            for (let tag of Object.keys(newVersion)) {
+                if (tag.index('name:') !== -1) return 1;
+            }
+
+            return 0;
+        } else {
+            if (newVersion.properties.tags.name !== oldVersion.properties.tags.name) return 1;
+
+            for (let tag of Object.keys(newVersion)) {
+                if ((tag.index('name:') !== -1) && (newVersion.properties.tags[tag] != oldVersion.properties.tags[tag])) return 1;
+            }
+
+            for (let tag of Object.keys(oldVersion)) {
+                if ((tag.index('name:') !== -1) && (newVersion.properties.tags[tag] != oldVersion.properties.tags[tag])) return 1;
+            }
+
+            return 0;
+        }
+    } catch (error) {
+        return 0;
+    }
+}
+
 
 function getPrimaryTags() {
     return PRIMARY_TAGS;

@@ -6,6 +6,7 @@ var path = require('path');
 
 var getSamples = require('../../../gabbar/filters/highway').getSamples;
 var fAttributes = require('../../../gabbar/attributes/feature');
+var cUtilities = require('../../../gabbar/utilities/changeset');
 
 test('Get line distance for a highway', function (t) {
     let changesetPath = path.join(__dirname, '../../fixtures/changesets/48255884.json');
@@ -282,5 +283,18 @@ test('Get length of longest segment', function (t) {
 
     let actual = fAttributes.getLengthOfLongestSegment(newVersion);
     t.equal(actual, 0.033);
+    t.end();
+});
+
+
+test('Test if name or name: properties are touched', function (t) {
+    let changesetPath = path.join(__dirname, '../../fixtures/changesets/47734592.json');
+    let changeset = JSON.parse(fs.readFileSync(changesetPath));
+
+    let sample = cUtilities.getAllFeatures(changeset)[0];
+    let newVersion = sample[0];
+    let oldVersion = sample[1];
+    t.equal(fAttributes.isNameTouched(newVersion, oldVersion), 1);
+
     t.end();
 });
