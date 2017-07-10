@@ -132,6 +132,7 @@ def anomaly_detection(changeset_id):
         model_attribute_values = list(attributes[4:])
 
         prediction = int(model.predict([model_attribute_values])[0])
+        score = round(model.decision_function([model_attribute_values])[0], 4)
 
         result = {
             'changeset_id': attributes[0],
@@ -139,6 +140,7 @@ def anomaly_detection(changeset_id):
             'feature_type': attributes[3],
             'attributes': dict(zip(model_attribute_keys, model_attribute_values)),
             'prediction': prediction,
+            'score': score,
             'timestamp': datetime.datetime.now(),
             'version': version,
         }
