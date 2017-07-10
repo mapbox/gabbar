@@ -93,7 +93,7 @@ csv.parse(fs.readFileSync(argv.changesets), (error, rows) => {
         else if (harmful === 'false') harmful = 1;
         else harmful = '';
 
-        let samples = getSamples(changeset, true);
+        let samples = getSamples(changeset);
         for (let sample of samples) {
             let newVersion = sample[0];
             let oldVersion = sample[1];
