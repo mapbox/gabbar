@@ -36,7 +36,7 @@ npm install
 
 ## Prediction
 
-<img width="919" alt="screen shot 2017-06-30 at 4 17 46 pm" src="https://user-images.githubusercontent.com/2899501/27732638-ce026614-5daf-11e7-900b-caff399a9da9.png">
+<img width="928" alt="screen shot 2017-07-10 at 4 59 03 pm" src="https://user-images.githubusercontent.com/2899501/28016300-6ea4cf06-6591-11e7-8572-a17ac98f2aa0.png">
 
 
 ```bash
