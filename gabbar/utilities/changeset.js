@@ -3,7 +3,8 @@
 
 module.exports = {
     getNewAndOldVersion: getNewAndOldVersion,
-    getFeaturesByAction: getFeaturesByAction
+    getFeaturesByAction: getFeaturesByAction,
+    getAllFeatures: getAllFeatures,
 };
 
 
@@ -31,4 +32,12 @@ function getFeaturesByAction(changeset, action) {
         }
     }
     return features;
+}
+
+function getAllFeatures(changeset) {
+    let features = [];
+    let featuresCreated = getFeaturesByAction(changeset, 'create');
+    let featuresModified = getFeaturesByAction(changeset, 'modify');
+    let featuresDeleted = getFeaturesByAction(changeset, 'delete');
+    return featuresCreated.concat(featuresModified, featuresDeleted);
 }

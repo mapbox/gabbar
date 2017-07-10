@@ -6,7 +6,7 @@ var path = require('path');
 
 var getNewAndOldVersion = require('../../../gabbar/utilities/changeset').getNewAndOldVersion;
 var getFeaturesByAction = require('../../../gabbar/utilities/changeset').getFeaturesByAction;
-
+var getAllFeatures = require('../../../gabbar/utilities/changeset').getAllFeatures;
 
 test('Get new and old version for a modified feature', function (t) {
     let changesetPath = path.join(__dirname, '../../fixtures/changesets/48255884.json');
@@ -39,5 +39,15 @@ test('Get features by action', function (t) {
     actual = getFeaturesByAction(changeset, 'delete');
     t.equal(actual.length, 0);
 
+    t.end();
+});
+
+test('Get all features', function (t) {
+    let changesetPath = path.join(__dirname, '../../fixtures/changesets/48255884.json');
+    let changeset = JSON.parse(fs.readFileSync(changesetPath));
+
+    // There are no created features in the fixture.
+    let actual = getAllFeatures(changeset);
+    t.equal(actual.length, 1);
     t.end();
 });

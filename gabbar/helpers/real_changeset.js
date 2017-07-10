@@ -33,26 +33,14 @@ if (argv.changesetID) {
                 let newVersion = sample[0];
                 let oldVersion = sample[1];
 
-                let newUserID = fAttributes.getUserID(newVersion);
-                let oldUserID = fAttributes.getUserID(oldVersion);
+                let attributes = hAttributes.getAttributes(realChangeset, changeset, newVersion, oldVersion);
+                data.attributes.push(attributes);
 
-                let arrayOfPromises = [
-                    downloadUserDetails(newUserID),
-                    downloadUserDetails(oldUserID),
-                ];
-                Promise.all(arrayOfPromises)
-                    .then(userDetails => {
-                        let newUserDetails = userDetails[0];
-                        let oldUserDetails = userDetails[1];
+                // TODO: Cannot return here when there are multiple samples.
+                console.log(JSON.stringify(data));
 
-                        let attributes = hAttributes.getAttributes(realChangeset, changeset, newVersion, oldVersion, newUserDetails, oldUserDetails);
-                        data.attributes.push(attributes);
-
-                        // TODO: Cannot return here when there are multiple samples.
-                        console.log(JSON.stringify(data));
-                    });
+                    // });
             }
-
         })
         .catch(error => {
             throw error;

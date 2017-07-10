@@ -1,0 +1,30 @@
+{
+    "id": 6157629,
+    "name": "samkv",
+    "first_edit": "2017-06-12T08:42:55.000Z",
+    "changeset_count": 26,
+    "num_changes": 365,
+    "extra": {
+        "total_discussions": "0",
+        "changesets_with_discussions": "0",
+        "mapping_days": "4",
+        "edit_frequency": [
+            {
+                "day": "2017-06-12T00:00:00.000Z",
+                "count": "13"
+            },
+            {
+                "day": "2017-06-13T00:00:00.000Z",
+                "count": "1"
+            },
+            {
+                "day": "2017-06-15T00:00:00.000Z",
+                "count": "8"
+            },
+            {
+                "day": "2017-06-20T00:00:00.000Z",
+                "count": "4"
+            }
+        ]
+    }
+}
