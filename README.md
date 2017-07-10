@@ -61,8 +61,9 @@ gabbar 49172351
         "feature_id": "124863896",
         "feature_type": "way",
         "prediction": -1,
-        "timestamp": "2017-07-08 22:40:19.342254",
-        "version": "0.6"
+        "score": -0.1493,
+        "timestamp": "2017-07-10 10:33:02.925012",
+        "version": "0.6.2"
     }
 ]
 ```
