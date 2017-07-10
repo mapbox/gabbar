@@ -1,0 +1,31 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "id": "4961098629",
+                "version": "1",
+                "timestamp": "2017-07-10T06:50:11Z",
+                "changeset": "50167186",
+                "uid": "1859838",
+                "user": "Shl-EF",
+                "action": "create",
+                "type": "node",
+                "tags": {
+                    "emergency_telephone_code": "112",
+                    "highway": "emergency_access_point",
+                    "ref": "SON 6145"
+                },
+                "changeType": "added"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.0292429,
+                    50.505238
+                ]
+            }
+        }
+    ]
+}

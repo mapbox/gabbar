@@ -23,6 +23,9 @@ function getSamples(changeset, forTraining) {
         let newVersion = feature[0];
         let oldVersion = feature[1];
 
+        let featureType = featureAttributes.getGeometryType(newVersion);
+        if (!forTraining && (featureType === 'node')) continue;
+
         let nameModified = featureAttributes.isNameModified(newVersion, oldVersion);
         // Skipping samples where a feature's name was modified.
         if (!forTraining && nameModified === 1) continue;
