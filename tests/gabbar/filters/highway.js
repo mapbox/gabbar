@@ -41,3 +41,18 @@ test('Get samples with a name modification with forTraining', function (t) {
 
     t.end();
 });
+
+test('Get samples for changeset with a highway but is of geometry type node', function (t) {
+    let changesetPath = path.join(__dirname, '../../fixtures/changesets/50167186.json');
+    let changeset = JSON.parse(fs.readFileSync(changesetPath));
+
+    let actual;
+
+    actual = getSamples(changeset);
+    t.equal(actual.length, 0);
+
+    actual = getSamples(changeset, true);
+    t.equal(actual.length, 1);
+
+    t.end();
+});

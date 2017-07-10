@@ -1,0 +1,56 @@
+{
+    "elements": [
+        {
+            "id": "4961098629",
+            "lat": "50.5052380",
+            "lon": "11.0292429",
+            "version": "1",
+            "timestamp": "2017-07-10T06:50:11Z",
+            "changeset": "50167186",
+            "uid": "1859838",
+            "user": "Shl-EF",
+            "action": "create",
+            "type": "node",
+            "tags": {
+                "emergency_telephone_code": "112",
+                "highway": "emergency_access_point",
+                "ref": "SON 6145"
+            }
+        }
+    ],
+    "metadata": {
+        "id": "50167186",
+        "created_at": "2017-07-10T06:50:11Z",
+        "closed_at": "2017-07-10T06:50:11Z",
+        "open": "false",
+        "user": "Shl-EF",
+        "uid": "1859838",
+        "min_lat": "50.5052380",
+        "min_lon": "11.0292429",
+        "max_lat": "50.5052380",
+        "max_lon": "11.0292429",
+        "comments_count": "0",
+        "tag": [
+            {
+                "k": "comment",
+                "v": "Rettungspunkt"
+            },
+            {
+                "k": "locale",
+                "v": "de"
+            },
+            {
+                "k": "host",
+                "v": "https://www.openstreetmap.org/edit"
+            },
+            {
+                "k": "imagery_used",
+                "v": "Bing aerial imagery;Local GPX"
+            },
+            {
+                "k": "created_by",
+                "v": "iD 2.3.0"
+            }
+        ]
+    }
+}
