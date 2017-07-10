@@ -536,6 +536,17 @@ Labelled good 	182 	1636
 Predicted harmful 	Predicted good
 Labelled harmful 	23 	32
 Labelled good 	38 	361
+
+# Filtering out node features.
+- Training
+Predicted harmful 	Predicted good
+Labelled harmful 	0 	0
+Labelled good 	173 	1549
+
+- Validation
+Predicted harmful 	Predicted good
+Labelled harmful 	37 	16
+Labelled good 	36 	341
 ```
 
 ```bash
