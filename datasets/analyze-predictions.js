@@ -4,7 +4,7 @@ const argv = require('minimist')(process.argv.slice(2));
 const fs = require('fs');
 const path = require('path');
 
-const OSMCHA_URL = 'https://osmcha.mapbox.com/'
+const OSMCHA_URL = 'https://osmcha.mapbox.com/';
 
 if (!argv.predictionsDir) {
     console.log('');
@@ -56,7 +56,7 @@ while (true) {
     // If changeset is already seen, skip.
     if (goodChangesets.has(good.changeset_id)) continue;
 
-    console.log(OSMCHA_URL + good.changeset_id + '/' + '\t' + getFeatureHash(good) + '.json');
+    console.log(OSMCHA_URL + good.changeset_id + '/\t' + getFeatureHash(good) + '.json');
     goodChangesets.add(good.changeset_id);
 }
 
@@ -73,6 +73,6 @@ while (true) {
     // If changeset is already seen, skip.
     if (harmfulChangesets.has(harmful.changeset_id)) continue;
 
-    console.log(OSMCHA_URL + harmful.changeset_id + '/' + '\t' + getFeatureHash(harmful) + '.json');
+    console.log(OSMCHA_URL + harmful.changeset_id + '/\t' + getFeatureHash(harmful) + '.json');
     harmfulChangesets.add(harmful.changeset_id);
 }

@@ -31,7 +31,7 @@ for (let version of versions) {
     let newVersion = version[0];
     let oldVersion = version[1];
 
-    if ((newVersion.properties.type == argv.featureType) && (newVersion.properties.id == argv.featureID)) {
+    if ((newVersion.properties.type === argv.featureType) && (newVersion.properties.id === argv.featureID)) {
         console.log(JSON.stringify(turf.featureCollection(version), null, 4));
         process.exit(0);
     }
