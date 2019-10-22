@@ -43,7 +43,7 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "eslint": "^3.19.0",
+    "eslint": "^6.5.1",
     "eslint-config-mourner": "^2.0.1",
     "tap": "^10.5.2",
     "tape": "^4.6.3"
